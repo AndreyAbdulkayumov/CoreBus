@@ -8,7 +8,7 @@
         x:Class="CoreBus.Base.Views.ModbusScannerWindow"
 		x:DataType="ViewModels:ModbusScanner_VM"
 		Title="Modbus сканер"
-		Width="430" Height="420"
+		Width="430" Height="440"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -16,7 +16,6 @@
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None">
-
 	
 	<Window.Styles>
 
@@ -100,6 +99,16 @@
 								Spacing="20"
 								Margin="10,10,10,10">
 
+						<StackPanel Orientation="Horizontal"
+									Spacing="10">
+							
+							<TextBlock Text="Протокол:"/>
+
+							<TextBlock Text="{Binding SelectedProtocolName, Mode=OneWay}"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+							
+						</StackPanel>
+						
 						<TextBlock Text="PDU поискового запроса"/>
 
 						<TextBox Classes="InputField"

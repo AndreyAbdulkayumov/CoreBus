@@ -10,6 +10,7 @@ using Core.Models.Modbus.Message;
 using ViewModels.Validation;
 using Core.Models.Modbus;
 using Services.Interfaces;
+using ViewModels.ModbusClient;
 
 namespace ViewModels.ModbusScanner;
 
@@ -29,6 +30,14 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         get => _slavesAddresses;
         set => this.RaiseAndSetIfChanged(ref _slavesAddresses, value);
+    }
+
+    private string? _selectedProtocolName;
+
+    public string? SelectedProtocolName
+    {
+        get => _selectedProtocolName;
+        set => this.RaiseAndSetIfChanged(ref _selectedProtocolName, value);
     }
 
     private string _pdu_SearchRequest = string.Empty;
@@ -123,6 +132,8 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
 
+    private readonly ModbusMessage _messageType;
+
     private Task? _searchTask;
     private CancellationTokenSource? _searchCancel;
 
@@ -134,6 +145,10 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
+
+        _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
+
+        SelectedProtocolName = _messageType.ProtocolName;
 
         DeviceReadTimeout += _connectedHostModel.Host_ReadTimeout.ToString() + " мс.";
 
@@ -247,20 +262,13 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         try
         {
-            ushort address = 0;
-            int numberOfRegisters = 2;
-            ModbusMessage modbusMessageType = new ModbusRTU_Message();
-            ushort CRC16_Polynom = 0xA001;
-
-
             ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == 3);
 
             var data = new ReadTypeMessage(
-                0,
-                address,
-                numberOfRegisters,
-                modbusMessageType is ModbusTCP_Message ? false : true,
-                CRC16_Polynom);
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                false);
 
             ModbusOperationResult result;
 
@@ -272,7 +280,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
                     CurrentSlaveID = i + " (0x" + i.ToString("X2") + ")";
 
-                    result = await _modbusModel.ReadRegister(readFunction, data, modbusMessageType);
+                    result = await _modbusModel.ReadRegister(readFunction, data, _messageType);
 
                     ViewSlaveAddress(i);
                 }
