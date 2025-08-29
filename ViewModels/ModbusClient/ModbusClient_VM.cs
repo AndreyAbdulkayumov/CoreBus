@@ -58,8 +58,8 @@ public class ModbusClient_VM : ReactiveObject
     }
 
     private const string Modbus_TCP_Name = "Modbus TCP";
-    private const string Modbus_RTU_Name = "Modbus RTU";
-    private const string Modbus_ASCII_Name = "Modbus ASCII";
+    public const string Modbus_RTU_Name = "Modbus RTU";
+    public const string Modbus_ASCII_Name = "Modbus ASCII";
     private const string Modbus_RTU_over_TCP_Name = "Modbus RTU over TCP";
     private const string Modbus_ASCII_over_TCP_Name = "Modbus ASCII over TCP";
 
