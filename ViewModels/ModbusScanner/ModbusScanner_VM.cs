@@ -306,6 +306,11 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true);
 
+            // Для демонстрации неодходимо оставить только эти вызовы метода, остальные закомментировать.
+            //ViewSlaveAddress(42);
+            //ViewSlaveAddress(98);
+            //ViewSlaveAddress(182);
+
             for (int i = ProgressBar_Minimum; i <= ProgressBar_Maximum; i++)
             {
                 try
