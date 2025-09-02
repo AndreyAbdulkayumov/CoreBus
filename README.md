@@ -111,7 +111,7 @@ CoreBus — кроссплатформенный терминал для раб�
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/ffe318a5-bab1-4fe5-9733-cd49e4a7c083"/>
-  <img src="https://github.com/user-attachments/assets/a5632679-32fa-439d-99f7-0cc9710754aa"/>
+  <img src="https://github.com/user-attachments/assets/3f92c794-e0ab-438d-9ad4-48ff2bf7b61f"/>
 </p>
 
 ## *"Макросы"*
