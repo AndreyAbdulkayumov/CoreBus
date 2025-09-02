@@ -127,6 +127,7 @@
 
 							<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
 									  SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
+									  IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
 									  FontSize="14"
 									  Width="139"/>
 
