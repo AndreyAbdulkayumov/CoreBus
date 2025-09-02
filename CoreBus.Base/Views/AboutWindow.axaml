@@ -145,7 +145,7 @@
 							HorizontalAlignment="Left" VerticalAlignment="Center"
 							Command="{Binding Command_CheckUpdate}"/>
 					
-					<Button Content="Сказать спасибо"
+					<Button Content="Поддержать проект"
 							CornerRadius="6"
 							Margin="0,0,10,0"
 							HorizontalAlignment="Right" VerticalAlignment="Center"

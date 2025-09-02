@@ -8,7 +8,7 @@
         x:Class="CoreBus.Base.Views.ModbusScannerWindow"
 		x:DataType="ViewModels:ModbusScanner_VM"
 		Title="Modbus сканер"
-		Width="430" Height="420"
+		Width="430" Height="450"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -16,7 +16,6 @@
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None">
-
 	
 	<Window.Styles>
 
@@ -24,6 +23,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TX_RX_Field.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
@@ -98,8 +98,8 @@
 
 					<StackPanel Orientation="Vertical"
 								Spacing="20"
-								Margin="10,10,10,10">
-
+								Margin="10,10,10,10">					
+						
 						<TextBlock Text="PDU поискового запроса"/>
 
 						<TextBox Classes="InputField"
@@ -117,6 +117,21 @@
 							</TextBox.Styles>
 
 						</TextBox>
+						
+						<StackPanel Orientation="Horizontal"
+									Spacing="10">
+
+							<TextBlock Text="Протокол"
+									   Margin="0,8,0,0"
+									   VerticalAlignment="Top"/>
+
+							<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
+									  SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
+									  IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
+									  FontSize="14"
+									  Width="139"/>
+
+						</StackPanel>
 
 						<StackPanel Orientation="Horizontal"
 									Spacing="10">

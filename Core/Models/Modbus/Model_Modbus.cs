@@ -8,25 +8,25 @@ public class Model_Modbus
 {
     public double CycleMode_Period
     {
-        get => CycleModeTimer.Interval;
-        set => CycleModeTimer.Interval = value;
+        get => _cycleModeTimer.Interval;
+        set => _cycleModeTimer.Interval = value;
     }
 
     public event EventHandler<Exception>? Model_ErrorInCycleMode;
 
-    private static bool IsBusy = false;
+    private static bool _isBusy = false;
 
     private IConnection? _device;
 
-    private readonly System.Timers.Timer CycleModeTimer;
+    private readonly System.Timers.Timer _cycleModeTimer;
     private const double IntervalDefault = 100;
 
     private Action? _readRegisterInCycleMode;
 
     public Model_Modbus()
     {
-        CycleModeTimer = new System.Timers.Timer(IntervalDefault);
-        CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
+        _cycleModeTimer = new System.Timers.Timer(IntervalDefault);
+        _cycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
     }
 
     public void Host_DeviceIsConnect(object? sender, IConnection? e)
@@ -44,14 +44,14 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
     {
-        while (IsBusy) ;
+        while (_isBusy) ;
 
-        IsBusy = true;
+        _isBusy = true;
 
-        byte[] TX = Array.Empty<byte>();
-        byte[] RX = Array.Empty<byte>();
+        var TX = Array.Empty<byte>();
+        var RX = Array.Empty<byte>();
 
-        var Result = new ModbusOperationResult();
+        var result = new ModbusOperationResult();
 
         ModbusOperationInfo? TX_Info = null, RX_Info = null;
 
@@ -123,7 +123,7 @@ public class Model_Modbus
 
         finally
         {
-            Result.Details = new ModbusActionDetails()
+            result.Details = new ModbusActionDetails()
             {
                 RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                 ResponseBytes = GetOutputRX(RX, RX.Length),
@@ -132,10 +132,10 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            IsBusy = false;
+            _isBusy = false;
         }
 
-        return Result;
+        return result;
     }
 
     private byte[] GetOutputRX(byte[] RX, int length)
@@ -149,14 +149,14 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
-        while (IsBusy) ;
+        while (_isBusy) ;
 
-        IsBusy = true;
+        _isBusy = true;
 
-        byte[] TX = Array.Empty<byte>();
-        byte[] RX = Array.Empty<byte>();
+        var TX = Array.Empty<byte>();
+        var RX = Array.Empty<byte>();
 
-        var Result = new ModbusOperationResult();
+        var result = new ModbusOperationResult();
 
         ModbusOperationInfo? TX_Info = null, RX_Info = null;
 
@@ -179,7 +179,7 @@ public class Model_Modbus
 
                 ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX);
 
-                Result.ReadedData = DeviceResponse.Data;
+                result.ReadedData = DeviceResponse.Data;
             }
 
             else
@@ -230,7 +230,7 @@ public class Model_Modbus
 
         finally
         {
-            Result.Details = new ModbusActionDetails()
+            result.Details = new ModbusActionDetails()
             {
                 RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                 ResponseBytes = GetOutputRX(RX, RX.Length),
@@ -239,10 +239,10 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            IsBusy = false;
+            _isBusy = false;
         }
 
-        return Result;
+        return result;
     }
 
     public void CycleMode_Start(Action readRegister_Handler)
@@ -251,12 +251,12 @@ public class Model_Modbus
 
         _readRegisterInCycleMode.Invoke();
 
-        CycleModeTimer.Start();
+        _cycleModeTimer.Start();
     }
 
     public void CycleMode_Stop()
     {
-        CycleModeTimer.Stop();
+        _cycleModeTimer.Stop();
     }
 
     private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)

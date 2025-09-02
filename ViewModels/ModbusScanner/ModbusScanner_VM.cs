@@ -1,15 +1,17 @@
-﻿using ReactiveUI;
+﻿using Core.Models;
+using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.Message;
+using MessageBox.Core;
+using ReactiveUI;
+using Services.Interfaces;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using MessageBox.Core;
-using Core.Models;
-using Core.Models.Modbus.DataTypes;
-using Core.Models.Modbus.Message;
+using ViewModels.ModbusClient;
 using ViewModels.Validation;
-using Core.Models.Modbus;
-using Services.Interfaces;
 
 namespace ViewModels.ModbusScanner;
 
@@ -29,6 +31,24 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         get => _slavesAddresses;
         set => this.RaiseAndSetIfChanged(ref _slavesAddresses, value);
+    }
+
+    private string _selectedModbusType = string.Empty;
+
+    public string SelectedModbusType
+    {
+        get => _selectedModbusType;
+        set => this.RaiseAndSetIfChanged(ref _selectedModbusType, value);
+    }
+
+    private ObservableCollection<string> _availableModbusTypes = new ObservableCollection<string>()
+    {
+        ModbusClient_VM.Modbus_RTU_Name, ModbusClient_VM.Modbus_ASCII_Name
+    };
+
+    public ObservableCollection<string>? AvailableModbusTypes
+    {
+        get => _availableModbusTypes;
     }
 
     private string _pdu_SearchRequest = string.Empty;
@@ -123,6 +143,8 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
 
+    private ModbusMessage _messageType;
+
     private Task? _searchTask;
     private CancellationTokenSource? _searchCancel;
 
@@ -134,6 +156,10 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
+
+        _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
+
+        SelectedModbusType = _messageType.ProtocolName;
 
         DeviceReadTimeout += _connectedHostModel.Host_ReadTimeout.ToString() + " мс.";
 
@@ -149,6 +175,29 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             StartPolling();
         });
         Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
+
+        this.WhenAnyValue(x => x.SelectedModbusType)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                if (!_connectedHostModel.HostIsConnect)
+                    return;
+
+                switch (SelectedModbusType)
+                {
+                    case ModbusClient_VM.Modbus_RTU_Name:
+                        _messageType = new ModbusRTU_Message();
+                        break;
+
+                    case ModbusClient_VM.Modbus_ASCII_Name:
+                        _messageType = new ModbusASCII_Message();
+                        break;
+
+                    default:
+                        _messageBox.Show($"Задан неизвестный тип Modbus протокола: {SelectedModbusType}", MessageType.Warning);
+                        break;
+                }
+            });
 
         // Значения по умолчанию
         PauseBetweenRequests = "100";
@@ -247,22 +296,20 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         try
         {
-            ushort address = 0;
-            int numberOfRegisters = 2;
-            ModbusMessage modbusMessageType = new ModbusRTU_Message();
-            ushort CRC16_Polynom = 0xA001;
+            // Данные для дефолтного PDU: 03 00 01 00 02
 
-
-            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == 3);
+            var readFunction = Function.ReadHoldingRegisters;
 
             var data = new ReadTypeMessage(
-                0,
-                address,
-                numberOfRegisters,
-                modbusMessageType is ModbusTCP_Message ? false : true,
-                CRC16_Polynom);
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                checkSum_IsEnable: true);
 
-            ModbusOperationResult result;
+            // Для демонстрации неодходимо оставить только эти вызовы метода, остальные закомментировать.
+            //ViewSlaveAddress(42);
+            //ViewSlaveAddress(98);
+            //ViewSlaveAddress(182);
 
             for (int i = ProgressBar_Minimum; i <= ProgressBar_Maximum; i++)
             {
@@ -270,9 +317,9 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
                 {
                     data.SlaveID = (byte)i;
 
-                    CurrentSlaveID = i + " (0x" + i.ToString("X2") + ")";
+                    CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    result = await _modbusModel.ReadRegister(readFunction, data, modbusMessageType);
+                    await _modbusModel.ReadRegister(readFunction, data, _messageType);
 
                     ViewSlaveAddress(i);
                 }

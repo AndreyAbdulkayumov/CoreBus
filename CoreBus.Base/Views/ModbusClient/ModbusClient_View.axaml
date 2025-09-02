@@ -43,7 +43,7 @@
 		
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="Режим обмена данными:"
+			<TextBlock Text="Протокол:"
                        FontSize="16"
                        Foreground="{DynamicResource App_Color_Text}"
                        Margin="10,0,0,0"
@@ -51,8 +51,9 @@
 
 			<TextBlock Text="не определен"
                        FontSize="16"
+					   IsVisible="{Binding !UI_IsEnable, Mode=OneWay}"
                        Foreground="{DynamicResource App_Color_Text_Bright}"
-                       Margin="220,0,0,0"
+                       Margin="100,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 			<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
@@ -60,7 +61,7 @@
                       FontSize="16"
 					  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
                       Width="225"
-                      Margin="220,0,0,0"
+                      Margin="100,0,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 			<Button Content="Сканнер"

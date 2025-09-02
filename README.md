@@ -81,11 +81,11 @@ CoreBus — кроссплатформенный терминал для раб�
 	- Файлы
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c9ddfaa7-ddba-48db-8819-dcd7a2bcc9c7"/>
+  <img src="https://github.com/user-attachments/assets/481e5cb3-2441-479e-8bca-64cfec122271"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d6cf386a-efe6-47ea-b405-32be7eddaec0"/>
+  <img src="https://github.com/user-attachments/assets/bc960011-efea-4f33-97de-6b6fd97c4724"/>
 </p>
 
 ## *"Modbus"*
@@ -99,19 +99,19 @@ CoreBus — кроссплатформенный терминал для раб�
  	- Modbus ASCII over TCP
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/654d4dbf-a9ec-4e22-9042-22d528e6cc77"/>
+  <img src="https://github.com/user-attachments/assets/311d5f62-ea38-471c-af53-b523bdae8d33"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/0708033f-b14a-421e-a542-0f35e90a3c70"/>
+  <img src="https://github.com/user-attachments/assets/e09003d1-1f47-49ef-9030-ad838153a2da"/>
 </p>
 
 Также в этом режиме реализован Modbus сканер. Он служит для поиска подчиненных устройств на линии связи и доступен только при подключении по последовательному порту.
 Список адресов найденных устройств отображается в поле "Устройства".
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b31e536b-c224-4ed6-9505-799a8b209765"/>
-  <img src="https://github.com/user-attachments/assets/db025621-c7ae-4fb2-a35c-f4297c359eed"/>
+  <img src="https://github.com/user-attachments/assets/ffe318a5-bab1-4fe5-9733-cd49e4a7c083"/>
+  <img src="https://github.com/user-attachments/assets/3f92c794-e0ab-438d-9ad4-48ff2bf7b61f"/>
 </p>
 
 ## *"Макросы"*

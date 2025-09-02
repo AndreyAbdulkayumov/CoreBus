@@ -3,7 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-	<Version>3.3.0</Version>
+	<Version>3.3.1</Version>
     <Company>Абдулкаюмов Андрей</Company>
     <Authors>Abdulkayumov Andrey</Authors>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -15,14 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.2" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.2" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.2" />
+    <PackageReference Include="Avalonia" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.2" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.4" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
   </ItemGroup>
 
   <ItemGroup>

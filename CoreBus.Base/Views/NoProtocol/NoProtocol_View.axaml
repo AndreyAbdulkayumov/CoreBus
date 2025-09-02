@@ -50,7 +50,7 @@
 						Margin="10,0,0,0"
 						HorizontalAlignment="Left" VerticalAlignment="Center">
 
-				<TextBlock Text="Тип интерфейса:"
+				<TextBlock Text="Интерфейс:"
 						   FontSize="16"
                            Foreground="{DynamicResource App_Color_Text}"/>
 
@@ -62,7 +62,7 @@
 
 			<StackPanel Orientation="Horizontal" Spacing="10"
 						IsVisible="{Binding EncodingIsVisible, Mode=OneWay}"
-						Margin="290,0,0,0"
+						Margin="250,0,0,0"
 						HorizontalAlignment="Left" VerticalAlignment="Center">
 
 				<TextBlock Text="Кодировка:"

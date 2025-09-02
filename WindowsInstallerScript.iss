@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "3.3.0"
+#define MyAppVersion "3.3.1"
 
 ; Директория установки приложения по умолчанию (папка Program Files на диске с системой)
 #define InstallDirectory "{commonpf64}\CoreBus"
