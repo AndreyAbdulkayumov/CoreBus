@@ -171,11 +171,11 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
 
         _modbusModel.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-        Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+        Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
         {
             if (_isStart)
             {
-                StopPolling();
+                await StopPolling();
                 return;
             }
 
@@ -256,9 +256,9 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         }
     }
 
-    public void SourceWindowClosingAction()
+    public async Task SourceWindowClosingAction()
     {
-        _modbusModel.CycleMode_Stop();
+        await _modbusModel.CycleMode_Stop();
         _modbusModel.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
     }
 
@@ -373,14 +373,14 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
             return;
         }
 
-        if (_selectedPeriod < _connectedHostModel.Host_ReadTimeout + TimeForReadHandler)
-        {
-            _messageBox.Show("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
-                TimeForReadHandler + " мс. (" + _connectedHostModel.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
-                "Таймаут чтения: " + _connectedHostModel.Host_ReadTimeout + " мс.", MessageType.Warning);
+        //if (_selectedPeriod < _connectedHostModel.Host_ReadTimeout + TimeForReadHandler)
+        //{
+        //    _messageBox.Show("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
+        //        TimeForReadHandler + " мс. (" + _connectedHostModel.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
+        //        "Таймаут чтения: " + _connectedHostModel.Host_ReadTimeout + " мс.", MessageType.Warning);
 
-            return;
-        }
+        //    return;
+        //}
 
         ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
@@ -396,9 +396,9 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         _isStart = true;
     }
 
-    public void StopPolling()
+    public async Task StopPolling()
     {
-        _modbusModel.CycleMode_Stop();
+        await _modbusModel.CycleMode_Stop();
 
         Button_Content = Button_Content_Start;
         _isStart = false;

@@ -147,11 +147,24 @@ public class Model_Modbus
         return outputArray;
     }
 
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    private readonly Mutex _mutex = new Mutex();
+
+    private CancellationTokenSource _cts = new CancellationTokenSource();
+
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
-        while (_isBusy) ;
+        //while (_isBusy) ;
 
-        _isBusy = true;
+        //_isBusy = true;
+
+        await _semaphore.WaitAsync(_cts.Token);
+
+        //bool isMutexAcquired = false;
+
+        //_mutex.WaitOne();
+        //isMutexAcquired = true;
 
         var TX = Array.Empty<byte>();
         var RX = Array.Empty<byte>();
@@ -239,7 +252,13 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            _isBusy = false;
+            //_isBusy = false;
+            _semaphore.Release();
+
+            //if (isMutexAcquired)
+            //{
+            //    _mutex.ReleaseMutex();
+            //}
         }
 
         return result;
@@ -254,12 +273,17 @@ public class Model_Modbus
         _cycleModeTimer.Start();
     }
 
-    public void CycleMode_Stop()
+    public async Task CycleMode_Stop()
     {
         _cycleModeTimer.Stop();
+
+        await _cts.CancelAsync();
+
+        _cts.Dispose();
+        _cts = new CancellationTokenSource();
     }
 
-    private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private async void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         try
         {
@@ -271,7 +295,7 @@ public class Model_Modbus
 
         catch (Exception error)
         {
-            CycleMode_Stop();
+            await CycleMode_Stop();
 
             Model_ErrorInCycleMode?.Invoke(this, error);
         }
