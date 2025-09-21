@@ -154,7 +154,9 @@
 						<Button ToolTip.Tip="Копировать ссылку на исходный код в буфер обмена"
 								CornerRadius="5"
 								Width="32" Height="32"
-								HorizontalAlignment="Right" VerticalAlignment="Center">
+								HorizontalAlignment="Right" VerticalAlignment="Center"
+								Command="{Binding Command_Copy_SourceCodeRepositoryAddress}"
+								CommandParameter="https://github.com/AndreyAbdulkayumov/CoreBus">
 
 							<Icons:MaterialIcon Kind="ContentCopy"
 												Height="18" Width="18">
@@ -188,7 +190,9 @@
 						<Button ToolTip.Tip="Копировать адрес электронной почты в буфер обмена"
 								CornerRadius="5"
 								Width="32" Height="32"
-								HorizontalAlignment="Right" VerticalAlignment="Center">
+								HorizontalAlignment="Right" VerticalAlignment="Center"
+								Command="{Binding Command_Copy_Email}"
+								CommandParameter="andrey.abdulkayumov@gmail.com">
 
 							<Icons:MaterialIcon Kind="ContentCopy"
 												Height="18" Width="18">

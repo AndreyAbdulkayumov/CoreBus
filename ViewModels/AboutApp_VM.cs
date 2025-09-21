@@ -37,6 +37,8 @@ public class AboutApp_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _runtimeVersion, value);
     }
 
+    public ReactiveCommand<string, Unit> Command_Copy_SourceCodeRepositoryAddress { get; }
+    public ReactiveCommand<string, Unit> Command_Copy_Email { get; }
     public ReactiveCommand<Unit, Unit>? Command_CheckUpdate { get; }
     public ReactiveCommand<Unit, Unit> Command_MakeDonate { get; }
 
@@ -50,6 +52,12 @@ public class AboutApp_VM : ReactiveObject
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
+
+        Command_Copy_SourceCodeRepositoryAddress = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
+        Command_Copy_SourceCodeRepositoryAddress.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования ссылки на исходный код:\n\n{error.Message}", MessageType.Error, error));
+
+        Command_Copy_Email = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
+        Command_Copy_Email.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования почты автора:\n\n{error.Message}", MessageType.Error, error));
 
         Command_CheckUpdate = ReactiveCommand.CreateFromTask(CheckUpdate);
         Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error, error));
