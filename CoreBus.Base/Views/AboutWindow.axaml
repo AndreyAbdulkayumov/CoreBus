@@ -8,7 +8,7 @@
         x:Class="CoreBus.Base.Views.AboutWindow"
 		x:DataType="ViewModels:AboutApp_VM"
         Title="О программе"
-		Width="400" Height="350"
+		Width="520" Height="450"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -19,7 +19,8 @@
 		KeyDown="Window_KeyDown">
 
 	<Window.Styles>
-		
+				
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 
@@ -55,35 +56,35 @@
 
 			</Grid>
 
-			<Grid Grid.Row="1">
+			<Grid Grid.Row="1"
+				  Margin="10,10,10,0">
 
 				<Grid.RowDefinitions>
-					<RowDefinition Height="1.5*"/>
 					<RowDefinition Height="1*"/>
-					<RowDefinition Height="7*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="200"/>
 					<RowDefinition Height="2*"/>
+					<RowDefinition Height="1.5*"/>
 				</Grid.RowDefinitions>
 
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*"/>
-					<ColumnDefinition Width="2*"/>
+					<ColumnDefinition Width="1.5*"/>
+					<ColumnDefinition Width="3*"/>
 				</Grid.ColumnDefinitions>
 
 				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
 						   Text="CoreBus"
-                           Foreground="{DynamicResource App_Color_Text}"
                            FontSize="18"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
 						   Text="{Binding AppVersion, Mode=OneWay}"
-						   Foreground="{DynamicResource App_Color_Text}"
 						   FontSize="16"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				<Image Grid.Row="2" Grid.Column="0"
 					   Source="avares://CoreBus.Base/Resources/MainLogo.ico"
-					   Margin="10,15,0,0"
+					   Margin="0,15,0,0"
 					   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
 				<StackPanel Grid.Row="2" Grid.Column="1"
@@ -97,39 +98,34 @@
 
 					<TextBlock Text="Абдулкаюмов Андрей Ренатович"
 							   Width="140"
-							   Foreground="{DynamicResource App_Color_Text}"
 							   FontSize="16"
 							   TextWrapping="Wrap"
 							   TextAlignment="Center"
 							   Margin="10"/>
 					
-					<Grid>
+					<Grid Margin="40,0,0,0">
 						
-						<TextBlock Text="Версия .NET:"
-								   Margin="20,0,0,0"
+						<TextBlock Text="Версия .NET:"								   
 								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
 								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 						
 					</Grid>
 
-					<Grid>
+					<Grid Margin="40,0,0,0">
 
-						<TextBlock Text="Версия Avalonia UI:"
-								   Margin="20,0,0,0"
+						<TextBlock Text="Версия Avalonia UI:"								   
 								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
 								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 						
@@ -137,22 +133,92 @@
 					
 				</StackPanel>
 
-				<Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+				<StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+							Orientation="Vertical" Spacing="10"
+							VerticalAlignment="Center">
+
+					<Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="5">
+
+							<TextBlock Text="Исходный код:"
+									   FontSize="14"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<HyperlinkButton Content="https://github.com/AndreyAbdulkayumov/CoreBus"
+											 FontSize="14"
+											 NavigateUri="https://github.com/AndreyAbdulkayumov/CoreBus" />
+
+						</StackPanel>
+
+						<Button ToolTip.Tip="Копировать ссылку на исходный код в буфер обмена"
+								CornerRadius="5"
+								Width="32" Height="32"
+								HorizontalAlignment="Right" VerticalAlignment="Center">
+
+							<Icons:MaterialIcon Kind="ContentCopy"
+												Height="18" Width="18">
+
+								<Icons:MaterialIcon.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="-1" />
+									</TransformGroup>
+								</Icons:MaterialIcon.RenderTransform>
+
+							</Icons:MaterialIcon>
+
+						</Button>
+						
+					</Grid>
+
+					<Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="5">
+
+							<TextBlock Text="Связаться с автором:"
+									   FontSize="14"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<HyperlinkButton Content="andrey.abdulkayumov@gmail.com"
+											 FontSize="14"
+											 NavigateUri="mailto:andrey.abdulkayumov@gmail.com" />
+
+						</StackPanel>
+
+						<Button ToolTip.Tip="Копировать адрес электронной почты в буфер обмена"
+								CornerRadius="5"
+								Width="32" Height="32"
+								HorizontalAlignment="Right" VerticalAlignment="Center">
+
+							<Icons:MaterialIcon Kind="ContentCopy"
+												Height="18" Width="18">
+
+								<Icons:MaterialIcon.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="-1" />
+									</TransformGroup>
+								</Icons:MaterialIcon.RenderTransform>
+
+							</Icons:MaterialIcon>
+
+						</Button>
+						
+					</Grid>
+					
+				</StackPanel>
+
+				<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
 					
 					<Button Content="Проверить обновления"
-							CornerRadius="6"
-							Margin="10,0,0,0"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
 							Command="{Binding Command_CheckUpdate}"/>
 					
 					<Button Content="Поддержать проект"
-							CornerRadius="6"
-							Margin="0,0,10,0"
 							HorizontalAlignment="Right" VerticalAlignment="Center"
 							Command="{Binding Command_MakeDonate}"/>
 					
-				</Grid>
-				
+				</Grid>	
+								
 			</Grid>
 
 		</Grid>
