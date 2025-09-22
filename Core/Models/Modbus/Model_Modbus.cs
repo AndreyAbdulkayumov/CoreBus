@@ -255,9 +255,9 @@ public class Model_Modbus
     {
         _readRegisterInCycleMode = readRegister_Handler;
 
-        _readRegisterInCycleMode.Invoke();
-
         _cycleModeTimer.Start();
+
+        _readRegisterInCycleMode.Invoke();
     }
 
     public void CycleMode_Stop()
