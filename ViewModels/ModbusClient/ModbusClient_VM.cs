@@ -492,11 +492,6 @@ public class ModbusClient_VM : ReactiveObject
             throw new Exception(message);
         }
 
-        catch (OperationCanceledException)
-        {
-            // Отмена операции.
-        }
-
         catch (Exception error)
         {
             var info = error.InnerException as ModbusExceptionInfo;

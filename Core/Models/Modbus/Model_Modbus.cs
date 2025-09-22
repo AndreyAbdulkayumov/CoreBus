@@ -44,7 +44,10 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
     {
-        while (_isBusy) ;
+        while (_isBusy)
+        {
+            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
+        }
 
         _isBusy = true;
 
@@ -147,24 +150,14 @@ public class Model_Modbus
         return outputArray;
     }
 
-    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
-    private readonly Mutex _mutex = new Mutex();
-
-    private CancellationTokenSource _cts = new CancellationTokenSource();
-
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
-        //while (_isBusy) ;
+        while (_isBusy)
+        {
+            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
+        }
 
-        //_isBusy = true;
-
-        await _semaphore.WaitAsync(_cts.Token);
-
-        //bool isMutexAcquired = false;
-
-        //_mutex.WaitOne();
-        //isMutexAcquired = true;
+        _isBusy = true;
 
         var TX = Array.Empty<byte>();
         var RX = Array.Empty<byte>();
@@ -252,13 +245,7 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            //_isBusy = false;
-            _semaphore.Release();
-
-            //if (isMutexAcquired)
-            //{
-            //    _mutex.ReleaseMutex();
-            //}
+            _isBusy = false;
         }
 
         return result;
@@ -273,17 +260,12 @@ public class Model_Modbus
         _cycleModeTimer.Start();
     }
 
-    public async Task CycleMode_Stop()
+    public void CycleMode_Stop()
     {
-        _cycleModeTimer.Stop();
-
-        await _cts.CancelAsync();
-
-        _cts.Dispose();
-        _cts = new CancellationTokenSource();
+        _cycleModeTimer.Stop();     
     }
 
-    private async void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         try
         {
@@ -295,7 +277,7 @@ public class Model_Modbus
 
         catch (Exception error)
         {
-            await CycleMode_Stop();
+            CycleMode_Stop();
 
             Model_ErrorInCycleMode?.Invoke(this, error);
         }

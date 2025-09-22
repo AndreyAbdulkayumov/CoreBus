@@ -171,11 +171,11 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
 
         _modbusModel.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-        Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
+        Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
         {
             if (_isStart)
             {
-                await StopPolling();
+                StopPolling();
                 return;
             }
 
@@ -256,9 +256,9 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         }
     }
 
-    public async Task SourceWindowClosingAction()
+    public void SourceWindowClosingAction()
     {
-        await _modbusModel.CycleMode_Stop();
+        _modbusModel.CycleMode_Stop();
         _modbusModel.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
     }
 
@@ -396,9 +396,9 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         _isStart = true;
     }
 
-    public async Task StopPolling()
+    public void StopPolling()
     {
-        await _modbusModel.CycleMode_Stop();
+        _modbusModel.CycleMode_Stop();
 
         Button_Content = Button_Content_Start;
         _isStart = false;
