@@ -128,7 +128,7 @@
 						</Button>
 
 						<Button Classes="MenuToolButton" 
-								ToolTip.Tip="О программе"
+								ToolTip.Tip="О приложении"
 								Command="{Binding Command_OpenAboutWindow}">
 							
 							<Icons:MaterialIcon Kind="Info"

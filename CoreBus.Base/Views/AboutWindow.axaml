@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         x:Class="CoreBus.Base.Views.AboutWindow"
 		x:DataType="ViewModels:AboutApp_VM"
-        Title="О программе"
+        Title="О приложении"
 		Width="520" Height="450"
 		Background="Transparent"
 		CanResize="False"
@@ -56,85 +56,78 @@
 
 			</Grid>
 
-			<Grid Grid.Row="1"
-				  Margin="10,10,10,0">
+			<StackPanel Grid.Row="1" Spacing="20"
+						Margin="10">				
 
-				<Grid.RowDefinitions>
-					<RowDefinition Height="1*"/>
-					<RowDefinition Height="1*"/>
-					<RowDefinition Height="200"/>
-					<RowDefinition Height="2*"/>
-					<RowDefinition Height="1.5*"/>
-				</Grid.RowDefinitions>
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1.5*"/>
-					<ColumnDefinition Width="3*"/>
-				</Grid.ColumnDefinitions>
-
-				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-						   Text="CoreBus"
+				<TextBlock Text="CoreBus"
                            FontSize="18"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-						   Text="{Binding AppVersion, Mode=OneWay}"
+				<TextBlock Text="{Binding AppVersion, Mode=OneWay}"
 						   FontSize="16"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<Image Grid.Row="2" Grid.Column="0"
-					   Source="avares://CoreBus.Base/Resources/MainLogo.ico"
-					   Margin="0,15,0,0"
-					   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+				<Grid>
 
-				<StackPanel Grid.Row="2" Grid.Column="1"
-							Orientation="Vertical" Spacing="10"
-							Margin="0,10,0,0">
-
-					<TextBlock Text="Разработал:"
-							   Foreground="{DynamicResource App_Color_Text_Back}"
-                               FontSize="16"
-							   TextAlignment="Center"/>
-
-					<TextBlock Text="Абдулкаюмов Андрей Ренатович"
-							   Width="140"
-							   FontSize="16"
-							   TextWrapping="Wrap"
-							   TextAlignment="Center"
-							   Margin="10"/>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1.5*"/>
+						<ColumnDefinition Width="3*"/>
+					</Grid.ColumnDefinitions>
 					
-					<Grid Margin="40,0,0,0">
-						
-						<TextBlock Text="Версия .NET:"								   
+					<Image Grid.Column="0"
+						   Source="avares://CoreBus.Base/Resources/MainLogo.ico"
+						   Margin="0,15,0,0"
+						   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+					<StackPanel Grid.Column="1"
+								Orientation="Vertical" Spacing="10"
+								Margin="10,10,0,0">
+
+						<TextBlock Text="Разработал:"
 								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   TextAlignment="Center"/>
 
-						<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
-								   Margin="200,0,0,0"
+						<TextBlock Text="Абдулкаюмов Андрей Ренатович"
+								   Width="140"
 								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-						
-					</Grid>
+								   TextWrapping="Wrap"
+								   TextAlignment="Center"
+								   Margin="10"/>
 
-					<Grid Margin="40,0,0,0">
+						<Grid Margin="40,0,0,0">
 
-						<TextBlock Text="Версия Avalonia UI:"								   
-								   Foreground="{DynamicResource App_Color_Text_Back}"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+							<TextBlock Text="Версия .NET:"
+									   Foreground="{DynamicResource App_Color_Text_Back}"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
-								   Margin="200,0,0,0"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-						
-					</Grid>
+							<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
+									   Margin="200,0,0,0"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</Grid>
+
+						<Grid Margin="40,0,0,0">
+
+							<TextBlock Text="Версия Avalonia UI:"
+									   Foreground="{DynamicResource App_Color_Text_Back}"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
+									   Margin="200,0,0,0"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</Grid>
+
+					</StackPanel>
 					
-				</StackPanel>
+				</Grid>
 
-				<StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-							Orientation="Vertical" Spacing="10"
+				<StackPanel Orientation="Vertical" Spacing="10"
 							VerticalAlignment="Center">
 
 					<Grid>
@@ -153,7 +146,7 @@
 
 						<Button ToolTip.Tip="Копировать ссылку на исходный код в буфер обмена"
 								CornerRadius="5"
-								Width="32" Height="32"
+								Width="30" Height="30"
 								HorizontalAlignment="Right" VerticalAlignment="Center"
 								Command="{Binding Command_Copy_SourceCodeRepositoryAddress}"
 								CommandParameter="https://github.com/AndreyAbdulkayumov/CoreBus">
@@ -170,7 +163,7 @@
 							</Icons:MaterialIcon>
 
 						</Button>
-						
+
 					</Grid>
 
 					<Grid>
@@ -189,7 +182,7 @@
 
 						<Button ToolTip.Tip="Копировать адрес электронной почты в буфер обмена"
 								CornerRadius="5"
-								Width="32" Height="32"
+								Width="30" Height="30"
 								HorizontalAlignment="Right" VerticalAlignment="Center"
 								Command="{Binding Command_Copy_Email}"
 								CommandParameter="andrey.abdulkayumov@gmail.com">
@@ -206,12 +199,12 @@
 							</Icons:MaterialIcon>
 
 						</Button>
-						
+
 					</Grid>
-					
+
 				</StackPanel>
 
-				<Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+				<Grid>
 					
 					<Button Content="Проверить обновления"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -223,7 +216,7 @@
 					
 				</Grid>	
 								
-			</Grid>
+			</StackPanel>
 
 		</Grid>
 
