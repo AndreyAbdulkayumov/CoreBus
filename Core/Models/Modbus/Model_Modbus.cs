@@ -262,7 +262,7 @@ public class Model_Modbus
 
     public void CycleMode_Stop()
     {
-        _cycleModeTimer.Stop();     
+        _cycleModeTimer.Stop();
     }
 
     private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
