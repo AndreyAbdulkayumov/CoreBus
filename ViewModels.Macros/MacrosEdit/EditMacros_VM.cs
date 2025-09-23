@@ -435,15 +435,22 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
     private void RunModbusCommand(ModbusCommandContent commandContent)
     {
-        var simpleMacros = new MacrosContent<ModbusAdditionalData, ModbusCommandContent>()
+        var simpleMacros = new MacrosContent<ModbusAdditionalData, MacrosCommandModbus>()
         {
             AdditionalData = CommonSlaveIdFieldViewModel?.GetAdditionalData(),
-            Commands = new List<ModbusCommandContent> { commandContent }
+            Commands = new List<MacrosCommandModbus>
+            {
+                new MacrosCommandModbus()
+                {
+                    Name = "Одиночная команда",
+                    Content = commandContent
+                }
+            }
         };
 
         var contentForSend = MacrosHelper.GetWithAdditionalData(simpleMacros);
 
-        var content = contentForSend.Commands?.First();
+        var content = contentForSend.Commands?.First().Content;
 
         if (content == null)
             return;
