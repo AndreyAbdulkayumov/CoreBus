@@ -453,8 +453,14 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         if (selectedFunction is ModbusReadFunction readFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusReadMessage(SenderName, content.SlaveID, content.Address, readFunction, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
-                );
+                new ModbusReadMessage(
+                    SenderName, 
+                    content.SlaveID, 
+                    content.Address, 
+                    readFunction, 
+                    content.NumberOfReadRegisters, 
+                    content.CheckSum_IsEnable
+                    ));
 
             return;
         }
@@ -462,7 +468,14 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         if (selectedFunction is ModbusWriteFunction writeFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusWriteMessage(SenderName, content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                new ModbusWriteMessage(
+                    SenderName, 
+                    content.SlaveID, 
+                    content.Address, 
+                    writeFunction, 
+                    content.WriteInfo?.WriteBuffer,
+                    content.WriteInfo != null ? content.WriteInfo.NumberOfWriteRegisters : 0,
+                    content.CheckSum_IsEnable)
                 );
 
             return;
