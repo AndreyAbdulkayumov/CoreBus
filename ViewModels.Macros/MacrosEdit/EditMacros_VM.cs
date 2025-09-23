@@ -435,15 +435,22 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
     private void RunModbusCommand(ModbusCommandContent commandContent)
     {
-        var simpleMacros = new MacrosContent<ModbusAdditionalData, ModbusCommandContent>()
+        var simpleMacros = new MacrosContent<ModbusAdditionalData, MacrosCommandModbus>()
         {
             AdditionalData = CommonSlaveIdFieldViewModel?.GetAdditionalData(),
-            Commands = new List<ModbusCommandContent> { commandContent }
+            Commands = new List<MacrosCommandModbus>
+            {
+                new MacrosCommandModbus()
+                {
+                    Name = "Одиночная команда",
+                    Content = commandContent
+                }
+            }
         };
 
         var contentForSend = MacrosHelper.GetWithAdditionalData(simpleMacros);
 
-        var content = contentForSend.Commands?.First();
+        var content = contentForSend.Commands?.First().Content;
 
         if (content == null)
             return;
@@ -453,8 +460,14 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         if (selectedFunction is ModbusReadFunction readFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusReadMessage(SenderName, content.SlaveID, content.Address, readFunction, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
-                );
+                new ModbusReadMessage(
+                    SenderName, 
+                    content.SlaveID, 
+                    content.Address, 
+                    readFunction, 
+                    content.NumberOfReadRegisters, 
+                    content.CheckSum_IsEnable
+                    ));
 
             return;
         }
@@ -462,7 +475,14 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         if (selectedFunction is ModbusWriteFunction writeFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusWriteMessage(SenderName, content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                new ModbusWriteMessage(
+                    SenderName, 
+                    content.SlaveID, 
+                    content.Address, 
+                    writeFunction, 
+                    content.WriteInfo?.WriteBuffer,
+                    content.WriteInfo != null ? content.WriteInfo.NumberOfWriteRegisters : 0,
+                    content.CheckSum_IsEnable)
                 );
 
             return;

@@ -48,7 +48,7 @@ public class Model_Modbus
         {
             await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
         }
-
+        
         _isBusy = true;
 
         var TX = Array.Empty<byte>();
@@ -66,7 +66,7 @@ public class Model_Modbus
             }
 
             TX = message.CreateMessage(writeFunction, dataForWrite);
-
+            
             TX_Info = await _device.Send(TX, TX.Length);
 
             RX_Info = await _device.Receive();
@@ -105,7 +105,18 @@ public class Model_Modbus
                     "Таймаут чтения: " + _device.ReadTimeout + " мс.";
             }
 
-            throw new TimeoutException(errorMessage);
+            throw new TimeoutException(errorMessage,
+                new ModbusExceptionInfo()
+                {
+                    Details = new ModbusActionDetails()
+                    {
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                    }
+                });
         }
 
         catch (Exception error)
@@ -215,7 +226,18 @@ public class Model_Modbus
                     "Таймаут чтения: " + _device.ReadTimeout + " мс.";
             }
 
-            throw new TimeoutException(errorMessage);
+            throw new TimeoutException(errorMessage,
+                new ModbusExceptionInfo()
+                {
+                    Details = new ModbusActionDetails()
+                    {
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                    }
+                });
         }
 
         catch (Exception error)
