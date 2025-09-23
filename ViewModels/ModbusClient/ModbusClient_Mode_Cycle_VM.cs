@@ -140,10 +140,9 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         set => this.RaiseAndSetIfChanged(ref _button_Content, value);
     }
 
+    public bool IsStart { get; private set; } = false;
+
     public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
-
-
-    private bool _isStart = false;
 
     private NumberStyles _numberViewStyle;
 
@@ -173,7 +172,7 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
 
         Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
         {
-            if (_isStart)
+            if (IsStart)
             {
                 StopPolling();
                 return;
@@ -393,7 +392,7 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         });
 
         Button_Content = Button_Content_Stop;
-        _isStart = true;
+        IsStart = true;
     }
 
     public void StopPolling()
@@ -401,7 +400,7 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         _modbusModel.CycleMode_Stop();
 
         Button_Content = Button_Content_Start;
-        _isStart = false;
+        IsStart = false;
     }
 
     private string? CheckReadFields()

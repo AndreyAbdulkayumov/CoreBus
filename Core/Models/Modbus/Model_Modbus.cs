@@ -44,7 +44,10 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
     {
-        while (_isBusy) ;
+        while (_isBusy)
+        {
+            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
+        }
 
         _isBusy = true;
 
@@ -149,7 +152,10 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
-        while (_isBusy) ;
+        while (_isBusy)
+        {
+            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
+        }
 
         _isBusy = true;
 
@@ -249,9 +255,9 @@ public class Model_Modbus
     {
         _readRegisterInCycleMode = readRegister_Handler;
 
-        _readRegisterInCycleMode.Invoke();
-
         _cycleModeTimer.Start();
+
+        _readRegisterInCycleMode.Invoke();
     }
 
     public void CycleMode_Stop()

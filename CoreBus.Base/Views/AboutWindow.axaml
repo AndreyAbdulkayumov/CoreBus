@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         x:Class="CoreBus.Base.Views.AboutWindow"
 		x:DataType="ViewModels:AboutApp_VM"
-        Title="О программе"
-		Width="400" Height="350"
+        Title="О приложении"
+		Width="520" Height="450"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -19,7 +19,8 @@
 		KeyDown="Window_KeyDown">
 
 	<Window.Styles>
-		
+				
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 
@@ -55,105 +56,167 @@
 
 			</Grid>
 
-			<Grid Grid.Row="1">
+			<StackPanel Grid.Row="1" Spacing="20"
+						Margin="10">				
 
-				<Grid.RowDefinitions>
-					<RowDefinition Height="1.5*"/>
-					<RowDefinition Height="1*"/>
-					<RowDefinition Height="7*"/>
-					<RowDefinition Height="2*"/>
-				</Grid.RowDefinitions>
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*"/>
-					<ColumnDefinition Width="2*"/>
-				</Grid.ColumnDefinitions>
-
-				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-						   Text="CoreBus"
-                           Foreground="{DynamicResource App_Color_Text}"
+				<TextBlock Text="CoreBus"
                            FontSize="18"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-						   Text="{Binding AppVersion, Mode=OneWay}"
-						   Foreground="{DynamicResource App_Color_Text}"
+				<TextBlock Text="{Binding AppVersion, Mode=OneWay}"
 						   FontSize="16"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<Image Grid.Row="2" Grid.Column="0"
-					   Source="avares://CoreBus.Base/Resources/MainLogo.ico"
-					   Margin="10,15,0,0"
-					   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+				<Grid>
 
-				<StackPanel Grid.Row="2" Grid.Column="1"
-							Orientation="Vertical" Spacing="10"
-							Margin="0,10,0,0">
-
-					<TextBlock Text="Разработал:"
-							   Foreground="{DynamicResource App_Color_Text_Back}"
-                               FontSize="16"
-							   TextAlignment="Center"/>
-
-					<TextBlock Text="Абдулкаюмов Андрей Ренатович"
-							   Width="140"
-							   Foreground="{DynamicResource App_Color_Text}"
-							   FontSize="16"
-							   TextWrapping="Wrap"
-							   TextAlignment="Center"
-							   Margin="10"/>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1.5*"/>
+						<ColumnDefinition Width="3*"/>
+					</Grid.ColumnDefinitions>
 					
-					<Grid>
-						
-						<TextBlock Text="Версия .NET:"
-								   Margin="20,0,0,0"
+					<Image Grid.Column="0"
+						   Source="avares://CoreBus.Base/Resources/MainLogo.ico"
+						   Margin="0,15,0,0"
+						   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+					<StackPanel Grid.Column="1"
+								Orientation="Vertical" Spacing="10"
+								Margin="10,10,0,0">
+
+						<TextBlock Text="Разработал:"
 								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   TextAlignment="Center"/>
 
-						<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
-								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource App_Color_Text}"
+						<TextBlock Text="Абдулкаюмов Андрей Ренатович"
+								   Width="140"
 								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-						
+								   TextWrapping="Wrap"
+								   TextAlignment="Center"
+								   Margin="10"/>
+
+						<Grid Margin="40,0,0,0">
+
+							<TextBlock Text="Версия .NET:"
+									   Foreground="{DynamicResource App_Color_Text_Back}"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
+									   Margin="200,0,0,0"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</Grid>
+
+						<Grid Margin="40,0,0,0">
+
+							<TextBlock Text="Версия Avalonia UI:"
+									   Foreground="{DynamicResource App_Color_Text_Back}"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
+									   Margin="200,0,0,0"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</Grid>
+
+					</StackPanel>
+					
+				</Grid>
+
+				<StackPanel Orientation="Vertical" Spacing="10"
+							VerticalAlignment="Center">
+
+					<Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="5">
+
+							<TextBlock Text="Исходный код:"
+									   FontSize="14"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<HyperlinkButton Content="https://github.com/AndreyAbdulkayumov/CoreBus"
+											 FontSize="14"
+											 NavigateUri="https://github.com/AndreyAbdulkayumov/CoreBus" />
+
+						</StackPanel>
+
+						<Button ToolTip.Tip="Копировать ссылку на исходный код в буфер обмена"
+								CornerRadius="5"
+								Width="30" Height="30"
+								HorizontalAlignment="Right" VerticalAlignment="Center"
+								Command="{Binding Command_Copy_SourceCodeRepositoryAddress}"
+								CommandParameter="https://github.com/AndreyAbdulkayumov/CoreBus">
+
+							<Icons:MaterialIcon Kind="ContentCopy"
+												Height="18" Width="18">
+
+								<Icons:MaterialIcon.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="-1" />
+									</TransformGroup>
+								</Icons:MaterialIcon.RenderTransform>
+
+							</Icons:MaterialIcon>
+
+						</Button>
+
 					</Grid>
 
 					<Grid>
 
-						<TextBlock Text="Версия Avalonia UI:"
-								   Margin="20,0,0,0"
-								   Foreground="{DynamicResource App_Color_Text_Back}"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<StackPanel Orientation="Horizontal" Spacing="5">
 
-						<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
-								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource App_Color_Text}"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-						
+							<TextBlock Text="Связаться с автором:"
+									   FontSize="14"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<HyperlinkButton Content="andrey.abdulkayumov@gmail.com"
+											 FontSize="14"
+											 NavigateUri="mailto:andrey.abdulkayumov@gmail.com" />
+
+						</StackPanel>
+
+						<Button ToolTip.Tip="Копировать адрес электронной почты в буфер обмена"
+								CornerRadius="5"
+								Width="30" Height="30"
+								HorizontalAlignment="Right" VerticalAlignment="Center"
+								Command="{Binding Command_Copy_Email}"
+								CommandParameter="andrey.abdulkayumov@gmail.com">
+
+							<Icons:MaterialIcon Kind="ContentCopy"
+												Height="18" Width="18">
+
+								<Icons:MaterialIcon.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform ScaleX="-1" />
+									</TransformGroup>
+								</Icons:MaterialIcon.RenderTransform>
+
+							</Icons:MaterialIcon>
+
+						</Button>
+
 					</Grid>
-					
+
 				</StackPanel>
 
-				<Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+				<Grid>
 					
 					<Button Content="Проверить обновления"
-							CornerRadius="6"
-							Margin="10,0,0,0"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
 							Command="{Binding Command_CheckUpdate}"/>
 					
 					<Button Content="Поддержать проект"
-							CornerRadius="6"
-							Margin="0,0,10,0"
 							HorizontalAlignment="Right" VerticalAlignment="Center"
 							Command="{Binding Command_MakeDonate}"/>
 					
-				</Grid>
-				
-			</Grid>
+				</Grid>	
+								
+			</StackPanel>
 
 		</Grid>
 

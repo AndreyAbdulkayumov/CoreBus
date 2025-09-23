@@ -263,10 +263,10 @@ public class ModbusClient_VM : ReactiveObject
             {
                 if (!IsCycleMode)
                 {
-                    this._cycleMode_VM.StopPolling();
+                    _cycleMode_VM.StopPolling();
                 }
 
-                CurrentModeViewModel = IsCycleMode ? this._cycleMode_VM : _normalMode_VM;
+                CurrentModeViewModel = IsCycleMode ? _cycleMode_VM : _normalMode_VM;
             });
 
         this.WhenAnyValue(x => x.SelectedModbusType)
@@ -321,6 +321,9 @@ public class ModbusClient_VM : ReactiveObject
 
         catch (Exception error)
         {
+            if (_cycleMode_VM.IsStart)
+                _cycleMode_VM.StopPolling();
+
             if (message.Sender == MainWindow_VM.SenderName)
             {
                 _messageBox.Show(error.Message, MessageType.Error, error);
