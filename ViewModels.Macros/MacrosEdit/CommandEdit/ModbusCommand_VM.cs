@@ -15,7 +15,7 @@ using Core.Models.Settings;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit;
 
-public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, ICommandContent, IMacrosValidation
+public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, ICommandContent, ICommandValidation
 {
     private readonly Guid _id;
 
@@ -337,11 +337,11 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         };
     }
 
-    public string? GetValidationMessage()
+    public string? GetValidationMessage(params FieldNames[] uncheckedFields)
     {
         List<string?> validationMessages = new List<string?>();
 
-        if (string.IsNullOrWhiteSpace(SlaveID))
+        if (!uncheckedFields.Contains(FieldNames.SlaveID) && string.IsNullOrWhiteSpace(SlaveID))
         {
             validationMessages.Add("Не задан SlaveID.");
         }
@@ -351,7 +351,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
             validationMessages.Add("Не задан Адрес.");
         }
 
-        string? writeReadMessages = SelectedFunctionType_Write ? CheckWriteFields() : CheckReadFields();
+        string? writeReadMessages = SelectedFunctionType_Write ? CheckWriteFields(uncheckedFields) : CheckReadFields(uncheckedFields);
 
         if (!string.IsNullOrEmpty(writeReadMessages))
         {
@@ -366,7 +366,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         return null;
     }
 
-    private string? CheckWriteFields()
+    private string? CheckWriteFields(params FieldNames[] uncheckedFields)
     {
         StringBuilder message = new StringBuilder();
 
@@ -377,9 +377,10 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
             foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
             {
                 if (element.Key == nameof(NumberOfReadRegisters))
-                {
                     continue;
-                }
+
+                if (uncheckedFields.Contains(FieldNames.SlaveID) && element.Key == nameof(SlaveID))
+                    continue;
 
                 message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
             }
@@ -401,7 +402,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         return null;
     }
 
-    private string? CheckReadFields()
+    private string? CheckReadFields(params FieldNames[] uncheckedFields)
     {
         if (string.IsNullOrWhiteSpace(NumberOfReadRegisters))
         {
@@ -424,6 +425,9 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
         {
+            if (uncheckedFields.Contains(FieldNames.SlaveID) && element.Key == nameof(SlaveID))
+                continue;
+
             message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
         }
 

@@ -6,7 +6,7 @@ using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit;
 
-public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, IMacrosValidation
+public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, ICommandValidation
 {
     private readonly Guid _id;
 
@@ -132,7 +132,7 @@ public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, IMacrosVali
         return MessageString;
     }
 
-    public string? GetValidationMessage()
+    public string? GetValidationMessage(params FieldNames[] uncheckedFields)
     {
         if (string.IsNullOrEmpty(MessageString))
         {

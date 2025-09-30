@@ -525,9 +525,11 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
     private string? GetCommandValidationMessage(ICommandContent command)
     {
-        if (command is IMacrosValidation validatedCommand)
+        if (command is ICommandValidation validatedCommand)
         {
-            string? message = validatedCommand.GetValidationMessage();
+            var uncheckedFields = CommonSlaveIdFieldViewModel?.UseCommonSlaveId == true ? [ FieldNames.SlaveID ] : Array.Empty<FieldNames>();
+
+            string? message = validatedCommand.GetValidationMessage(uncheckedFields);
 
             if (!string.IsNullOrEmpty(message))
             {
