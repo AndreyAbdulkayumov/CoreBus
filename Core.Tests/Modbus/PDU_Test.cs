@@ -6,7 +6,7 @@ namespace Core.Tests.Modbus;
 public class PDU_Test
 {
     [Fact]
-    public void Test_Func_01()
+    public void Test_ReadCoilStatus_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadCoilStatus,
@@ -16,7 +16,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_02()
+    public void Test_ReadDiscreteInputs_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadDiscreteInputs,
@@ -26,7 +26,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_03()
+    public void Test_ReadHoldingRegisters_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
@@ -36,7 +36,27 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_04()
+    public void Test_ReadHoldingRegisters_PDU_Creation_ZeroRegisters()
+    {
+        CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            Address: 0,
+            NumberOfRegisters: 0
+            );
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_PDU_Creation_MaxAddressZeroRegisters()
+    {
+        CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            Address: 0xFFFF,
+            NumberOfRegisters: 0
+            );
+    }
+
+    [Fact]
+    public void Test_ReadInputRegisters_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadInputRegisters,
@@ -46,7 +66,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_05()
+    public void Test_ForceSingleCoil_PDU_Creation()
     {
         CheckSingleWriteFunction(
             SelectedFunction: Function.ForceSingleCoil,
@@ -56,7 +76,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_06()
+    public void Test_PresetSingleRegister_PDU_Creation()
     {
         CheckSingleWriteFunction(
             SelectedFunction: Function.PresetSingleRegister,
@@ -66,7 +86,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_0F()
+    public void Test_ForceMultipleCoils_PDU_Creation()
     {
         CheckMultiplyWriteCoilsFunction(
             address: 79,
@@ -75,7 +95,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_Func_16()
+    public void Test_PresetMultipleRegisters_PDU_Creation()
     {
         CheckMultiplyWriteRegistersFunction(
             Address: 79,
@@ -84,7 +104,7 @@ public class PDU_Test
     }
 
 
-    // Общий функционал
+    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 
     private void CheckReadFunction(ModbusReadFunction SelectedFunction, UInt16 Address, UInt16 NumberOfRegisters)
     {
@@ -133,7 +153,7 @@ public class PDU_Test
 
         if (WriteDataBytes.Length != 2)
         {
-            throw new Exception("При записи одного регистра поле данных должно содержать только 2 байта.");
+            throw new Exception("Р”Р»РёРЅР° Р·Р°РїРёСЃРё РґР»СЏ РѕРґРЅРѕРіРѕ СЂРµРіРёСЃС‚СЂР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ 2 Р±Р°Р№С‚Р°.");
         }
 
         byte[] BytesArray_Expected = new byte[]
@@ -203,7 +223,7 @@ public class PDU_Test
 
         if (WriteDataBytes.Length != WriteData.Length * 2)
         {
-            throw new Exception("Неправильное количество байт в поле данных.");
+            throw new Exception("РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ WriteDataBytes.");
         }
 
         byte[] BytesArray_Expected = new byte[6 + WriteDataBytes.Length];

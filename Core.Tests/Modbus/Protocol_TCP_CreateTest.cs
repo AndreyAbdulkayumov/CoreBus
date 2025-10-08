@@ -10,8 +10,15 @@ public class Protocol_TCP_CreateTest
     // PackageNumber делать всегда равным 0
 
     [Fact]
-    public void Test_Func_01()
+    public void Test_ReadCoilStatus_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        9C (156)
+        // PDU:            01 00 0C 00 05 (Function Code 01, Address 000C, Quantity 0005)
+        // Full Message:   00 00 00 00 00 06 9C 01 00 0C 00 05
         CheckReadFunction(
             SelectedFunction: Function.ReadCoilStatus,
             PackageNumber: 0,
@@ -22,8 +29,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_02()
+    public void Test_ReadDiscreteInputs_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        AC (172)
+        // PDU:            02 00 0C 00 02 (Function Code 02, Address 000C, Quantity 0002)
+        // Full Message:   00 00 00 00 00 06 AC 02 00 0C 00 02
         CheckReadFunction(
             SelectedFunction: Function.ReadDiscreteInputs,
             PackageNumber: 0,
@@ -34,8 +48,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_03()
+    public void Test_ReadHoldingRegisters_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        10 (16)
+        // PDU:            03 00 2A 00 05 (Function Code 03, Address 002A, Quantity 0005)
+        // Full Message:   00 00 00 00 00 06 10 03 00 2A 00 05
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
             PackageNumber: 0,
@@ -46,8 +67,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_04()
+    public void Test_ReadInputRegisters_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        06 (6)
+        // PDU:            04 00 13 00 04 (Function Code 04, Address 0013, Quantity 0004)
+        // Full Message:   00 00 00 00 00 06 06 04 00 13 00 04
         CheckReadFunction(
             SelectedFunction: Function.ReadInputRegisters,
             PackageNumber: 0,
@@ -58,8 +86,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_05()
+    public void Test_ForceSingleCoil_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        0D (13)
+        // PDU:            05 00 60 FF 00 (Function Code 05, Address 0060, WriteData FF00)
+        // Full Message:   00 00 00 00 00 06 0D 05 00 60 FF 00
         CheckSingleWriteFunction(
             SelectedFunction: Function.ForceSingleCoil,
             PackageNumber: 0,
@@ -70,8 +105,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_06()
+    public void Test_PresetSingleRegister_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        12 (18)
+        // PDU:            06 00 3F AE D5 (Function Code 06, Address 003F, WriteData AED5)
+        // Full Message:   00 00 00 00 00 06 12 06 00 3F AE D5
         CheckSingleWriteFunction(
             SelectedFunction: Function.PresetSingleRegister,
             PackageNumber: 0,
@@ -82,8 +124,15 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_0F()
+    public void Test_ForceMultipleCoils_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 0A (Unit ID + PDU length: 1+1+2+2+1+1 = 8 bytes for PDU, +1 for Unit ID = 9 bytes)
+        // Unit ID:        20 (32)
+        // PDU:            0F 00 49 00 07 01 0B (Function Code 0F, Address 0049, Quantity 0007, Byte Count 01, Coil Data 0B)
+        // Full Message:   00 00 00 00 00 09 20 0F 00 49 00 07 01 0B
         CheckMultiplyWriteCoilsFunction(
             packageNumber: 0,
             slaveID: 32,
@@ -93,17 +142,134 @@ public class Protocol_TCP_CreateTest
     }
 
     [Fact]
-    public void Test_Func_16()
+    public void Test_PresetMultipleRegisters_CreatesCorrectMessage()
     {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 11 (Unit ID + PDU length: 1+1+2+2+1+5*2 = 17 bytes for PDU, +1 for Unit ID = 18 bytes)
+        // Unit ID:        12 (18)
+        // PDU:            10 00 3F 00 05 0A FF FF 45 86 40 00 05 68 FA FD
+        // Full Message:   00 00 00 00 00 11 12 10 00 3F 00 05 0A FF FF 45 86 40 00 05 68 FA FD
         CheckMultiplyWriteRegistersFunction(
             PackageNumber: 0,
             SlaveID: 18,
             Address: 63,
-            WriteData: new UInt16[] { 0xFFFF, 0x4586, 0x4000, 0x0568, 0xFAFD }
+            WriteData: new UInt16[] { 0xFFFF, 0x4586, 0x4000, 0x0568, 0xFAFD },
             );
     }
 
+    [Fact]
+    public void Test_ReadCoilStatus_WithSpecificPackageNumber_CreatesCorrectMessage()
+    {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: 01 00
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        9C (156)
+        // PDU:            01 00 0C 00 05 (Function Code 01, Address 000C, Quantity 0005)
+        // Full Message:   01 00 00 00 00 06 9C 01 00 0C 00 05
+        CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            PackageNumber: 256,
+            SlaveID: 156,
+            Address: 12,
+            NumberOfRegisters: 5
+            );
+    }
 
+    [Fact]
+    public void Test_ReadCoilStatus_MaxPackageNumber_CreatesCorrectMessage()
+    {
+        // Expected Modbus TCP message (MBAP Header + PDU):
+        // Transaction ID: FF FF
+        // Protocol ID:    00 00
+        // Length:         00 06 (Unit ID + PDU length)
+        // Unit ID:        9C (156)
+        // PDU:            01 00 0C 00 05 (Function Code 01, Address 000C, Quantity 0005)
+        // Full Message:   FF FF 00 00 00 06 9C 01 00 0C 00 05
+        CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            PackageNumber: 65535,
+            SlaveID: 156,
+            Address: 12,
+            NumberOfRegisters: 5
+            );
+    }
+
+    [Fact]
+    public void Test_ReadCoilStatus_InvalidSlaveID_Zero_ThrowsException()
+    {
+        // SlaveID 0 is typically reserved for broadcast and should not be used as a unit address.
+        // Expecting an exception or a specific error handling.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            PackageNumber: 0,
+            SlaveID: 0,
+            Address: 12,
+            NumberOfRegisters: 5
+            ));
+    }
+
+    [Fact]
+    public void Test_ReadCoilStatus_InvalidSlaveID_MaxByte_ThrowsException()
+    {
+        // SlaveID 255 is also an invalid unit address, often used for broadcast in some contexts.
+        // Expecting an exception or a specific error handling.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            PackageNumber: 0,
+            SlaveID: 255,
+            Address: 12,
+            NumberOfRegisters: 5
+            ));
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_MaxAddress_OneRegister_CreatesCorrectMessage()
+    {
+        // Expected Modbus TCP message for Address 0xFFFF and 1 register
+        // Transaction ID: 00 00
+        // Protocol ID:    00 00
+        // Length:         00 06
+        // Unit ID:        10 (16)
+        // PDU:            03 FF FF 00 01
+        // Full Message:   00 00 00 00 00 06 10 03 FF FF 00 01
+        CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            PackageNumber: 0,
+            SlaveID: 16,
+            Address: 0xFFFF,
+            NumberOfRegisters: 1
+            );
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_ZeroRegisters_ThrowsException()
+    {
+        // NumberOfRegisters = 0 should ideally throw an exception as it's an invalid request.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            PackageNumber: 0,
+            SlaveID: 1,
+            Address: 0,
+            NumberOfRegisters: 0
+            ));
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_TooManyRegisters_ThrowsException()
+    {
+        // Modbus specification for Read Holding Registers (0x03) allows max 125 registers.
+        // Requesting more than 125 (e.g., 126) should throw an exception.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            PackageNumber: 0,
+            SlaveID: 1,
+            Address: 0,
+            NumberOfRegisters: 126
+            ));
+    }
 
     // Общий функционал
 

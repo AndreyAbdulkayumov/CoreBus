@@ -9,8 +9,10 @@ public class Protocol_ASCII_CreateTest
     private ModbusMessage Message = new ModbusASCII_Message();
 
     [Fact]
-    public void Test_Func_01()
+    public void Test_ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :9C01000C000557<CR><LF>
         CheckReadFunction(
             SelectedFunction: Function.ReadCoilStatus,
             SlaveID: 156,
@@ -21,8 +23,10 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_02()
+    public void Test_ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :2E02003B0004<CR><LF> (no LRC, as checksum is disabled)
         CheckReadFunction(
             SelectedFunction: Function.ReadDiscreteInputs,
             SlaveID: 46,
@@ -33,8 +37,10 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_03()
+    public void Test_ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :010300560001A5<CR><LF>
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
             SlaveID: 1,
@@ -45,8 +51,10 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_04()
+    public void Test_ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :220400020003<CR><LF> (no LRC, as checksum is disabled)
         CheckReadFunction(
             SelectedFunction: Function.ReadInputRegisters,
             SlaveID: 34,
@@ -57,20 +65,24 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_05()
+    public void Test_ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :0D050060FF00C1<CR><LF>
         CheckSingleWriteFunction(
             SelectedFunction: Function.ForceSingleCoil,
             SlaveID: 13,
             Address: 96,
-            WriteData: 0x0056,
+            WriteData: 0xFF00,
             CheckSum_IsEnable: true
             );
     }
 
     [Fact]
-    public void Test_Func_06()
+    public void Test_PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :1206003FAED5<CR><LF> (no LRC, as checksum is disabled)
         CheckSingleWriteFunction(
             SelectedFunction: Function.PresetSingleRegister,
             SlaveID: 18,
@@ -81,8 +93,10 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_0F()
+    public void Test_ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :560F0017000902AD0325<CR><LF>
         CheckMultiplyWriteCoilsFunction(
             slaveID: 86,
             address: 23,
@@ -92,8 +106,10 @@ public class Protocol_ASCII_CreateTest
     }
 
     [Fact]
-    public void Test_Func_16()
+    public void Test_PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
+        // Expected Modbus ASCII message:
+        // :9C10005600050A00FF452185000058DAF8A0<CR><LF>
         CheckMultiplyWriteRegistersFunction(
             SlaveID: 156,
             Address: 86,
@@ -102,7 +118,74 @@ public class Protocol_ASCII_CreateTest
             );
     }
 
+    [Fact]
+    public void Test_ReadCoilStatus_InvalidSlaveID_Zero_ThrowsException()
+    {
+        // SlaveID 0 is typically reserved for broadcast and should not be used as a unit address.
+        // Expecting an exception or a specific error handling.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            SlaveID: 0,
+            Address: 12,
+            NumberOfRegisters: 5,
+            CheckSum_IsEnable: true
+            ));
+    }
 
+    [Fact]
+    public void Test_ReadCoilStatus_InvalidSlaveID_MaxByte_ThrowsException()
+    {
+        // SlaveID 255 is also an invalid unit address, often used for broadcast in some contexts.
+        // Expecting an exception or a specific error handling.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadCoilStatus,
+            SlaveID: 255,
+            Address: 12,
+            NumberOfRegisters: 5,
+            CheckSum_IsEnable: true
+            ));
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_MaxAddress_OneRegister_CreatesCorrectMessage()
+    {
+        // Expected Modbus ASCII message for Address 0xFFFF and 1 register (with checksum enabled)
+        // :9C03FFFF000109<CR><LF>
+        CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            SlaveID: 156,
+            Address: 0xFFFF,
+            NumberOfRegisters: 1,
+            CheckSum_IsEnable: true
+            );
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_ZeroRegisters_ThrowsException()
+    {
+        // NumberOfRegisters = 0 should ideally throw an exception as it's an invalid request.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            SlaveID: 1,
+            Address: 0,
+            NumberOfRegisters: 0,
+            CheckSum_IsEnable: true
+            ));
+    }
+
+    [Fact]
+    public void Test_ReadHoldingRegisters_TooManyRegisters_ThrowsException()
+    {
+        // Modbus specification for Read Holding Registers (0x03) allows max 125 registers.
+        // Requesting more than 125 (e.g., 126) should throw an exception.
+        Assert.Throws<Exception>(() => CheckReadFunction(
+            SelectedFunction: Function.ReadHoldingRegisters,
+            SlaveID: 1,
+            Address: 0,
+            NumberOfRegisters: 126,
+            CheckSum_IsEnable: true
+            ));
+    }
 
     // Общий функционал
 
