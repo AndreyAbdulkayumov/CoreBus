@@ -4,99 +4,153 @@ using Core.Models.Modbus.Message;
 
 namespace Core.Tests.Modbus;
 
-public class Protocol_ASCII_CreateTest
+public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
 {
-    private ModbusMessage Message = new ModbusASCII_Message();
+    protected override ModbusMessage GetModbusMessageInstance()
+    {
+        return new ModbusASCII_Message();
+    }
 
     [Fact]
     public void Test_ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :9C01000C000557<CR><LF>
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     9C (156)
+        // Функция:           01 (Чтение статуса катушек)
+        // Адрес:             00 0C (12)
+        // Количество:        00 05 (5 катушек)
+        // LRC:               57
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :9C01000C000557<CR><LF>
         CheckReadFunction(
-            SelectedFunction: Function.ReadCoilStatus,
-            SlaveID: 156,
-            Address: 12,
-            NumberOfRegisters: 5,
-            CheckSum_IsEnable: true
+            selectedFunction: Function.ReadCoilStatus,
+            slaveID: 156,
+            address: 12,
+            numberOfRegisters: 5,
+            checkSum_IsEnable: true
             );
     }
 
     [Fact]
     public void Test_ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :2E02003B0004<CR><LF> (no LRC, as checksum is disabled)
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     2E (46)
+        // Функция:           02 (Чтение дискретных входов)
+        // Адрес:             00 3B (59)
+        // Количество:        00 04 (4 входа)
+        // LRC:               (LRC не используется, так как контрольная сумма отключена)
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :2E02003B0004<CR><LF>
         CheckReadFunction(
-            SelectedFunction: Function.ReadDiscreteInputs,
-            SlaveID: 46,
-            Address: 59,
-            NumberOfRegisters: 4,
-            CheckSum_IsEnable: false
+            selectedFunction: Function.ReadDiscreteInputs,
+            slaveID: 46,
+            address: 59,
+            numberOfRegisters: 4,
+            checkSum_IsEnable: false
             );
     }
 
     [Fact]
     public void Test_ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :010300560001A5<CR><LF>
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     01 (1)
+        // Функция:           03 (Чтение регистров хранения)
+        // Адрес:             00 56 (86)
+        // Количество:        00 01 (1 регистр)
+        // LRC:               A5
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :010300560001A5<CR><LF>
         CheckReadFunction(
-            SelectedFunction: Function.ReadHoldingRegisters,
-            SlaveID: 1,
-            Address: 86,
-            NumberOfRegisters: 1,
-            CheckSum_IsEnable: true
+            selectedFunction: Function.ReadHoldingRegisters,
+            slaveID: 1,
+            address: 86,
+            numberOfRegisters: 1,
+            checkSum_IsEnable: true
             );
     }
 
     [Fact]
     public void Test_ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :220400020003<CR><LF> (no LRC, as checksum is disabled)
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     22 (34)
+        // Функция:           04 (Чтение входных регистров)
+        // Адрес:             00 02 (2)
+        // Количество:        00 03 (3 регистра)
+        // LRC:               (LRC не используется, так как контрольная сумма отключена)
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :220400020003<CR><LF>
         CheckReadFunction(
-            SelectedFunction: Function.ReadInputRegisters,
-            SlaveID: 34,
-            Address: 2,
-            NumberOfRegisters: 3,
-            CheckSum_IsEnable: false
+            selectedFunction: Function.ReadInputRegisters,
+            slaveID: 34,
+            address: 2,
+            numberOfRegisters: 3,
+            checkSum_IsEnable: false
             );
     }
 
     [Fact]
     public void Test_ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :0D050060FF00C1<CR><LF>
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     0D (13)
+        // Функция:           05 (Принудительная установка одной катушки)
+        // Адрес:             00 60 (96)
+        // Данные для записи: FF 00 (ВКЛ)
+        // LRC:               C1
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :0D050060FF00C1<CR><LF>
         CheckSingleWriteFunction(
-            SelectedFunction: Function.ForceSingleCoil,
-            SlaveID: 13,
-            Address: 96,
-            WriteData: 0xFF00,
-            CheckSum_IsEnable: true
+            selectedFunction: Function.ForceSingleCoil,
+            slaveID: 13,
+            address: 96,
+            writeData: 0xFF00,
+            checkSum_IsEnable: true
             );
     }
 
     [Fact]
     public void Test_PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :1206003FAED5<CR><LF> (no LRC, as checksum is disabled)
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     12 (18)
+        // Функция:           06 (Предустановка одного регистра)
+        // Адрес:             00 3F (63)
+        // Данные для записи: AE D5 (44757)
+        // LRC:               (LRC не используется, так как контрольная сумма отключена)
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :1206003FAED5<CR><LF>
         CheckSingleWriteFunction(
-            SelectedFunction: Function.PresetSingleRegister,
-            SlaveID: 18,
-            Address: 63,
-            WriteData: 0xAED5,
-            CheckSum_IsEnable: false
+            selectedFunction: Function.PresetSingleRegister,
+            slaveID: 18,
+            address: 63,
+            writeData: 0xAED5,
+            checkSum_IsEnable: false
             );
     }
 
     [Fact]
     public void Test_ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :560F0017000902AD0325<CR><LF>
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     56 (86)
+        // Функция:           0F (Принудительная установка нескольких катушек)
+        // Адрес:             00 17 (23)
+        // Количество:        00 09 (9 катушек)
+        // Количество байт:   02 (2 байта данных катушек)
+        // Данные катушек:    AD 03 (1010 1101, 0000 0011 -> катушки 1,3,4,5,7,9 ВКЛ)
+        // LRC:               25
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :560F0017000902AD0325<CR><LF>
         CheckMultiplyWriteCoilsFunction(
             slaveID: 86,
             address: 23,
@@ -108,173 +162,71 @@ public class Protocol_ASCII_CreateTest
     [Fact]
     public void Test_PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
-        // Expected Modbus ASCII message:
-        // :9C10005600050A00FF452185000058DAF8A0<CR><LF>
+        // Ожидаемое Modbus ASCII сообщение (ADU):
+        // Начало:            : (0x3A)
+        // ID Устройства:     9C (156)
+        // Функция:           10 (Предустановка нескольких регистров)
+        // Адрес:             00 56 (86)
+        // Количество:        00 05 (5 регистров)
+        // Количество байт:   0A (10 байт данных регистров)
+        // Данные регистров:  00 FF 45 21 85 00 00 58 DA F8
+        // LRC:               A0
+        // Конец:             <CR><LF> (0x0D 0x0A)
+        // Полное сообщение:  :9C10005600050A00FF452185000058DAF8A0<CR><LF>
         CheckMultiplyWriteRegistersFunction(
-            SlaveID: 156,
-            Address: 86,
-            WriteData: new UInt16[] { 0x00FF, 0x4521, 0x8500, 0x0058, 0xDAF8 },
-            CheckSum_IsEnable: true
+            slaveID: 156,
+            address: 86,
+            writeData: new UInt16[] { 0x00FF, 0x4521, 0x8500, 0x0058, 0xDAF8 },
+            checkSum_IsEnable: true
             );
     }
 
-    [Fact]
-    public void Test_ReadCoilStatus_InvalidSlaveID_Zero_ThrowsException()
+    protected override byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable, UInt16 packageNumber)
     {
-        // SlaveID 0 is typically reserved for broadcast and should not be used as a unit address.
-        // Expecting an exception or a specific error handling.
-        Assert.Throws<Exception>(() => CheckReadFunction(
-            SelectedFunction: Function.ReadCoilStatus,
-            SlaveID: 0,
-            Address: 12,
-            NumberOfRegisters: 5,
-            CheckSum_IsEnable: true
-            ));
-    }
+        byte[] addressBytes = ModbusField.Get_Address(address);
+        byte[] numberOfRegistersBytes = ModbusField.Get_NumberOfRegisters(numberOfRegisters);
 
-    [Fact]
-    public void Test_ReadCoilStatus_InvalidSlaveID_MaxByte_ThrowsException()
-    {
-        // SlaveID 255 is also an invalid unit address, often used for broadcast in some contexts.
-        // Expecting an exception or a specific error handling.
-        Assert.Throws<Exception>(() => CheckReadFunction(
-            SelectedFunction: Function.ReadCoilStatus,
-            SlaveID: 255,
-            Address: 12,
-            NumberOfRegisters: 5,
-            CheckSum_IsEnable: true
-            ));
-    }
-
-    [Fact]
-    public void Test_ReadHoldingRegisters_MaxAddress_OneRegister_CreatesCorrectMessage()
-    {
-        // Expected Modbus ASCII message for Address 0xFFFF and 1 register (with checksum enabled)
-        // :9C03FFFF000109<CR><LF>
-        CheckReadFunction(
-            SelectedFunction: Function.ReadHoldingRegisters,
-            SlaveID: 156,
-            Address: 0xFFFF,
-            NumberOfRegisters: 1,
-            CheckSum_IsEnable: true
-            );
-    }
-
-    [Fact]
-    public void Test_ReadHoldingRegisters_ZeroRegisters_ThrowsException()
-    {
-        // NumberOfRegisters = 0 should ideally throw an exception as it's an invalid request.
-        Assert.Throws<Exception>(() => CheckReadFunction(
-            SelectedFunction: Function.ReadHoldingRegisters,
-            SlaveID: 1,
-            Address: 0,
-            NumberOfRegisters: 0,
-            CheckSum_IsEnable: true
-            ));
-    }
-
-    [Fact]
-    public void Test_ReadHoldingRegisters_TooManyRegisters_ThrowsException()
-    {
-        // Modbus specification for Read Holding Registers (0x03) allows max 125 registers.
-        // Requesting more than 125 (e.g., 126) should throw an exception.
-        Assert.Throws<Exception>(() => CheckReadFunction(
-            SelectedFunction: Function.ReadHoldingRegisters,
-            SlaveID: 1,
-            Address: 0,
-            NumberOfRegisters: 126,
-            CheckSum_IsEnable: true
-            ));
-    }
-
-    // Общий функционал
-
-    private void CheckReadFunction(ModbusReadFunction SelectedFunction,
-        byte SlaveID, UInt16 Address, UInt16 NumberOfRegisters, bool CheckSum_IsEnable)
-    {
-        MessageData Data = new ReadTypeMessage(
-            SlaveID,
-            Address,
-            NumberOfRegisters,
-            CheckSum_IsEnable
-            );
-
-        byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
-
-        byte[] AddressBytes = ModbusField.Get_Address(Address);
-        byte[] NumberOfRegistersBytes = ModbusField.Get_NumberOfRegisters(NumberOfRegisters);
-
-        byte[] DataBytes = new byte[]
+        byte[] dataBytes = new byte[]
         {
-                SlaveID,
-                SelectedFunction.Number,
-                AddressBytes[1],
-                AddressBytes[0],
-                NumberOfRegistersBytes[1],
-                NumberOfRegistersBytes[0]
+            slaveID,
+            selectedFunction.Number,
+            addressBytes[1],
+            addressBytes[0],
+            numberOfRegistersBytes[1],
+            numberOfRegistersBytes[0]
         };
 
-        byte[] BytesArray_Expected = Create_ASCII_Package(DataBytes, CheckSum_IsEnable);
-
-        Assert.Equal(BytesArray_Actual, BytesArray_Expected);
+        return Create_ASCII_Package(dataBytes, checkSum_IsEnable);
     }
 
-
-    private void CheckSingleWriteFunction(ModbusWriteFunction SelectedFunction,
-        byte SlaveID, UInt16 Address, UInt16 WriteData, bool CheckSum_IsEnable)
+    protected override byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable, UInt16 packageNumber)
     {
-        UInt16[] WriteDataArray = new UInt16[] { WriteData };
+        UInt16[] writeDataArray = new UInt16[] { writeData };
 
-        byte[] bytes = BitConverter.GetBytes(WriteData);
+        byte[] addressBytes = ModbusField.Get_Address(address);
+        byte[] writeDataBytes = ModbusField.Get_WriteData(writeDataArray);
 
-        MessageData Data = new WriteTypeMessage(
-            SlaveID,
-            Address,
-            bytes,
-            1,
-            CheckSum_IsEnable
-            );
-
-        byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
-
-        byte[] AddressBytes = ModbusField.Get_Address(Address);
-        byte[] WriteDataBytes = ModbusField.Get_WriteData(WriteDataArray);
-
-        if (WriteDataBytes.Length != 2)
+        if (writeDataBytes.Length != 2)
         {
             throw new Exception("При записи одного регистра поле данных должно содержать только 2 байта.");
         }
 
-        byte[] DataBytes = new byte[]
+        byte[] dataBytes = new byte[]
         {
-                SlaveID,
-                SelectedFunction.Number,
-                AddressBytes[1],
-                AddressBytes[0],
-                WriteDataBytes[0],
-                WriteDataBytes[1]
+            slaveID,
+            selectedFunction.Number,
+            addressBytes[1],
+            addressBytes[0],
+            writeDataBytes[0],
+            writeDataBytes[1]
         };
 
-        byte[] BytesArray_Expected = Create_ASCII_Package(DataBytes, CheckSum_IsEnable);
-
-        Assert.Equal(BytesArray_Expected, BytesArray_Actual);
+        return Create_ASCII_Package(dataBytes, checkSum_IsEnable);
     }
 
-    private void CheckMultiplyWriteCoilsFunction(byte slaveID, UInt16 address, int[] bitArray, bool checkSum_IsEnable)
+    protected override byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable, UInt16 packageNumber)
     {
-        ModbusWriteFunction selectedFunction = Function.ForceMultipleCoils;
-
         (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
-
-        MessageData data = new WriteTypeMessage(
-            slaveID,
-            address,
-            writeBytes,
-            numberOfCoils,
-            checkSum_IsEnable
-            );
-
-        byte[] bytesArray_Actual = Message.CreateMessage(selectedFunction, data);
 
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)numberOfCoils);
@@ -291,52 +243,33 @@ public class Protocol_ASCII_CreateTest
 
         Array.Copy(writeBytes, 0, dataBytes, 7, writeBytes.Length);
 
-        byte[] bytesArray_Expected = Create_ASCII_Package(dataBytes, checkSum_IsEnable);
-
-        Assert.Equal(bytesArray_Expected, bytesArray_Actual);
+        return Create_ASCII_Package(dataBytes, checkSum_IsEnable);
     }
 
-    private void CheckMultiplyWriteRegistersFunction(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable)
+    protected override byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 packageNumber)
     {
-        ModbusWriteFunction selectedFunction = Function.PresetMultipleRegisters;
+        byte[] addressBytes = ModbusField.Get_Address(address);
+        byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)writeData.Length);
+        byte[] writeDataBytes = ModbusField.Get_WriteData(writeData);
 
-        byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
-
-        MessageData Data = new WriteTypeMessage(
-            SlaveID,
-            Address,
-            bytes,
-            WriteData.Length,
-            CheckSum_IsEnable
-            );
-
-        byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
-
-        byte[] AddressBytes = ModbusField.Get_Address(Address);
-        byte[] NumberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)WriteData.Length);
-        byte[] WriteDataBytes = ModbusField.Get_WriteData(WriteData);
-
-
-        if (WriteDataBytes.Length != WriteData.Length * 2)
+        if (writeDataBytes.Length != writeData.Length * 2)
         {
             throw new Exception("Неправильное количество байт в поле данных.");
         }
 
-        byte[] DataBytes = new byte[7 + WriteDataBytes.Length];
+        byte[] dataBytes = new byte[7 + writeDataBytes.Length];
 
-        DataBytes[0] = SlaveID;
-        DataBytes[1] = selectedFunction.Number;
-        DataBytes[2] = AddressBytes[1];
-        DataBytes[3] = AddressBytes[0];
-        DataBytes[4] = NumberOfRegisters[1];
-        DataBytes[5] = NumberOfRegisters[0];
-        DataBytes[6] = (byte)WriteDataBytes.Length;
+        dataBytes[0] = slaveID;
+        dataBytes[1] = selectedFunction.Number;
+        dataBytes[2] = addressBytes[1];
+        dataBytes[3] = addressBytes[0];
+        dataBytes[4] = numberOfRegisters[1];
+        dataBytes[5] = numberOfRegisters[0];
+        dataBytes[6] = (byte)writeDataBytes.Length;
 
-        Array.Copy(WriteDataBytes, 0, DataBytes, 7, WriteDataBytes.Length);
+        Array.Copy(writeDataBytes, 0, dataBytes, 7, writeDataBytes.Length);
 
-        byte[] BytesArray_Expected = Create_ASCII_Package(DataBytes, CheckSum_IsEnable);
-
-        Assert.Equal(BytesArray_Expected, BytesArray_Actual);
+        return Create_ASCII_Package(dataBytes, checkSum_IsEnable);
     }
 
     private byte[] Create_ASCII_Package(byte[] MessageBytes, bool CheckSum_IsEnable)
