@@ -1,4 +1,12 @@
 # CoreBus
+
+[![License](https://img.shields.io/github/license/AndreyAbdulkayumov/CoreBus?style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/blob/main/LICENSE)
+[![GitHub repo size](https://img.shields.io/github/repo-size/AndreyAbdulkayumov/CoreBus?style=for-the-badge)]()
+[![Code size](https://img.shields.io/github/languages/code-size/AndreyAbdulkayumov/CoreBus?style=for-the-badge)]()
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/AndreyAbdulkayumov/CoreBus?include_prereleases&style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/releases)
+[![Downloads](https://img.shields.io/github/downloads/AndreyAbdulkayumov/CoreBus/total?style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/AndreyAbdulkayumov/CoreBus?style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/commits/main)
+
 CoreBus — кроссплатформенный терминал для работы с COM-портами и TCP-сокетами с поддержкой протоколов Modbus TCP / RTU / ASCII.
 
 Основные возможности приложения:
