@@ -38,13 +38,10 @@ public partial class MessageBoxWindow : Window
     private async Task CopyToClipboard(string data)
     {
         var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
-        var dataObject = new DataObject();
-
-        dataObject.Set(DataFormats.Text, data);
 
         if (clipboard != null)
         {
-            await clipboard.SetDataObjectAsync(dataObject);
+            await clipboard.SetTextAsync(data);
         }
     }
 
