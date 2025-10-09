@@ -4,7 +4,7 @@
 
 Далее эти файлы должны быть конвертированы в .pdf и добавлены в папку: 
 
-TerminalProgram\TerminalProgram\Documentation
+CoreBus.Base/Documentation
 
 В файле проекта эти .pdf файлы должны иметь атрибут 
 
