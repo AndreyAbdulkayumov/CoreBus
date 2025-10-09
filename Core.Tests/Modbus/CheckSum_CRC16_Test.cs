@@ -45,7 +45,7 @@ public class CheckSum_CRC16_Test
     [Fact]
     public void Test_EmptyArray()
     {
-        byte[] Data = new byte[] { };
+        byte[] Data = Array.Empty<byte>();
 
         UInt16 CheckSum_Expected = 0xFFFF;
 

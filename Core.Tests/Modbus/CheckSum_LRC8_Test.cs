@@ -44,9 +44,9 @@ public class CheckSum_LRC8_Test
     [Fact]
     public void Test_EmptyArray()
     {
-        byte[] Data = new byte[] { };
+        byte[] Data = Array.Empty<byte>();
 
-        byte CheckSum_Expected = 0x00; // Expected value for empty array, needs verification
+        byte CheckSum_Expected = 0x00;
 
         byte CheckSum_Actual = GetCheckSum_Actual(Data);
 
@@ -58,7 +58,7 @@ public class CheckSum_LRC8_Test
     {
         byte[] Data = new byte[] { 0x01 };
 
-        byte CheckSum_Expected = 0xFF; // Expected value for single byte, needs verification
+        byte CheckSum_Expected = 0xFF;
 
         byte CheckSum_Actual = GetCheckSum_Actual(Data);
 

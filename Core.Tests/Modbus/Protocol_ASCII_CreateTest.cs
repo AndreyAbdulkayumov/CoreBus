@@ -305,7 +305,6 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
         ResultArray[ResultArray.Length - 2] = 0x0D;  // Предпоследний элемент
         ResultArray[ResultArray.Length - 1] = 0x0A;  // Последний элемент
 
-
         return ResultArray;
     }
 }

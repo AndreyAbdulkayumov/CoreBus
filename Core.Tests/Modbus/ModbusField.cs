@@ -28,7 +28,7 @@ public static class ModbusField
 
     public static byte[] Get_WriteData(UInt16[] Data)
     {
-        List<byte> ListBytes = new List<byte>();
+        var ListBytes = new List<byte>();
 
         byte[] Temp;
 
@@ -50,7 +50,7 @@ public static class ModbusField
 
     public static (byte[], int) Get_WriteDataFromMultipleCoils(int[] bitArray)
     {
-        List<byte> result = new List<byte>();
+        var result = new List<byte>();
 
         byte temp = 0;
 
