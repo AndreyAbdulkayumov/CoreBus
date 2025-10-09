@@ -12,28 +12,35 @@ public abstract class BaseProtocolCreateTest
         Message = GetModbusMessageInstance();
     }
 
-    // Абстрактный метод, который будет реализован в дочерних классах для создания экземпляра ModbusMessage
+    // Абстрактный метод, который будет реализован в дочерних классах для создания экземпляра ModbusMessage.
     protected abstract ModbusMessage GetModbusMessageInstance();
 
-    // Абстрактные методы для создания ожидаемых байтовых последовательностей, специфичных для каждого протокола
-    protected abstract byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable, UInt16 packageNumber);
-    protected abstract byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable, UInt16 packageNumber);
-    protected abstract byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable, UInt16 packageNumber);
-    protected abstract byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 packageNumber);
+    // Абстрактные методы для создания ожидаемых байтовых последовательностей, специфичных для каждого протокола.
+    protected abstract byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable);
+    protected abstract byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable);
+    protected abstract byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable);
+    protected abstract byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable);
 
-    // Обобщенные методы проверки, которые будут использовать абстрактные методы
-    protected void CheckReadFunction(ModbusReadFunction selectedFunction, byte slaveID, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable = false, UInt16 packageNumber = 0)
+    /*
+     * 
+     * 
+     * Обобщенные методы проверки, которые будут использовать абстрактные методы.
+     * 
+     * 
+     */
+
+    protected void CheckReadFunction(ModbusReadFunction selectedFunction, byte slaveID, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable = false)
     {
         MessageData Data = new ReadTypeMessage(slaveID, address, numberOfRegisters, checkSum_IsEnable);
 
         byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
 
-        byte[] BytesArray_Expected = CreateExpectedReadMessage(slaveID, selectedFunction, address, numberOfRegisters, checkSum_IsEnable, packageNumber);
+        byte[] BytesArray_Expected = CreateExpectedReadMessage(slaveID, selectedFunction, address, numberOfRegisters, checkSum_IsEnable);
 
         Assert.Equal(BytesArray_Expected, BytesArray_Actual);
     }
 
-    protected void CheckSingleWriteFunction(ModbusWriteFunction selectedFunction, byte slaveID, UInt16 address, UInt16 writeData, bool checkSum_IsEnable = false, UInt16 packageNumber = 0)
+    protected void CheckSingleWriteFunction(ModbusWriteFunction selectedFunction, byte slaveID, UInt16 address, UInt16 writeData, bool checkSum_IsEnable = false)
     {
         UInt16[] WriteDataArray = new UInt16[] { writeData };
 
@@ -43,12 +50,12 @@ public abstract class BaseProtocolCreateTest
 
         byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
 
-        byte[] BytesArray_Expected = CreateExpectedSingleWriteMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable, packageNumber);
+        byte[] BytesArray_Expected = CreateExpectedSingleWriteMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 
         Assert.Equal(BytesArray_Expected, BytesArray_Actual);
     }
 
-    protected void CheckMultiplyWriteCoilsFunction(byte slaveID, UInt16 address, int[] bitArray, bool checkSum_IsEnable = false, UInt16 packageNumber = 0)
+    protected void CheckMultiplyWriteCoilsFunction(byte slaveID, UInt16 address, int[] bitArray, bool checkSum_IsEnable = false)
     {
         ModbusWriteFunction selectedFunction = Function.ForceMultipleCoils;
 
@@ -58,12 +65,12 @@ public abstract class BaseProtocolCreateTest
 
         byte[] bytesArray_Actual = Message.CreateMessage(selectedFunction, data);
 
-        byte[] bytesArray_Expected = CreateExpectedMultiplyWriteCoilsMessage(slaveID, selectedFunction, address, bitArray, checkSum_IsEnable, packageNumber);
+        byte[] bytesArray_Expected = CreateExpectedMultiplyWriteCoilsMessage(slaveID, selectedFunction, address, bitArray, checkSum_IsEnable);
 
         Assert.Equal(bytesArray_Expected, bytesArray_Actual);
     }
 
-    protected void CheckMultiplyWriteRegistersFunction(byte slaveID, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable = false, UInt16 packageNumber = 0)
+    protected void CheckMultiplyWriteRegistersFunction(byte slaveID, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable = false)
     {
         ModbusWriteFunction selectedFunction = Function.PresetMultipleRegisters;
 
@@ -73,7 +80,7 @@ public abstract class BaseProtocolCreateTest
 
         byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
 
-        byte[] BytesArray_Expected = CreateExpectedMultiplyWriteRegistersMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable, packageNumber);
+        byte[] BytesArray_Expected = CreateExpectedMultiplyWriteRegistersMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 
         Assert.Equal(BytesArray_Expected, BytesArray_Actual);
     }

@@ -165,7 +165,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
             );
     }
 
-    protected override byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable)
     {
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegistersBytes = ModbusField.Get_NumberOfRegisters(numberOfRegisters);
@@ -199,7 +199,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable)
     {
         UInt16[] writeDataArray = new UInt16[] { writeData };
 
@@ -240,7 +240,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable)
     {
         (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
 
@@ -269,7 +269,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable)
     {
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)writeData.Length);

@@ -10,8 +10,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         return new ModbusTCP_Message();
     }
 
-    // PackageNumber делать всегда равным 0
-
     [Fact]
     public void Test_ReadCoilStatus_CreatesCorrectMessage()
     {
@@ -24,7 +22,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 9C 01 00 0C 00 05
         CheckReadFunction(
             selectedFunction: Function.ReadCoilStatus,
-            packageNumber: 0,
             slaveID: 156,
             address: 12,
             numberOfRegisters: 5
@@ -43,7 +40,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 AC 02 00 0C 00 02
         CheckReadFunction(
             selectedFunction: Function.ReadDiscreteInputs,
-            packageNumber: 0,
             slaveID: 172,
             address: 12,
             numberOfRegisters: 2
@@ -62,7 +58,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 10 03 00 2A 00 05
         CheckReadFunction(
             selectedFunction: Function.ReadHoldingRegisters,
-            packageNumber: 0,
             slaveID: 16,
             address: 42,
             numberOfRegisters: 5
@@ -81,7 +76,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 06 04 00 13 00 04
         CheckReadFunction(
             selectedFunction: Function.ReadInputRegisters,
-            packageNumber: 0,
             slaveID: 6,
             address: 19,
             numberOfRegisters: 4
@@ -100,7 +94,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 0D 05 00 60 FF 00
         CheckSingleWriteFunction(
             selectedFunction: Function.ForceSingleCoil,
-            packageNumber: 0,
             slaveID: 13,
             address: 96,
             writeData: 0xFF00
@@ -119,7 +112,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // Полное сообщение:  00 00 00 00 00 06 12 06 00 3F AE D5
         CheckSingleWriteFunction(
             selectedFunction: Function.PresetSingleRegister,
-            packageNumber: 0,
             slaveID: 18,
             address: 63,
             writeData: 0xAED5
@@ -137,7 +129,6 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // PDU:               0F 00 49 00 07 01 0B (Код функции 0F, Адрес 0049, Количество 0007, Количество байт 01, Данные флагов 0B)
         // Полное сообщение:  00 00 00 00 00 09 20 0F 00 49 00 07 01 0B
         CheckMultiplyWriteCoilsFunction(
-            packageNumber: 0,
             slaveID: 32,
             address: 73,
             bitArray: new int[] { 0, 0, 1, 1, 1, 0, 1 }
@@ -155,25 +146,24 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // PDU:               10 00 3F 00 05 0A FF FF 45 86 40 00 05 68 FA FD
         // Полное сообщение:  00 00 00 00 00 11 12 10 00 3F 00 05 0A FF FF 45 86 40 00 05 68 FA FD
         CheckMultiplyWriteRegistersFunction(
-            packageNumber: 0,
             slaveID: 18,
             address: 63,
             writeData: new UInt16[] { 0xFFFF, 0x4586, 0x4000, 0x0568, 0xFAFD }
             );
     }
 
-    protected override byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedReadMessage(byte slaveID, ModbusReadFunction selectedFunction, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable)
     {
         // CheckSum_IsEnable не используется для TCP, всегда false
 
-        byte[] packageNumberArray = BitConverter.GetBytes(packageNumber);
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegistersBytes = ModbusField.Get_NumberOfRegisters(numberOfRegisters);
 
         byte[] bytesArray_Expected = new byte[12];
 
-        bytesArray_Expected[0] = packageNumberArray[1];
-        bytesArray_Expected[1] = packageNumberArray[0];
+        // PackageNumber всегда в тестах 0
+        bytesArray_Expected[0] = 0;
+        bytesArray_Expected[1] = 0;
         // Modbus ID
         bytesArray_Expected[2] = 0;
         bytesArray_Expected[3] = 0;
@@ -190,13 +180,12 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedSingleWriteMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16 writeData, bool checkSum_IsEnable)
     {
         // CheckSum_IsEnable не используется для TCP, всегда false
 
         UInt16[] writeDataArray = new UInt16[] { writeData };
 
-        byte[] packageNumberArray = BitConverter.GetBytes(packageNumber);
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] writeDataBytes = ModbusField.Get_WriteData(writeDataArray);
 
@@ -207,8 +196,9 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
 
         byte[] bytesArray_Expected = new byte[12];
 
-        bytesArray_Expected[0] = packageNumberArray[1];
-        bytesArray_Expected[1] = packageNumberArray[0];
+        // PackageNumber всегда в тестах 0
+        bytesArray_Expected[0] = 0;
+        bytesArray_Expected[1] = 0;
         // Modbus ID
         bytesArray_Expected[2] = 0;
         bytesArray_Expected[3] = 0;
@@ -225,7 +215,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedMultiplyWriteCoilsMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, int[] bitArray, bool checkSum_IsEnable)
     {
         // CheckSum_IsEnable не используется для TCP, всегда false
 
@@ -236,12 +226,12 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         // PDU - 6 байт + байт SlaveID + байты данных
         byte[] slaveID_PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(7 + writeBytes.Length));
 
-        byte[] packageNumberArray = BitConverter.GetBytes(packageNumber);
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)numberOfCoils);
 
-        bytesArray_Expected[0] = packageNumberArray[1];
-        bytesArray_Expected[1] = packageNumberArray[0];
+        // PackageNumber всегда в тестах 0
+        bytesArray_Expected[0] = 0;
+        bytesArray_Expected[1] = 0;
         // Modbus ID
         bytesArray_Expected[2] = 0;
         bytesArray_Expected[3] = 0;
@@ -261,15 +251,13 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
         return bytesArray_Expected;
     }
 
-    protected override byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 packageNumber)
+    protected override byte[] CreateExpectedMultiplyWriteRegistersMessage(byte slaveID, ModbusWriteFunction selectedFunction, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable)
     {
         // CheckSum_IsEnable не используется для TCP, всегда false
 
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)writeData.Length);
         byte[] writeDataBytes = ModbusField.Get_WriteData(writeData);
-
-        byte[] packageNumberArray = BitConverter.GetBytes(packageNumber);
 
         // PDU - 6 байт + байт SlaveID + байты данных
         byte[] slaveID_PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(7 + writeDataBytes.Length));
@@ -281,8 +269,9 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
 
         byte[] bytesArray_Expected = new byte[13 + writeDataBytes.Length];
 
-        bytesArray_Expected[0] = packageNumberArray[1];
-        bytesArray_Expected[1] = packageNumberArray[0];
+        // PackageNumber всегда в тестах 0
+        bytesArray_Expected[0] = 0;
+        bytesArray_Expected[1] = 0;
         // Modbus ID
         bytesArray_Expected[2] = 0;
         bytesArray_Expected[3] = 0;
