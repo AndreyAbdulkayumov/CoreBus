@@ -13,8 +13,7 @@
 		Width="960" Height="550"
 		Background="Transparent"
 		CanResize="False"
-		ShowInTaskbar="False"
-		WindowStartupLocation="CenterOwner"
+		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None">
