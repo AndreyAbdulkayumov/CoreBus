@@ -188,6 +188,11 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task<object?> EditMacros(object? parameters)
     {
+        if (MainWindow.Instance == null)
+        {
+            throw new Exception("Не задан владелец окна.");
+        }
+
         await using var scope = _serviceProvider.CreateAsyncScope();
 
         _editMacrosVM = scope.ServiceProvider.GetRequiredService<EditMacros_VM>();
@@ -208,9 +213,40 @@ public class OpenChildWindowService : IOpenChildWindowService
             DataContext = _editMacrosVM
         };
 
-        await OpenWindowWithDimmer(window, MacrosWindow.Instance, MacrosWindow.Workspace);
+        void MainWindowClosedHandler(object? sender, EventArgs e)
+        {
+            window?.Close();
+        }
 
+        window.Closed += (object? sender, EventArgs e) =>
+        {
+            MainWindow.Instance.Closed -= MainWindowClosedHandler;
+        };
+
+        MainWindow.Instance.Closed += MainWindowClosedHandler;
+
+        await Dispatcher.UIThread.Invoke(async () =>
+        {
+            window.Show();
+            await WaitForCloseAsync(window);
+        });
+        
         return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
+    }
+
+    private Task WaitForCloseAsync(Window window)
+    {
+        var tcs = new TaskCompletionSource<object?>();
+
+        void Handler(object? sender, EventArgs e)
+        {
+            window.Closed -= Handler;
+            tcs.TrySetResult(null);
+        }
+
+        window.Closed += Handler;
+
+        return tcs.Task;
     }
 
     private async Task OpenWindowWithDimmer(Window window, Window? owner, Visual? workspace)

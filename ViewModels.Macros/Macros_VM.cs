@@ -21,6 +21,14 @@ public class Macros_VM : ReactiveObject, IDisposable
     private const string ModeName_NoProtocol = "Без протокола";
     private const string ModeName_ModbusClient = "Modbus";
 
+    private bool _windowIsVisible = true;
+
+    public bool WindowIsVisible
+    {
+        get => _windowIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _windowIsVisible, value);
+    }
+
     private string? _modeName;
 
     public string? ModeName
@@ -209,11 +217,26 @@ public class Macros_VM : ReactiveObject, IDisposable
         return macros;
     }
 
+    private async Task<object?> OpenEditMacrosWindow(object? parameters)
+    {
+        try
+        {
+            WindowIsVisible = false;
+
+            return await _openChildWindowService.EditMacros(parameters);
+        }
+
+        finally
+        {
+            WindowIsVisible = true;
+        }
+    }
+
     private async Task CreateMacros()
     {
         var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
-        var content = await _openChildWindowService.EditMacros(null);
+        var content = await OpenEditMacrosWindow(null);
 
         if (content == null)
         {
@@ -251,7 +274,7 @@ public class Macros_VM : ReactiveObject, IDisposable
                 throw new NotImplementedException();
         }
 
-        object? content = await _openChildWindowService.EditMacros(initData);
+        object? content = await OpenEditMacrosWindow(initData);
 
         if (content == null)
         {

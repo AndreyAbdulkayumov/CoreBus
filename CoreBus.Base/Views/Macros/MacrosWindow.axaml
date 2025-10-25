@@ -13,7 +13,8 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly">
+		SystemDecorations="BorderOnly"
+		IsVisible="{Binding WindowIsVisible, Mode=OneWay}">
 
 	<Window.Styles>
 
