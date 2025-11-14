@@ -42,6 +42,16 @@ CoreBus — кроссплатформенный терминал для раб�
 
 Приложение тестировалось на Windows 10/11, Ubuntu и Astra Linux Common Edition.
 
+## *Демонстрация*
+
+https://github.com/user-attachments/assets/55d66231-dcb7-4a94-a248-c2b8909a0f87
+
+[Смотреть на YouTube (RU)](https://youtu.be/6OAinVJ1S7M?si=M7Vp73ERL0coCOle)
+
+[Смотреть на YouTube (EN)](https://youtu.be/9WoWtsWAVNY?si=BzPMWfwlqdwswaIf)
+
+[Смотреть на ВК Видео](https://vk.com/id142285511?z=video142285511_456239325%2Fvideos142285511%2Fpl_142285511_-2)
+
 ## *Помощь проекту*
 Автор будет благодарен за любую поддержку. Реквизиты указаны по [ссылке](https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html).
 
