@@ -44,7 +44,7 @@ CoreBus — кроссплатформенный терминал для раб�
 
 ## *Демонстрация*
 
-https://github.com/user-attachments/assets/55d66231-dcb7-4a94-a248-c2b8909a0f87
+[Смотреть на GitHub (RU)](https://github.com/user-attachments/assets/55d66231-dcb7-4a94-a248-c2b8909a0f87)
 
 [Смотреть на YouTube (RU)](https://youtu.be/6OAinVJ1S7M?si=M7Vp73ERL0coCOle)
 
