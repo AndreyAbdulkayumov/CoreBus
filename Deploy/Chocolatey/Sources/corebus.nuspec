@@ -10,10 +10,18 @@
     <!-- == SOFTWARE SPECIFIC SECTION == -->
     <!-- This section is about the software itself -->
     <title>CoreBus</title>
-	
+
     <authors>Andrey Abdulkayumov</authors>
 	
     <projectUrl>https://github.com/AndreyAbdulkayumov/CoreBus</projectUrl>
+	
+	<iconUrl>https://raw.githubusercontent.com/AndreyAbdulkayumov/CoreBus/master/CoreBus.Base/Resources/MainLogo.png</iconUrl>
+
+	<licenseUrl>https://raw.githubusercontent.com/AndreyAbdulkayumov/CoreBus/master/LICENSE.md</licenseUrl>
+	
+	<packageSourceUrl>https://github.com/AndreyAbdulkayumov/CoreBus/tree/master/Deploy/Chocolatey</packageSourceUrl>
+	
+	<bugTrackerUrl>https://github.com/AndreyAbdulkayumov/CoreBus/issues</bugTrackerUrl>
 	
     <tags>corebus modbus rtu ascii tcp serial port ethernet plc com terminal cross-platform protocol</tags>
     
@@ -54,7 +62,9 @@
 		8. Cross-platform: Windows, Linux.
 	</description>
 	
-    <releaseNotes>https://github.com/AndreyAbdulkayumov/CoreBus/releases</releaseNotes>
+    <releaseNotes>
+		See the releases here https://github.com/AndreyAbdulkayumov/CoreBus/releases
+	</releaseNotes>
 		
   </metadata>
   <files>
