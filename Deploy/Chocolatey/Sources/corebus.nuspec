@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <!-- == PACKAGE SPECIFIC SECTION == -->
+    <id>corebus</id>
+	
+    <version>3.3.3</version>
+    <!-- ============================== -->
+
+    <!-- == SOFTWARE SPECIFIC SECTION == -->
+    <!-- This section is about the software itself -->
+    <title>CoreBus</title>
+	
+    <authors>Andrey Abdulkayumov</authors>
+	
+    <projectUrl>https://github.com/AndreyAbdulkayumov/CoreBus</projectUrl>
+	
+    <tags>corebus modbus rtu ascii tcp serial port ethernet plc com terminal cross-platform protocol</tags>
+    
+	<summary>CoreBus is a cross-platform terminal for working with serial ports and TCP sockets with support for Modbus TCP/RTU/ASCII protocols.</summary>
+    
+	<description>
+	    Watch the demo on YouTube: https://youtu.be/9WoWtsWAVNY?si=BzPMWfwlqdwswaIf
+		
+		Features:
+
+		1. Two operating modes: "No Protocol" and "Modbus".
+
+		2. "No Protocol":
+		- Working with data in string or byte format.
+		- Support for different encodings.
+		- There are three sending modes: single, cyclic, and file sending.
+
+		3. "Modbus":
+		- Support for various Modbus protocol variations: TCP, RTU, ASCII and RTU/ASCII over TCP.
+		- Convenient operation with recording functions.
+		- The ability to work with float numbers.
+		- The ability to work with binary data.
+		- Cycle mode.
+		- A Modbus scanner that searches for devices on a communication line.
+
+		4. Macros:
+		- Separate macros for each operating mode.
+		- A macro consists of an unlimited number of commands (actions).
+		- For Modbus macros, it is possible to set a common Slave ID for the entire macro.
+		- Import and export macros.
+
+		5. Dark and Light themes.
+
+		6. Presets with user settings.
+
+		7. User manual.
+
+		8. Cross-platform: Windows, Linux.
+	</description>
+	
+    <releaseNotes>https://github.com/AndreyAbdulkayumov/CoreBus/releases</releaseNotes>
+		
+  </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
