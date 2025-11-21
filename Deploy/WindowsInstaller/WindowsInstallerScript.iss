@@ -23,15 +23,16 @@
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; Относительный путь
-#define PublishDirectory 'CoreBus.Desktop\bin\Release\net10.0\publish\win-x64'
+#define PublishDirectory '..\..\CoreBus.Desktop\bin\Release\net10.0\publish\win-x64'
 
-#define OutputDirectory 'D:\0_Compiled_Installers\CoreBus'
-
-; Относительный путь
-#define LicenseFileDirectory 'LICENSE.md'
+; Установщик будет создан в директории этого скрипта
+#define OutputDirectory '.'
 
 ; Относительный путь
-#define SetupIconFileDirectory 'CoreBus.Base\Resources\MainLogo.ico'
+#define LicenseFileDirectory '..\..\LICENSE.md'
+
+; Относительный путь
+#define SetupIconFileDirectory '..\..\CoreBus.Base\Resources\MainLogo.ico'
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -58,7 +59,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 ; Добавляем ярлык приложения в Панели управления
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
-OutputDir={#OutputDirectory}\{#MyAppVersion}
+OutputDir={#OutputDirectory}
 OutputBaseFilename={#OutputFileName}
 SetupIconFile={#SetupIconFileDirectory}
 Compression=lzma
