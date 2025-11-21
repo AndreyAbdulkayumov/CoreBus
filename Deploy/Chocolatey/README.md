@@ -4,7 +4,7 @@ https://community.chocolatey.org/
 
 ## Описание файлов
 
-В папке Source содержатся исходники для создания пакета, публикуемого на ресурсе.
+В папке Sources содержатся исходники для создания пакета, публикуемого на ресурсе.
 
 `corebus.nuspec` - файл с информацией о пакете.
 
@@ -15,6 +15,8 @@ https://community.chocolatey.org/
 `tools/LICENSE.txt` - текст лицензии, взят [отсюда](https://github.com/AndreyAbdulkayumov/CoreBus/blob/master/LICENSE.md)
 
 `tools/VERIFICATION.txt` - инструкция проверки подлинности пакета.
+
+Скрипты установки и удаления написаны с учетом того, что установщик самого приложения создан с использованием **Inno Setup**.
 
 ## Публикация
 
