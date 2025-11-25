@@ -245,7 +245,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
                 return new NoProtocolCommand_VM(id, parameters);
 
             case ApplicationWorkMode.ModbusClient:
-                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel);
+                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel, CommonSlaveIdFieldViewModel?.UseCommonSlaveId ?? false);
 
             default:
                 throw new NotImplementedException();
