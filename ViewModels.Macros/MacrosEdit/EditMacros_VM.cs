@@ -91,15 +91,15 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         //
         /****************************************************/
 
-        MessageBus.Current.Listen<MacrosActionResponse>()
-            .Subscribe(response =>
-            {
-                if (!response.ActionSuccess && response.Sender == SenderName)
+        _disposables.Add(
+            MessageBus.Current.Listen<MacrosActionResponse>()
+                .Subscribe(response =>
                 {
-                    _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
-                }
-            })
-            .DisposeWith(_disposables);
+                    if (!response.ActionSuccess && response.Sender == SenderName)
+                    {
+                        _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
+                    }
+                }));
 
         /****************************************************/
         //
