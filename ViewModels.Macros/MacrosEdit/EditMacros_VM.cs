@@ -91,15 +91,15 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         //
         /****************************************************/
 
-        MessageBus.Current.Listen<MacrosActionResponse>()
-            .Subscribe(response =>
-            {
-                if (!response.ActionSuccess && response.Sender == SenderName)
+        _disposables.Add(
+            MessageBus.Current.Listen<MacrosActionResponse>()
+                .Subscribe(response =>
                 {
-                    _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
-                }
-            })
-            .DisposeWith(_disposables);
+                    if (!response.ActionSuccess && response.Sender == SenderName)
+                    {
+                        _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
+                    }
+                }));
 
         /****************************************************/
         //
@@ -245,7 +245,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
                 return new NoProtocolCommand_VM(id, parameters);
 
             case ApplicationWorkMode.ModbusClient:
-                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel);
+                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel, CommonSlaveIdFieldViewModel?.UseCommonSlaveId ?? false);
 
             default:
                 throw new NotImplementedException();

@@ -172,9 +172,11 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     private readonly IWriteField_VM WriteField_SingleCoil_VM;
     private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-    public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox, Model_Settings settingsModel)
+    public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox, Model_Settings settingsModel, bool useCommonSlaveId)
     {
         _id = id;
+
+        UseCommonSlaveId = useCommonSlaveId;
 
         WriteField_MultipleCoils_VM = new MultipleCoils_VM();
         WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true, settingsModel);
