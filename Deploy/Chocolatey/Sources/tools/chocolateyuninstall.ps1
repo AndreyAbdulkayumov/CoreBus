@@ -1,15 +1,16 @@
 ﻿$ErrorActionPreference = 'Stop'
 
-$packageName = $Env:ChocolateyPackageName
-$softwareNamePattern = 'CoreBus*'
+$packageName = $env:ChocolateyPackageName
+$softwareName = 'CoreBus*'
 
-[array] $key = Get-UninstallRegistryKey $softwareNamePattern
+[array] $key = Get-UninstallRegistryKey $softwareName
 if ($key.Count -eq 1) {
     $key | % {
         $packageArgs = @{
             packageName    = $packageName
-            silentArgs     = "/VERYSILENT"
-            fileType       = 'EXE'
+			softwareName   = $softwareName
+			fileType       = 'EXE'
+            silentArgs     = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-'
             validExitCodes = @(0)
             file           = $_.UninstallString.Replace('"', '')
         }

@@ -15,7 +15,7 @@
 	
     <projectUrl>https://github.com/AndreyAbdulkayumov/CoreBus</projectUrl>
 	
-	<iconUrl>https://raw.githubusercontent.com/AndreyAbdulkayumov/CoreBus/master/CoreBus.Base/Resources/MainLogo.png</iconUrl>
+	<iconUrl>https://cdn.jsdelivr.net/gh/AndreyAbdulkayumov/CoreBus@master/Deploy/Chocolatey/MainLogo.png</iconUrl>
 
 	<licenseUrl>https://raw.githubusercontent.com/AndreyAbdulkayumov/CoreBus/master/LICENSE.md</licenseUrl>
 	
@@ -63,7 +63,7 @@
 	</description>
 	
     <releaseNotes>
-		See the releases here https://github.com/AndreyAbdulkayumov/CoreBus/releases
+		https://github.com/AndreyAbdulkayumov/CoreBus/releases
 	</releaseNotes>
 		
   </metadata>
