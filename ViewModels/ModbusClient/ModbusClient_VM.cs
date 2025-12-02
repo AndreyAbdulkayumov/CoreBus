@@ -31,12 +31,12 @@ public class ModbusClient_VM : ReactiveObject
 
     public event EventHandler<bool>? CheckSum_VisibilityChanged;
 
-    private object? _currentModeViewModel;
+    private object? _modbusRequestBuilder_VM;
 
-    public object? CurrentModeViewModel
+    public object? ModbusRequestBuilder_VM
     {
-        get => _currentModeViewModel;
-        set => this.RaiseAndSetIfChanged(ref _currentModeViewModel, value);
+        get => _modbusRequestBuilder_VM;
+        set => this.RaiseAndSetIfChanged(ref _modbusRequestBuilder_VM, value);
     }
 
     #region Properties
@@ -49,12 +49,12 @@ public class ModbusClient_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
     }
 
-    private bool _isCycleMode = false;
+    private bool _isMonitoringMode = false;
 
-    public bool IsCycleMode
+    public bool IsMonitoringMode
     {
-        get => _isCycleMode;
-        set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
+        get => _isMonitoringMode;
+        set => this.RaiseAndSetIfChanged(ref _isMonitoringMode, value);
     }
 
     private const string Modbus_TCP_Name = "Modbus TCP";
@@ -157,7 +157,6 @@ public class ModbusClient_VM : ReactiveObject
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly ModbusClient_Mode_Normal_VM _normalMode_VM;
-    private readonly ModbusClient_Mode_Cycle_VM _cycleMode_VM;
 
     private ushort _packageNumber = 0;
 
@@ -166,7 +165,7 @@ public class ModbusClient_VM : ReactiveObject
 
     public ModbusClient_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel,
-        ModbusClient_Mode_Normal_VM normalMode_VM, ModbusClient_Mode_Cycle_VM cycleMode_VM)
+        ModbusClient_Mode_Normal_VM normalMode_VM)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
@@ -174,7 +173,6 @@ public class ModbusClient_VM : ReactiveObject
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
-        _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -182,8 +180,7 @@ public class ModbusClient_VM : ReactiveObject
         _normalMode_VM = normalMode_VM;
         _normalMode_VM.Subscribe(this);
 
-        _cycleMode_VM = cycleMode_VM;
-        _cycleMode_VM.Subscribe(this);
+        ModbusRequestBuilder_VM = _normalMode_VM;
 
         /****************************************************/
         //
@@ -258,15 +255,17 @@ public class ModbusClient_VM : ReactiveObject
         });
         Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка очистки данных.\n\n{error.Message}", MessageType.Error, error));
 
-        this.WhenAnyValue(x => x.IsCycleMode)
+        this.WhenAnyValue(x => x.IsMonitoringMode)
             .Subscribe(_ =>
             {
-                if (!IsCycleMode)
-                {
-                    _cycleMode_VM.StopPolling();
-                }
+                //if (!IsMonitoringMode)
+                //{
+                //    _cycleMode_VM.StopPolling();
+                //}
 
-                CurrentModeViewModel = IsCycleMode ? _cycleMode_VM : _normalMode_VM;
+                //CurrentModeViewModel = IsMonitoringMode ? _cycleMode_VM : _normalMode_VM;
+
+                //CurrentModeViewModel = IsMonitoringMode ? _monitoringMode_VM : _normalMode_VM;                
             });
 
         this.WhenAnyValue(x => x.SelectedModbusType)
@@ -321,8 +320,8 @@ public class ModbusClient_VM : ReactiveObject
 
         catch (Exception error)
         {
-            if (_cycleMode_VM.IsStart)
-                _cycleMode_VM.StopPolling();
+            //if (_cycleMode_VM.IsStart)
+            //    _cycleMode_VM.StopPolling();
 
             if (message.Sender == MainWindow_VM.SenderName)
             {

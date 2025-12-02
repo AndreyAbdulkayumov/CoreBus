@@ -63,7 +63,6 @@ public partial class App : Application
             .AddSingleton<NoProtocol_Mode_Files_VM>()
             .AddSingleton<ModbusClient_VM>()
             .AddSingleton<ModbusClient_Mode_Normal_VM>()
-            .AddSingleton<ModbusClient_Mode_Cycle_VM>()
             // Окно настроек
             .AddTransient<Settings_VM>()
             // Компоненты окна настроек

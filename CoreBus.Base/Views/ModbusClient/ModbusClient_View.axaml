@@ -20,18 +20,6 @@
 
 	</UserControl.Styles>
 
-	<UserControl.DataTemplates>
-
-		<DataTemplate DataType="{x:Type ViewModels:ModbusClient_Mode_Normal_VM}">
-			<ModeViews:Normal/>
-		</DataTemplate>
-
-		<DataTemplate DataType="{x:Type ViewModels:ModbusClient_Mode_Cycle_VM}">
-			<ModeViews:Cycle/>
-		</DataTemplate>
-
-	</UserControl.DataTemplates>
-
 	<Grid>
 
 		<Grid.RowDefinitions>
@@ -75,9 +63,9 @@
 					Command="{Binding Command_Open_ModbusScanner}"/>
 			
 			<ToggleSwitch Margin="0,0,20,0"
-						  OffContent="Цикличный опрос"
-						  OnContent="Цикличный опрос"
-						  IsChecked="{Binding IsCycleMode, Mode=TwoWay}"
+						  OffContent="Мониторинг"
+						  OnContent="Мониторинг"
+						  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"
 						  HorizontalAlignment="Right" VerticalAlignment="Center"/>
 			
 			<Button Content="Очистить данные"
@@ -231,8 +219,8 @@
 			<GridSplitter Grid.Column="1"
 						  ResizeDirection="Columns"/>
 
-			<ContentControl Grid.Column="2"
-							Content="{Binding CurrentModeViewModel}"/>
+			<ModeViews:Normal Grid.Column="2"
+					          DataContext="{Binding ModbusRequestBuilder_VM}"/>
 
 
 		</Grid>
