@@ -8,7 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ViewModels.ModbusClient;
-using ViewModels.ModbusClient.DataTypes;
+using ViewModels.ModbusClient.Manual.DataTypes;
 
 namespace CoreBus.Base.Views.ModbusClient;
 

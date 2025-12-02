@@ -60,19 +60,19 @@
     <Compile Update="Views\Macros\EditMacros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\ModbusRepresentations\LastRequest.axaml.cs">
       <DependentUpon>LastRequest.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ModbusClient\ModbusClient_View.axaml.cs">
       <DependentUpon>ModbusClient_View.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\TransmitMode\Normal.axaml.cs">
-      <DependentUpon>Normal.axaml</DependentUpon>
+    <Compile Update="Views\ModbusClient\Manual\ModbusRequestBuilder.axaml.cs">
+      <DependentUpon>ModbusRequestBuilder.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\WriteFields\MultipleRegisters.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\WriteFields\MultipleRegisters.axaml.cs">
       <DependentUpon>MultipleRegisters.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\WriteFields\SingleRegister.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\WriteFields\SingleRegister.axaml.cs">
       <DependentUpon>SingleRegister.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\NoProtocol\TransmitMode\Cycle.axaml.cs">

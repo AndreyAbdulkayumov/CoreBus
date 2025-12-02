@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="50"
+             x:Class="CoreBus.Base.Views.ModbusClient.Manual.WriteFields.SingleRegister"
+			 x:DataType="ViewModels:SingleRegister_VM">
+
+	<StackPanel Orientation="Horizontal" Spacing="20"
+				HorizontalAlignment="Center" VerticalAlignment="Stretch">
+
+		<TextBox Classes="InputField"
+				 Text="{Binding ViewData, Mode=TwoWay}"
+				 Width="290"
+				 VerticalAlignment="Top"
+				 TextChanged="UppercaseTextBox_TextChanged"/>
+
+		<ComboBox Classes="Functions"
+				  Width="105"
+				  ItemsSource="{Binding FormatItems}"
+				  SelectedItem="{Binding SelectedDataFormat}"
+				  VerticalAlignment="Top"/>
+
+	</StackPanel>
+	
+</UserControl>

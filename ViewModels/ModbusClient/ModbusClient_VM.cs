@@ -15,8 +15,9 @@ using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using ViewModels.ModbusClient.DataTypes;
-using ViewModels.ModbusClient.ModbusRepresentations;
+using ViewModels.ModbusClient.Manual;
+using ViewModels.ModbusClient.Manual.DataTypes;
+using ViewModels.ModbusClient.Manual.ModbusRepresentations;
 
 namespace ViewModels.ModbusClient;
 
@@ -156,7 +157,7 @@ public class ModbusClient_VM : ReactiveObject
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
-    private readonly ModbusClient_Mode_Normal_VM _normalMode_VM;
+    private readonly ModbusRequestBuilder_VM _normalMode_VM;
 
     private ushort _packageNumber = 0;
 
@@ -165,7 +166,7 @@ public class ModbusClient_VM : ReactiveObject
 
     public ModbusClient_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel,
-        ModbusClient_Mode_Normal_VM normalMode_VM)
+        ModbusRequestBuilder_VM normalMode_VM)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));

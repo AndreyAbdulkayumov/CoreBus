@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient;assembly=CoreBus.Base"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
-			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.ModbusClient.TransmitMode;assembly=CoreBus.Base"
-             xmlns:ModbusRepresentations="clr-namespace:CoreBus.Base.Views.ModbusClient.ModbusRepresentations;assembly=CoreBus.Base"
+			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
+             xmlns:ModbusRepresentations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.ModbusRepresentations;assembly=CoreBus.Base"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="CoreBus.Base.Views.ModbusClient.ModbusClient_View"
@@ -219,8 +219,8 @@
 			<GridSplitter Grid.Column="1"
 						  ResizeDirection="Columns"/>
 
-			<ModeViews:Normal Grid.Column="2"
-					          DataContext="{Binding ModbusRequestBuilder_VM}"/>
+			<ModeViews:ModbusRequestBuilder Grid.Column="2"
+					                        DataContext="{Binding ModbusRequestBuilder_VM}"/>
 
 
 		</Grid>
