@@ -31,18 +31,8 @@
 
 					<DataTemplate x:DataType="DataTypes:BinaryRepresentation_ItemData">
 
-						<Grid>
-
-							<Grid.RowDefinitions>
-								<RowDefinition Height="34"/>
-								<RowDefinition Height="34"/>
-							</Grid.RowDefinitions>
-
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="90"/>
-								<ColumnDefinition Width="580"/>
-								<ColumnDefinition Width="50"/>
-							</Grid.ColumnDefinitions>
+						<Grid RowDefinitions="34,34"
+			                  ColumnDefinitions="90,580,50">
 
 							<TextBlock Grid.Row="0" Grid.Column="0"
 									   Text="Адрес"
@@ -144,6 +134,7 @@
 						</Grid>
 
 					</DataTemplate>
+
 				</ItemsControl.ItemTemplate>
 
 			</ItemsControl>

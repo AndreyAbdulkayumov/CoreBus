@@ -19,6 +19,7 @@
 
 	</UserControl.Styles>
 
+
 	<UserControl.DataTemplates>
 
 		<DataTemplate DataType="{x:Type ManualModeViewModels:ModbusManualMode_VM}">
@@ -31,13 +32,9 @@
 
 	</UserControl.DataTemplates>
 
-	<Grid>
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="50"/>
-			<RowDefinition Height="1*"/>
-		</Grid.RowDefinitions>
-		
+	<Grid RowDefinitions="50,1*">
+				
 		<Grid Grid.Row="0">
 
 			<TextBlock Text="Протокол:"

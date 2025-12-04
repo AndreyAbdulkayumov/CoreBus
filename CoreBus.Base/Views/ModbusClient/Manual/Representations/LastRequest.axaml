@@ -16,13 +16,7 @@
             CornerRadius="10"
 			HorizontalAlignment="Stretch" VerticalAlignment="Center">
 
-		<Grid>
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="80"/>
-				<ColumnDefinition Width="1*"/>
-				<ColumnDefinition Width="80"/>
-			</Grid.ColumnDefinitions>
+		<Grid ColumnDefinitions="80,1*,80">
 
 			<Grid Grid.Column="0"
 				  Margin="0,8,0,8">
@@ -72,13 +66,8 @@
 
 							<DataTemplate>
 
-								<Grid Width="50">
-
-									<Grid.RowDefinitions>
-										<RowDefinition Height="0.6*"/>
-										<RowDefinition Height="1*"/>
-										<RowDefinition Height="1*"/>
-									</Grid.RowDefinitions>
+								<Grid Width="50"
+			                          RowDefinitions="0.6*,1*,1*">
 
 									<Border Grid.Row="0"
                                             BorderBrush="Black"
@@ -134,13 +123,8 @@
 			</Border>
 
 			<Grid Grid.Column="2"
+		          RowDefinitions="0.6*,1*,1*"
 				  Margin="0,8,0,8">
-
-				<Grid.RowDefinitions>
-					<RowDefinition Height="0.6*"/>
-					<RowDefinition Height="1*"/>
-					<RowDefinition Height="1*"/>
-				</Grid.RowDefinitions>
 				
 				<Button Grid.Row="1"
 						ToolTip.Tip="Копировать запрос в буфер обмена"
