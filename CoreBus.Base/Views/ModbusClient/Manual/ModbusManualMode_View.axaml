@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
-			 xmlns:ModbusRepresentations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.Representations;assembly=CoreBus.Base"
+			 xmlns:Representations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.Representations;assembly=CoreBus.Base"
              mc:Ignorable="d" 
              d:DesignWidth="1000" d:DesignHeight="550"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.ModbusManualMode_View"
@@ -32,7 +32,6 @@
 			<local:RequestBuilder Grid.Column="2"
 						          DataContext="{Binding RequestBuilder_VM}"/>
 
-
 		</Grid>
 
 		<GridSplitter Grid.Row="1"
@@ -44,20 +43,20 @@
 
 				<TabItem Header="Последний запрос">
 					<ScrollViewer>
-						<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>
+						<Representations:LastRequest Margin="0,5,0,5"/>
 					</ScrollViewer>
 				</TabItem>
 
 				<TabItem Header="История обмена">
-					<ModbusRepresentations:Log Margin="0,5,0,5"/>
+					<Representations:Log Margin="0,5,0,5"/>
 				</TabItem>
 				
 				<TabItem Header="Бинарное представление">
-					<ModbusRepresentations:Binary Margin="0,5,0,5"/>
+					<Representations:Binary Margin="0,5,0,5"/>
 				</TabItem>
 
 				<TabItem Header="Число типа float">
-					<ModbusRepresentations:Float Margin="0,5,0,5"/>
+					<Representations:Float Margin="0,5,0,5"/>
 				</TabItem>				
 				
 			</TabControl>
