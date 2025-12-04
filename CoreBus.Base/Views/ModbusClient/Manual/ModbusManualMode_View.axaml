@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
+             xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+			 xmlns:ModbusRepresentations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.Representations;assembly=CoreBus.Base"
+             mc:Ignorable="d" 
+             d:DesignWidth="1000" d:DesignHeight="550"
+             x:Class="CoreBus.Base.Views.ModbusClient.Manual.ModbusManualMode_View"
+             x:DataType="ViewModels:ModbusManualMode_VM">
+
+    <UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
+
+	</UserControl.Styles>
+
+
+    <Grid RowDefinitions="2*,3,220">
+
+		<Grid Grid.Row="0" 
+		      ColumnDefinitions="1*,3,480">
+			
+			<local:ResponseRepresentationTable Grid.Column="0"/>
+
+			<GridSplitter Grid.Column="1"
+						  ResizeDirection="Columns"/>
+
+			<local:RequestBuilder Grid.Column="2"
+						          DataContext="{Binding RequestBuilder_VM}"/>
+
+
+		</Grid>
+
+		<GridSplitter Grid.Row="1"
+					  ResizeDirection="Rows"/>
+
+		<Grid Grid.Row="2">
+
+			<TabControl>
+
+				<TabItem Header="Последний запрос">
+					<ScrollViewer>
+						<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>
+					</ScrollViewer>
+				</TabItem>
+
+				<TabItem Header="История обмена">
+					<ModbusRepresentations:Log Margin="0,5,0,5"/>
+				</TabItem>
+				
+				<TabItem Header="Бинарное представление">
+					<ModbusRepresentations:Binary Margin="0,5,0,5"/>
+				</TabItem>
+
+				<TabItem Header="Число типа float">
+					<ModbusRepresentations:Float Margin="0,5,0,5"/>
+				</TabItem>				
+				
+			</TabControl>
+
+		</Grid>
+
+	</Grid>
+
+</UserControl>
