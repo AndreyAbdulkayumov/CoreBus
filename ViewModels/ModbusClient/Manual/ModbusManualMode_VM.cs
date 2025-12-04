@@ -1,5 +1,4 @@
-﻿using Core.Clients;
-using Core.Clients.DataTypes;
+﻿using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
@@ -84,9 +83,6 @@ public class ModbusManualMode_VM : ReactiveObject
     #endregion
 
     #region Commands
-
-    
-    
 
     public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
     public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }

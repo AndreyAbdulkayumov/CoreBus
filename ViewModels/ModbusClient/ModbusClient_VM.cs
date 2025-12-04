@@ -127,29 +127,28 @@ public class ModbusClient_VM : ReactiveObject
             {
                 if (_connectedHostModel.HostIsConnect)
                 {
-                    _modbusManualMode_VM.SetCheckSumVisiblity();
-
-                    if (SelectedModbusType == Modbus_TCP_Name)
+                    switch (SelectedModbusType)
                     {
-                        ModbusMessageType = new ModbusTCP_Message();
-                        return;
+                        case Modbus_TCP_Name:
+                            ModbusMessageType = new ModbusTCP_Message();
+                            break;
+
+                        case Modbus_RTU_Name:
+                        case Modbus_RTU_over_TCP_Name:
+                            ModbusMessageType = new ModbusRTU_Message();
+                            break;
+
+                        case Modbus_ASCII_Name:
+                        case Modbus_ASCII_over_TCP_Name:
+                            ModbusMessageType = new ModbusASCII_Message();
+                            break;
+
+                        default:
+                            _messageBox.Show($"Задан неизвестный тип Modbus протокола:\n{SelectedModbusType}", MessageType.Warning);
+                            return;
                     }
 
-                    if (SelectedModbusType == Modbus_RTU_Name ||
-                        SelectedModbusType == Modbus_RTU_over_TCP_Name)
-                    {
-                        ModbusMessageType = new ModbusRTU_Message();
-                        return;
-                    }
-
-                    if (SelectedModbusType == Modbus_ASCII_Name ||
-                        SelectedModbusType == Modbus_ASCII_over_TCP_Name)
-                    {
-                        ModbusMessageType = new ModbusASCII_Message();
-                        return;
-                    }
-
-                    _messageBox.Show($"Задан неизвестный тип Modbus протокола: {SelectedModbusType}", MessageType.Warning);
+                    _modbusManualMode_VM.SetCheckSumVisiblity();                    
                 }
             });
 

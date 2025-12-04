@@ -21,7 +21,7 @@ public class ModbusDataDisplayedForTable
     public SolidColorBrush? RowBackground { get; set; }
 }
 
-public partial class ResponseRepresentationTable : UserControl
+public partial class ResponseDataGrid : UserControl
 {
     private const string ResourceKey_DataGrid_Color_RowBackground = "DataGrid_Color_RowBackground";
     private const string ResourceKey_DataGrid_Color_AlternatingRowBackground = "DataGrid_Color_AlternatingRowBackground";
@@ -36,7 +36,7 @@ public partial class ResponseRepresentationTable : UserControl
     private Border? _selectedBorder;
     private SolidColorBrush? _selectedBorder_InitColor;
 
-    public ResponseRepresentationTable()
+    public ResponseDataGrid()
     {
         InitializeComponent();
 

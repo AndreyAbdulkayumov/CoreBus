@@ -63,6 +63,9 @@
     <Compile Update="Views\ModbusClient\Manual\Representations\LastRequest.axaml.cs">
       <DependentUpon>LastRequest.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\ModbusClient\Manual\ResponseDataGrid.axaml.cs">
+      <DependentUpon>ResponseDataGrid.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ModbusClient\ModbusClient_View.axaml.cs">
       <DependentUpon>ModbusClient_View.axaml</DependentUpon>
     </Compile>
