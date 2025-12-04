@@ -22,6 +22,7 @@ using Core.Models.Modbus;
 using Core.Models.AppUpdateSystem;
 using ViewModels.ModbusScanner;
 using ViewModels.ModbusClient.Manual;
+using ViewModels.ModbusClient.Monitoring;
 
 namespace CoreBus.Base;
 
@@ -63,7 +64,9 @@ public partial class App : Application
             .AddSingleton<NoProtocol_Mode_Cycle_VM>()
             .AddSingleton<NoProtocol_Mode_Files_VM>()
             .AddSingleton<ModbusClient_VM>()
-            .AddSingleton<ModbusRequestBuilder_VM>()
+            .AddSingleton<ModbusManualMode_VM>()
+            .AddSingleton<RequestBuilder_VM>()
+            .AddSingleton<ModbusMonitoring_VM>()
             // Окно настроек
             .AddTransient<Settings_VM>()
             // Компоненты окна настроек

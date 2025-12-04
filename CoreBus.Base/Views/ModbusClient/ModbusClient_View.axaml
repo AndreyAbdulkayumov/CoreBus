@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient;assembly=CoreBus.Base"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
-			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
-             xmlns:ModbusRepresentations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.ModbusRepresentations;assembly=CoreBus.Base"
+			 xmlns:ManualModeViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+			 xmlns:ManualModeView="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
+			 xmlns:MonitoringViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+			 xmlns:MonitoringView="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="CoreBus.Base.Views.ModbusClient.ModbusClient_View"
@@ -13,20 +15,27 @@
 	
 	<UserControl.Styles>
 
-		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ToggleSwitch.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
 
 	</UserControl.Styles>
+
+	<UserControl.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ManualModeViewModels:ModbusManualMode_VM}">
+			<ManualModeView:ModbusManualMode_View/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type MonitoringViewModels:ModbusMonitoring_VM}">
+			<MonitoringView:ModbusMonitoring_View/>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
 
 	<Grid>
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
-			<RowDefinition Height="2*"/>
-			<RowDefinition Height="3"/>
-			<RowDefinition Height="220"/>
+			<RowDefinition Height="1*"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
@@ -62,13 +71,8 @@
 					VerticalContentAlignment="Center"
 					Command="{Binding Command_Open_ModbusScanner}"/>
 			
-			<ToggleSwitch Margin="0,0,20,0"
-						  OffContent="Мониторинг"
-						  OnContent="Мониторинг"
-						  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"
-						  HorizontalAlignment="Right" VerticalAlignment="Center"/>
-			
 			<Button Content="Очистить данные"
+		            IsVisible="{Binding ButtonClearData_IsVisible, Mode=OneWay}"
 					Width="145"
 					Margin="0,0,220,0"
 					HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -76,183 +80,16 @@
 					VerticalContentAlignment="Center"
 					Command="{Binding Command_ClearData}"/>
 
-		</Grid>
-
-		<Grid Grid.Row="1">
+			<ToggleSwitch Margin="0,0,20,0"
+						  OffContent="Мониторинг"
+						  OnContent="Мониторинг"
+						  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"
+						  HorizontalAlignment="Right" VerticalAlignment="Center"/>	
 			
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="1*"/>
-				<ColumnDefinition Width="3"/>
-				<ColumnDefinition Width="480"/>
-			</Grid.ColumnDefinitions>
-
-			<Grid Grid.Column="0">
-
-				<!-- Table View start definition -->
-				
-				<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
-						BorderThickness="1"
-						Margin="10"
-						CornerRadius="6"
-						ClipToBounds="True">
-
-					<Grid RowDefinitions="40,1*">
-
-						<Border Grid.Row="0" 
-								Background="{DynamicResource DataGrid_Color_HeaderBackground}"
-								BorderThickness="2"
-								BorderBrush="{DynamicResource DataGrid_Color_HeaderBackground}"
-								CornerRadius="4,4,0,0">
-
-							<Grid ColumnDefinitions="2*,4*,4*,6*"
-								  Margin="10,0,10,0">
-
-								<Label Grid.Column="0"
-									   Content="ID"/>
-
-								<Label Grid.Column="1"
-									   Content="Функция"/>
-
-								<Label Grid.Column="2"
-									   Content="Адрес"/>
-
-								<Label Grid.Column="3"
-								       Content="Данные"/>
-
-							</Grid>
-
-						</Border>
-
-
-						<ScrollViewer x:Name="ScrollViewer_ModbusData" Grid.Row="1">
-
-							<ItemsControl x:Name="ItemsControl_ModbusData">
-
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<StackPanel Orientation="Vertical" />
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-
-								<ItemsControl.ItemTemplate>
-
-									<DataTemplate x:DataType="local:ModbusDataDisplayedForTable">
-
-										<Border Background="{Binding RowBackground, Mode=OneWay}"
-												BorderThickness="2"
-												BorderBrush="{Binding RowBackground, Mode=OneWay}"
-												PointerPressed="Border_PointerPressed">
-
-											<Grid ColumnDefinitions="2*,4*,4*,6*"
-												  Margin="10">
-
-												<Border Grid.Column="0"
-														ClipToBounds="True">
-													
-													<SelectableTextBlock Width="200"
-																		 Text="{Binding OperationID, Mode=OneWay}"/>
-												</Border>
-
-												<Border Grid.Column="1" 
-														ClipToBounds="True">
-													
-													<SelectableTextBlock Width="200"
-																		 Text="{Binding FuncNumber, Mode=OneWay}"/>
-												</Border>
-												
-												<Border Grid.Column="2" 
-														ClipToBounds="True">
-													
-													<SelectableTextBlock  Width="200"
-																		  Text="{Binding ViewAddress, Mode=OneWay}"/>
-												</Border>
-
-												<Border Grid.Column="3"
-														ClipToBounds="True">
-													
-													<SelectableTextBlock Width="200"
-																		 Text="{Binding ViewData, Mode=OneWay}"/>
-												</Border>
-												
-
-											</Grid>
-
-										</Border>
-
-									</DataTemplate>
-
-								</ItemsControl.ItemTemplate>
-
-							</ItemsControl>
-
-						</ScrollViewer>
-
-					</Grid>
-
-					<Border.Styles>
-
-						<Style Selector="Label">
-							<Setter Property="Foreground" Value="Black"/>
-							<Setter Property="FontSize" Value="16"/>
-							<Setter Property="HorizontalAlignment" Value="Center"/>
-							<Setter Property="VerticalAlignment" Value="Center"/>
-							<Setter Property="HorizontalContentAlignment" Value="Center"/>
-							<Setter Property="VerticalContentAlignment" Value="Center"/>
-						</Style>
-
-						<Style Selector="SelectableTextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-							<Setter Property="FontSize" Value="16"/>
-							<Setter Property="TextAlignment" Value="Center"/>
-							<Setter Property="HorizontalAlignment" Value="Center"/>
-							<Setter Property="VerticalAlignment" Value="Center"/>
-						</Style>
-						
-					</Border.Styles>
-
-				</Border>
-
-				<!-- Table View end definition -->
-				
-			</Grid>			
-
-			<GridSplitter Grid.Column="1"
-						  ResizeDirection="Columns"/>
-
-			<ModeViews:ModbusRequestBuilder Grid.Column="2"
-					                        DataContext="{Binding ModbusRequestBuilder_VM}"/>
-
-
 		</Grid>
 
-		<GridSplitter Grid.Row="2"
-					  ResizeDirection="Rows"/>
-
-		<Grid Grid.Row="3">
-
-			<TabControl>
-
-				<TabItem Header="Последний запрос">
-					<ScrollViewer>
-						<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>
-					</ScrollViewer>
-				</TabItem>
-
-				<TabItem Header="История обмена">
-					<ModbusRepresentations:Log Margin="0,5,0,5"/>
-				</TabItem>
-				
-				<TabItem Header="Бинарное представление">
-					<ModbusRepresentations:Binary Margin="0,5,0,5"/>
-				</TabItem>
-
-				<TabItem Header="Число типа float">
-					<ModbusRepresentations:Float Margin="0,5,0,5"/>
-				</TabItem>				
-				
-			</TabControl>
-
-		</Grid>
+		<ContentControl Grid.Row="1" 
+				        Content="{Binding CurrentModeViewModel}"/>
 		
 	</Grid>
 	

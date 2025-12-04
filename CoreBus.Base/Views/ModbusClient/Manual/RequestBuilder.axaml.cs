@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace CoreBus.Base.Views.ModbusClient.Manual;
 
-public partial class ModbusRequestBuilder : UserControl
+public partial class RequestBuilder : UserControl
 {
-    public ModbusRequestBuilder()
+    public RequestBuilder()
     {
         InitializeComponent();
     }

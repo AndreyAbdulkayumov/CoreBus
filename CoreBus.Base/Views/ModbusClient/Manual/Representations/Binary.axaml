@@ -3,12 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:DataTypes="clr-namespace:ViewModels.ModbusClient.Manual.DataTypes;assembly=ViewModels"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
-             x:Class="CoreBus.Base.Views.ModbusClient.Manual.ModbusRepresentations.Binary"
-			 x:DataType="ViewModels:ModbusClient_VM">
+             x:Class="CoreBus.Base.Views.ModbusClient.Manual.Representations.Binary"
+			 x:DataType="ViewModels:ModbusManualMode_VM">
 
 	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="1"

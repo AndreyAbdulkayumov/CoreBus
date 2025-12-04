@@ -1,7 +1,7 @@
 ﻿using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.Manual.DataTypes;
 
-namespace ViewModels.ModbusClient.Manual.ModbusRepresentations;
+namespace ViewModels.ModbusClient.Manual.Representations;
 
 internal static class FloatRepresentation
 {

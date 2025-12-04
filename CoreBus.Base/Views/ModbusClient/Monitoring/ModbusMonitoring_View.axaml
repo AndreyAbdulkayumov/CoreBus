@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
              mc:Ignorable="d" 
-             d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="CoreBus.Base.ModbusMonitoring"
+             d:DesignWidth="1000" d:DesignHeight="550"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.ModbusMonitoring_View"
              x:DataType="ViewModels:ModbusMonitoring_VM">
-  Welcome to Avalonia!
+  Мониторинг
 </UserControl>

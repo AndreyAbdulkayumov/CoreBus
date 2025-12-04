@@ -7,11 +7,11 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using ViewModels.Macros.DataTypes;
-using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields;
 using ViewModels.Validation;
 using Core.Models.Settings;
+using ViewModels.ModbusClient.Manual;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit;
 
@@ -444,7 +444,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
     private void SelectNumberFormat_Hex()
     {
-        NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
+        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_hex;
         _numberViewStyle = NumberStyles.HexNumber;
 
         if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
@@ -476,7 +476,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
     private void SelectNumberFormat_Dec()
     {
-        NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
+        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_dec;
         _numberViewStyle = NumberStyles.Number;
 
         if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))

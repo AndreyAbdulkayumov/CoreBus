@@ -18,7 +18,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Manual;
 
-public class ModbusRequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
+public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 {
     private bool ui_IsEnable = false;
 
@@ -164,7 +164,7 @@ public class ModbusRequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Settings _settingsModel;
 
-    public ModbusRequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
+    public RequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
@@ -338,7 +338,7 @@ public class ModbusRequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             });
     }
 
-    public void Subscribe(ModbusClient_VM parent)
+    public void Subscribe(ModbusManualMode_VM parent)
     {
         parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
     }
@@ -428,7 +428,7 @@ public class ModbusRequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
     private void SelectNumberFormat_Hex()
     {
-        NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
+        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_hex;
         _numberViewStyle = NumberStyles.HexNumber;
 
         if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
@@ -460,7 +460,7 @@ public class ModbusRequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
     private void SelectNumberFormat_Dec()
     {
-        NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
+        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_dec;
         _numberViewStyle = NumberStyles.Number;
 
         if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))

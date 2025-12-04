@@ -1,4 +1,4 @@
-﻿namespace ViewModels.ModbusClient.Manual.ModbusRepresentations;
+﻿namespace ViewModels.ModbusClient.Manual.Representations;
 
 internal static class LogRepresentation
 {
