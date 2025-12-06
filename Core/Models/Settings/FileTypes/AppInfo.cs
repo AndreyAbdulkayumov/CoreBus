@@ -17,6 +17,7 @@ public class AppInfo
     public string? SelectedPresetFileName { get; set; }
     public AppTheme ThemeName { get; set; }
     public AppMode SelectedMode { get; set; }
+    public bool IsModbusMonitoringMode { get; set; }
     public bool CheckUpdateAfterStart { get; set; }
     public string? SkippedAppVersion { get; set; }
 
@@ -28,6 +29,7 @@ public class AppInfo
             SelectedPresetFileName = defaultPresetName,
             ThemeName = AppTheme.Dark,
             SelectedMode = AppMode.ModbusClient,
+            IsModbusMonitoringMode = false,
             CheckUpdateAfterStart = true,
             SkippedAppVersion = null,
         };

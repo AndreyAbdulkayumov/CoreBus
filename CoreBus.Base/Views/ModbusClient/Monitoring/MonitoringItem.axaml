@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringItem"
+             x:DataType="ViewModels:MonitoringItem_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+
+	</UserControl.Styles>
+
+    <Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			BorderThickness="2"
+			CornerRadius="6">
+
+		<StackPanel Orientation="Horizontal" Spacing="15"
+					Margin="10"
+					HorizontalAlignment="Center">
+
+			<TextBox Classes="InputField"
+					 Width="270"/>
+
+			<Button Classes="MenuToolButton"
+					ToolTip.Tip="Удалить регистр"
+					Command="{Binding Command_RemoveItem}">
+
+				<Icons:MaterialIcon Kind="CloseBold"/>
+
+			</Button>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>

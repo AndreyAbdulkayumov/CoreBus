@@ -2,6 +2,7 @@
 using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus.Message;
+using Core.Models.Settings;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
@@ -72,12 +73,26 @@ public class ModbusClient_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _buttonClearData_IsVisible, value);
     }
 
-    private bool _isMonitoringMode = false;
+    private bool _isMonitoringMode;
 
     public bool IsMonitoringMode
     {
-        get => _isMonitoringMode;
-        set => this.RaiseAndSetIfChanged(ref _isMonitoringMode, value);
+        get => _settingsModel.AppData.IsModbusMonitoringMode;
+        set
+        {
+            _settingsModel.AppData.IsModbusMonitoringMode = value;
+
+            //if (!IsMonitoringMode)
+            //{
+            //    _cycleMode_VM.StopPolling();
+            //}
+
+            ButtonClearData_IsVisible = !value;
+
+            CurrentModeViewModel = value ? _modbusMonitoring_VM : _modbusManualMode_VM;
+
+            this.RaiseAndSetIfChanged(ref _isMonitoringMode, value);
+        }
     }
 
     private object? _currentModeViewModel;
@@ -96,14 +111,18 @@ public class ModbusClient_VM : ReactiveObject
     private readonly IOpenChildWindowService _openChildWindow;
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
+    private readonly Model_Settings _settingsModel;
     private readonly ModbusManualMode_VM _modbusManualMode_VM;
     private readonly ModbusMonitoring_VM _modbusMonitoring_VM;
 
-    public ModbusClient_VM(IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, ModbusManualMode_VM modbusManualMode_VM, ModbusMonitoring_VM modbusMonitoring_VM)
+    public ModbusClient_VM(IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
+        ConnectedHost connectedHostModel, Model_Settings settingsModel,
+        ModbusManualMode_VM modbusManualMode_VM, ModbusMonitoring_VM modbusMonitoring_VM)
     {
         _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+        _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _modbusManualMode_VM = modbusManualMode_VM ?? throw new ArgumentNullException(nameof(modbusManualMode_VM));
         _modbusMonitoring_VM = modbusMonitoring_VM ?? throw new ArgumentNullException(nameof(modbusMonitoring_VM));
 
@@ -148,22 +167,13 @@ public class ModbusClient_VM : ReactiveObject
                             return;
                     }
 
-                    _modbusManualMode_VM.SetCheckSumVisiblity();                    
+                    _modbusManualMode_VM.SetCheckSumVisiblity();
                 }
             });
 
-        this.WhenAnyValue(x => x.IsMonitoringMode)
-            .Subscribe(_ =>
-            {
-                //if (!IsMonitoringMode)
-                //{
-                //    _cycleMode_VM.StopPolling();
-                //}
+        // Действия после запуска приложения
 
-                ButtonClearData_IsVisible = !IsMonitoringMode;
-
-                CurrentModeViewModel = IsMonitoringMode ? _modbusMonitoring_VM : _modbusManualMode_VM;              
-            });
+        CurrentModeViewModel = _settingsModel.AppData.IsModbusMonitoringMode ? _modbusMonitoring_VM : _modbusManualMode_VM;
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)
