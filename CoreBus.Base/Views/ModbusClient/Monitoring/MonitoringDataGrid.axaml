@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringDataGrid"
+			 x:DataType="ViewModels:ModbusMonitoring_VM">
+
+    <Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			BorderThickness="1"
+			Margin="10"
+			CornerRadius="6"
+			ClipToBounds="True">
+
+		<Grid RowDefinitions="40,1*">
+
+			<Border Grid.Row="0" 
+					Background="{DynamicResource DataGrid_Color_HeaderBackground}"
+					BorderThickness="2"
+					BorderBrush="{DynamicResource DataGrid_Color_HeaderBackground}"
+					CornerRadius="4,4,0,0">
+
+				<Grid ColumnDefinitions="2*,4*,4*,4*,4*"
+						Margin="10,0,10,0">
+
+					<Label Grid.Column="0"
+							Content="Адрес"/>
+
+					<Label Grid.Column="1"
+							Content="Псевдоним"/>
+
+					<Label Grid.Column="2"
+							Content="Значение"/>
+
+					<Label Grid.Column="3"
+							Content="Тип"/>
+
+					<Label Grid.Column="4"
+							Content="Преобразованное значение"/>
+
+				</Grid>
+
+			</Border>
+
+			<ScrollViewer Grid.Row="1">
+
+				<StackPanel Orientation="Vertical" Spacing="20"
+							Margin="10">
+
+					<ItemsControl ItemsSource="{Binding MonitoringItems, Mode=TwoWay}"
+									HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Vertical" Spacing="5"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+
+							<DataTemplate>
+								<local:MonitoringItem/>
+							</DataTemplate>
+
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
+
+					<Button Content="Добавить регистр"
+							FontSize="14"
+							HorizontalAlignment="Center"
+							Command="{Binding Command_AddRegister}"/>
+
+				</StackPanel>
+
+			</ScrollViewer>
+
+		</Grid>
+
+		<Border.Styles>
+
+			<Style Selector="Label">
+				<Setter Property="Foreground" Value="Black"/>
+				<Setter Property="FontSize" Value="16"/>
+				<Setter Property="HorizontalAlignment" Value="Center"/>
+				<Setter Property="VerticalAlignment" Value="Center"/>
+				<Setter Property="HorizontalContentAlignment" Value="Center"/>
+				<Setter Property="VerticalContentAlignment" Value="Center"/>
+			</Style>
+						
+		</Border.Styles>
+
+	</Border>     
+
+</UserControl>

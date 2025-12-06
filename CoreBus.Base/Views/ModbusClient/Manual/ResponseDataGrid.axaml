@@ -30,8 +30,7 @@
 						   Content="ID"/>
 
 					<Label Grid.Column="1"
-						   Content="Функция"
-						   FontFamily="Segoe UI"/>
+						   Content="Функция"/>
 
 					<Label Grid.Column="2"
 						   Content="Адрес"/>
