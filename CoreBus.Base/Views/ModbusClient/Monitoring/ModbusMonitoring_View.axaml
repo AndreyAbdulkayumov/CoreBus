@@ -26,7 +26,13 @@
 
             <Grid>
 				
-
+                <Button Grid.Column="0"
+						Content="✕"
+						FontSize="14"
+						ToolTip.Tip="Удалить выбранные регистры"
+						Command="{Binding Command_RemoveSelectedItems}"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"/>
 
             </Grid>
 

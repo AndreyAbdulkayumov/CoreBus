@@ -24,6 +24,7 @@
 		<Style Selector="^:focus /template/ Border" >
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
 			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="BorderThickness" Value="0"/>
 		</Style>
 
 		<Style Selector="^:disabled /template/ Border">

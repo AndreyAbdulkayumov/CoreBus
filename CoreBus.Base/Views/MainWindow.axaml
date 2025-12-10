@@ -49,7 +49,7 @@
 	</Window.DataTemplates>
 	
 
-	<Border Background="{DynamicResource App_Back_Color_Background}">
+	<Border Background="{DynamicResource App_Back_Color_Background}" Focusable="True">
 
 		<Grid>
 

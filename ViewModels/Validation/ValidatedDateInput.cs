@@ -6,6 +6,7 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
 {
     protected abstract ValidateMessage? GetErrorMessage(string fieldName, string? value);
 
+    protected const string NotEmptyField = "Not empty field";
     protected const string HexError_Byte = "HexError_Byte";
     protected const string HexError_UInt16 = "HexError_UInt16";
     protected const string DecError_Byte = "DecError_Byte";
@@ -14,9 +15,16 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
     protected const string DecError_float = "DecError_float";
     protected const string BinError_UInt16 = "BinError_UInt16";
     protected const string IP_Address_Invalid = "IP-Address Invalid";
+    protected const string MonitoringItem_Address_Invalid = "Monitoring item Address Invalid";
 
     protected Dictionary<string, ValidateMessage> AllErrorMessages = new Dictionary<string, ValidateMessage>()
     {
+        { NotEmptyField,
+            new ValidateMessage(
+                shortMessage: "Введите значение",
+                fullMessage: "Поле не может быть пустым."
+                )},
+
         { HexError_Byte,
             new ValidateMessage(
                 shortMessage: "0x00 - 0xFF",

@@ -2,18 +2,33 @@
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Net;
 using System.Reactive;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring
 {
-    public class MonitoringItem_VM : ReactiveObject
+    public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
+        private bool _isSelected;
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => this.RaiseAndSetIfChanged(ref _isSelected, value);
+        }
+
         private string _address;
 
         public string Address
         {
             get => _address;
-            set => this.RaiseAndSetIfChanged(ref _address, value);
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _address, value);
+                ValidateInput(nameof(Address), value);
+            }
         }
 
         private string _alias;
@@ -22,6 +37,14 @@ namespace ViewModels.ModbusClient.Monitoring
         {
             get => _alias;
             set => this.RaiseAndSetIfChanged(ref _alias, value);
+        }
+
+        private double _aliasOpacity;
+
+        public double AliasOpacity
+        {
+            get => _aliasOpacity;
+            set => this.RaiseAndSetIfChanged(ref _aliasOpacity, value);
         }
 
         private string _value;
@@ -76,12 +99,10 @@ namespace ViewModels.ModbusClient.Monitoring
 
         public ReactiveCommand<Unit, Unit> Command_FormulaChange { get; }
 
-        public ReactiveCommand<Unit, Unit> Command_RemoveItem { get; }
 
-
-        public MonitoringItem_VM(IMessageBoxMainWindow messageBox)
+        public MonitoringItem_VM(int initAddress, IMessageBoxMainWindow messageBox)
         {
-            Address = "0";
+            Address = initAddress.ToString();
             Value = "0";
             TypedValue = "0";
             SelectedValueType = AllValueTypes.First();
@@ -93,11 +114,59 @@ namespace ViewModels.ModbusClient.Monitoring
             });
             Command_FormulaChange.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка изменения формулы.\n\n{error.Message}", MessageType.Error, error));
 
-            Command_RemoveItem = ReactiveCommand.Create(() =>
-            {
+            this.WhenAnyValue(e => e.Alias)
+                .Subscribe(alias =>
+                {
+                    AliasOpacity = string.IsNullOrEmpty(alias) ? 0.3 : 1;
+                });
+        }
 
-            });
-            Command_RemoveItem.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления регистра.\n\n{error.Message}", MessageType.Error, error));
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(Address):
+                    return "Адрес";
+
+                default:
+                    return fieldName;
+            }
+        }
+
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
+        {
+            switch (fieldName)
+            {
+                case nameof(Address):
+                    return Check_Address(value);
+            }
+
+            return null;
+        }
+
+        private ValidateMessage? Check_Address(string? value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return AllErrorMessages[NotEmptyField];
+            }
+
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out UInt16 _selectedAddress))
+            {
+                return AllErrorMessages[DecError_UInt16];
+
+                // TODO: на будущее
+                //switch (_numberViewStyle)
+                //{
+                //    case NumberStyles.Number:
+                //        return AllErrorMessages[DecError_UInt16];
+
+                //    case NumberStyles.HexNumber:
+                //        return AllErrorMessages[HexError_UInt16];
+                //}
+            }
+
+            return null;
         }
     }
 }
