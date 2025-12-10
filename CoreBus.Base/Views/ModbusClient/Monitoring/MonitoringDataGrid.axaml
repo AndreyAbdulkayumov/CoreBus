@@ -5,7 +5,7 @@
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
              mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+			 d:DesignWidth="1100" d:DesignHeight="450"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringDataGrid"
 			 x:DataType="ViewModels:ModbusMonitoring_VM">
 
@@ -23,23 +23,20 @@
 					BorderBrush="{DynamicResource DataGrid_Color_HeaderBackground}"
 					CornerRadius="4,4,0,0">
 
-				<Grid ColumnDefinitions="2*,4*,4*,4*,4*"
-						Margin="10,0,10,0">
+				<Grid ColumnDefinitions="2*,4*,2*,4*,4*,2*"
+		              Margin="10,0,10,0">
 
-					<Label Grid.Column="0"
-							Content="Адрес"/>
+					<Label Grid.Column="0" Content="Адрес"/>
 
-					<Label Grid.Column="1"
-							Content="Псевдоним"/>
+					<Label Grid.Column="1" Content="Псевдоним"/>
 
-					<Label Grid.Column="2"
-							Content="Значение"/>
+					<Label Grid.Column="2" Content="Значение"/>
 
-					<Label Grid.Column="3"
-							Content="Тип"/>
+					<Label Grid.Column="3" Content="Тип"/>
 
-					<Label Grid.Column="4"
-							Content="Преобразованное значение"/>
+					<Label Grid.Column="4" Content="Преобразованное значение"/>
+
+					<Label Grid.Column="5" Content="На графике"/>
 
 				</Grid>
 
@@ -51,7 +48,8 @@
 							Margin="10">
 
 					<ItemsControl ItemsSource="{Binding MonitoringItems, Mode=TwoWay}"
-									HorizontalAlignment="Stretch" VerticalAlignment="Top">
+								  HorizontalAlignment="Stretch" 
+								  VerticalAlignment="Top">
 
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>

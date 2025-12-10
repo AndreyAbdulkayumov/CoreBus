@@ -9,25 +9,139 @@
 
 	<UserControl.Styles>
 
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
 
 	</UserControl.Styles>
 
-    <StackPanel Orientation="Horizontal" Spacing="15"
-				Margin="10"
-				HorizontalAlignment="Center">
 
-		<TextBox Classes="InputField"
-					Width="270"/>
+	<Grid RowDefinitions="*,2">
+		
+		<Grid Grid.Row="0" 
+		      ColumnDefinitions="2*,4*,2*,4*,4*,2*">
 
-		<Button Classes="MenuToolButton"
-				ToolTip.Tip="Удалить регистр"
-				Command="{Binding Command_RemoveItem}">
+			<!-- Адрес -->
 
-			<Icons:MaterialIcon Kind="CloseBold"/>
+			<TextBox Grid.Column="0"
+			         Classes="InputField"
+					 Text="{Binding Address, Mode=TwoWay}"
+					 HorizontalAlignment="Stretch"
+					 VerticalAlignment="Center"
+					 Margin="10"/>
 
-		</Button>
+			<!-- Псевдоним -->
 
-	</StackPanel>
+			<TextBox Grid.Column="1"
+			         Classes="InputField"
+					 Text="{Binding Alias, Mode=TwoWay}"
+					 HorizontalAlignment="Stretch"
+					 VerticalAlignment="Center"
+					 Margin="10"/>
+
+			<!-- Значение (сырое) -->
+
+			<Grid Grid.Column="2"
+		          Margin="10">
+
+				<Border Background="PeachPuff"
+			            CornerRadius="4"
+						Width="80"/>
+
+				<SelectableTextBlock Text="{Binding Value, Mode=TwoWay}"
+						             FontSize="16"
+									 Foreground="Black"
+						             HorizontalAlignment="Center"
+									 VerticalAlignment="Center"/>
+
+			</Grid>
+			
+
+			<!-- Тип -->
+
+			<Grid Grid.Column="3"
+		          ColumnDefinitions="3*,90" 
+				  Margin="10">
+
+				<Grid Grid.Column="0">
+
+					<Border Background="PeachPuff"
+							CornerRadius="4"
+							Width="80"/>
+
+					<SelectableTextBlock Text="{Binding TypedValue, Mode=TwoWay}"
+										 FontSize="16"
+										 Foreground="Black"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"/>
+
+				</Grid>
+
+				<ComboBox Grid.Column="1"
+			              ItemsSource="{Binding AllValueTypes}"
+						  SelectedItem="{Binding SelectedValueType, Mode=TwoWay}"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Center"/>
+
+			</Grid>
+			
+
+			<!-- Преобразованное значение + кнопка формулы -->
+
+			<Grid Grid.Column="4" 
+		          ColumnDefinitions="3*,Auto" 
+				  Margin="10">
+
+				<Grid Grid.Column="0">
+
+					<Border Background="PeachPuff"
+							CornerRadius="4"
+							Width="120"/>
+
+					<SelectableTextBlock Text="{Binding ConvertedValue, Mode=TwoWay}"
+										 FontSize="16"
+										 Foreground="Black"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"/>
+
+				</Grid>
+
+				<Button Grid.Column="1"
+						Content="f(x)"
+						Command="{Binding Command_FormulaChange}"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Center"/>
+
+			</Grid>
+
+			<!-- На графике + кнопка удаления -->
+
+			<Grid Grid.Column="5" 
+		          ColumnDefinitions="Auto,Auto"
+				  Margin="10">
+
+				<CheckBox Grid.Column="0"
+						  IsChecked="{Binding OnChart, Mode=TwoWay}"
+						  VerticalAlignment="Center"
+						  HorizontalAlignment="Center"/>
+
+				<Button Grid.Column="1"
+						Content="✕"
+						ToolTip.Tip="Удалить регистр"
+						Margin="4,0,0,0"
+						Command="{Binding Command_RemoveItem}"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Center"/>
+
+			</Grid>
+
+		</Grid>
+
+		<!-- Разделитель строк -->
+
+		<Rectangle Grid.Row="1"
+			       Fill="{DynamicResource GridSplitter_Color_Background}"/>
+
+	</Grid>	
 
 </UserControl>
