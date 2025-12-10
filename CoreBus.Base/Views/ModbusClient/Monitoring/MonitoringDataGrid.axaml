@@ -56,8 +56,7 @@
 
 			<ScrollViewer Grid.Row="1">
 
-				<StackPanel Orientation="Vertical" Spacing="20"
-							Margin="10">
+				<StackPanel Orientation="Vertical" Spacing="20">
 
 					<ItemsControl ItemsSource="{Binding MonitoringItems, Mode=TwoWay}"
 								  HorizontalAlignment="Stretch" 
@@ -65,7 +64,7 @@
 
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
-								<StackPanel Orientation="Vertical" Spacing="5"/>
+								<StackPanel Orientation="Vertical"/>
 							</ItemsPanelTemplate>
 						</ItemsControl.ItemsPanel>
 

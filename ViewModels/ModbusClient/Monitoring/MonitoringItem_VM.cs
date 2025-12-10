@@ -55,12 +55,28 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _value, value);
         }
 
+        private bool _isNewValue;
+
+        public bool IsNewValue
+        {
+            get => _isNewValue;
+            set => this.RaiseAndSetIfChanged(ref _isNewValue, value);
+        }
+
         private string _typedValue;
 
         public string TypedValue
         {
             get => _typedValue;
             set => this.RaiseAndSetIfChanged(ref _typedValue, value);
+        }
+
+        private bool _isNewTypedValue;
+
+        public bool IsNewTypedValue
+        {
+            get => _isNewTypedValue;
+            set => this.RaiseAndSetIfChanged(ref _isNewTypedValue, value);
         }
 
         private ObservableCollection<string> _allValueTypes = new ObservableCollection<string>()
@@ -104,6 +120,7 @@ namespace ViewModels.ModbusClient.Monitoring
         {
             Address = initAddress.ToString();
             Value = "0";
+            IsNewValue = true;
             TypedValue = "0";
             SelectedValueType = AllValueTypes.First();
             ConvertedValue = "0.00";

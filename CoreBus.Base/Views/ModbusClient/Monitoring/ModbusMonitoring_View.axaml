@@ -24,17 +24,52 @@
 			    CornerRadius="4"
 			    Margin="10">
 
-            <Grid>
-				
-                <Button Grid.Column="0"
-						Content="✕"
-						FontSize="14"
-						ToolTip.Tip="Удалить выбранные регистры"
-						Command="{Binding Command_RemoveSelectedItems}"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Auto">
 
-            </Grid>
+			    <StackPanel Orientation="Vertical" Spacing="15"
+						    Margin="20,10,20,10">
+
+				    <StackPanel Orientation="Horizontal" Spacing="20">
+				
+                        
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+
+						<TextBlock Text="Период"
+								   Width="55"
+								   VerticalAlignment="Center"/>
+
+						<TextBox Classes="InputField"
+								 Width="60"
+								 Text="{Binding Period_ms, Mode=TwoWay}"
+								 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+								 VerticalAlignment="Center"/>
+
+						<TextBlock Text="мс."
+								   VerticalAlignment="Center"/>
+
+						<Button Width="150"
+								FontSize="14"
+								Content="{Binding Button_Content, Mode=OneWay}"
+								IsEnabled="{Binding UI_IsEnable}"
+								HorizontalAlignment="Center" VerticalAlignment="Center"
+								Command="{Binding Command_Start_Stop_Polling}"/>
+					
+						<Button Content="Удалить выбранные регистры"
+						    FontSize="14"
+						    Command="{Binding Command_RemoveSelectedItems}"
+                            Margin="10,0,0,0"
+						    HorizontalAlignment="Left"
+						    VerticalAlignment="Center"/>
+
+					</StackPanel>
+
+                </StackPanel>
+
+            </ScrollViewer>
 
         </Border>
 

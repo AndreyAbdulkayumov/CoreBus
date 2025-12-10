@@ -16,18 +16,20 @@
 	</UserControl.Styles>
 
 
-	<Grid RowDefinitions="1*,5,2">
+	<!-- У всех элементов строки должна быть высота 22 (можно установить через минимальную) -->
+	<Grid RowDefinitions="1*,1">
 		
 
 		<!-- Подсветка строки -->
 
 		<Border Grid.Row="0" Grid.RowSpan="2"
-		        Background="#706f6f"
+		        Background="#375E75"
 				IsVisible="{Binding IsSelected, Mode=OneWay}"/>
 
 
 		<Grid Grid.Row="0"
-		      ColumnDefinitions="25,2*,4*,2*,4*,4*,2*">
+		      ColumnDefinitions="25,2*,4*,2*,4*,4*,2*"
+			  Margin="10,5,10,5">
 
 
 			<!-- Галочка выделения строки -->
@@ -55,7 +57,7 @@
 			         Classes="InputField"
 					 Text="{Binding Alias, Mode=TwoWay}"
 					 Opacity="{Binding AliasOpacity, Mode=OneWay}"
-					 MinHeight="5"
+					 MinHeight="22"
 					 Height="22"
 					 FontSize="14"
 					 Margin="10,0,10,0"
@@ -70,7 +72,12 @@
 		          Margin="15,0,15,0">
 
 				<Border Background="PeachPuff"
-			            CornerRadius="4"/>
+			            CornerRadius="4"
+						IsVisible="{Binding IsNewValue, Mode=OneWay}"/>
+
+				<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+			            CornerRadius="4"
+						IsVisible="{Binding !IsNewValue, Mode=OneWay}"/>
 
 				<SelectableTextBlock Text="{Binding Value, Mode=TwoWay}"
 						             FontSize="14"
@@ -91,7 +98,12 @@
 		              Margin="15,0,15,0">
 
 					<Border Background="PeachPuff"
-							CornerRadius="4"/>
+							CornerRadius="4"
+							IsVisible="{Binding IsNewTypedValue, Mode=OneWay}"/>
+
+					<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+							CornerRadius="4"
+							IsVisible="{Binding !IsNewTypedValue, Mode=OneWay}"/>
 
 					<SelectableTextBlock Text="{Binding TypedValue, Mode=TwoWay}"
 										 FontSize="14"
@@ -122,7 +134,12 @@
 					  Margin="15,0,15,0">
 
 					<Border Background="PeachPuff"
-							CornerRadius="4"/>
+							CornerRadius="4"
+							IsVisible="{Binding IsNewTypedValue, Mode=OneWay}"/>
+
+					<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+							CornerRadius="4"
+							IsVisible="{Binding !IsNewTypedValue, Mode=OneWay}"/>
 
 					<SelectableTextBlock Text="{Binding ConvertedValue, Mode=TwoWay}"
 										 FontSize="14"
@@ -157,8 +174,8 @@
 
 		<!-- Разделитель строк -->
 
-		<Rectangle Grid.Row="2"
-			       Fill="{DynamicResource GridSplitter_Color_Background}"/>
+		<Rectangle Grid.Row="1"
+			       Fill="{DynamicResource Group_Color_BorderBrush}"/>
 
 	</Grid>	
 
