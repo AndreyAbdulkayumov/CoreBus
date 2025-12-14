@@ -174,6 +174,8 @@ public class ModbusClient_VM : ReactiveObject
         // Действия после запуска приложения
 
         CurrentModeViewModel = _settingsModel.AppData.IsModbusMonitoringMode ? _modbusMonitoring_VM : _modbusManualMode_VM;
+
+        ButtonClearData_IsVisible = !_settingsModel.AppData.IsModbusMonitoringMode;
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)

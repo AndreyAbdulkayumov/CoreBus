@@ -44,7 +44,7 @@
 
 					<Label Grid.Column="3" Content="Значение"/>
 
-					<Label Grid.Column="4" Content="Тип"/>
+					<Label Grid.Column="4" Content="Типизированное значение"/>
 
 					<Label Grid.Column="5" Content="Преобразованное значение"/>
 

@@ -58,30 +58,32 @@
                       Margin="100,0,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-			<Button Content="Сканнер"
-					IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-					IsVisible="{Binding ButtonModbusScanner_IsVisible, Mode=OneWay}"
-					Width="80" Height="32"
-					Margin="0,0,385,0"
-					HorizontalAlignment="Right" VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Center"
-					Command="{Binding Command_Open_ModbusScanner}"/>
-			
-			<Button Content="Очистить данные"
-		            IsVisible="{Binding ButtonClearData_IsVisible, Mode=OneWay}"
-					Width="145"
-					Margin="0,0,220,0"
-					HorizontalAlignment="Right" VerticalAlignment="Center"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Center"
-					Command="{Binding Command_ClearData}"/>
+			<StackPanel Orientation="Horizontal" Spacing="40"
+			            Margin="0,0,20,0"
+			            HorizontalAlignment="Right">
+				
+				<Button Content="Очистить данные"
+						IsVisible="{Binding ButtonClearData_IsVisible, Mode=OneWay}"
+						Width="145"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Command="{Binding Command_ClearData}"/>
 
-			<ToggleSwitch Margin="0,0,20,0"
-						  OffContent="Мониторинг"
-						  OnContent="Мониторинг"
-						  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"
-						  HorizontalAlignment="Right" VerticalAlignment="Center"/>	
+				<Button Content="Сканнер"
+						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						IsVisible="{Binding ButtonModbusScanner_IsVisible, Mode=OneWay}"
+						Width="80" Height="32"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Command="{Binding Command_Open_ModbusScanner}"/>
+
+				<ToggleSwitch OffContent="Мониторинг"
+							  OnContent="Мониторинг"
+							  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"/>	
+
+			</StackPanel>
+			
+			
 			
 		</Grid>
 

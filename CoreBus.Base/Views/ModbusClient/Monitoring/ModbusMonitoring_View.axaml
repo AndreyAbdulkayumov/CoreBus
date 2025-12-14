@@ -5,7 +5,7 @@
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
              mc:Ignorable="d" 
-             d:DesignWidth="1000" d:DesignHeight="550"
+             d:DesignWidth="1100" d:DesignHeight="550"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.ModbusMonitoring_View"
              x:DataType="ViewModels:ModbusMonitoring_VM">
 
@@ -13,10 +13,12 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
         <StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 
 	</UserControl.Styles>
 
-    <Grid RowDefinitions="100,3,1*">
+
+    <Grid RowDefinitions="120,3,1*">
 
         <Border Grid.Row="0"
                 BorderBrush="{DynamicResource Group_Color_BorderBrush}"
@@ -25,49 +27,9 @@
 			    Margin="10">
 
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
-					  VerticalScrollBarVisibility="Auto">
-
-			    <StackPanel Orientation="Vertical" Spacing="15"
-						    Margin="20,10,20,10">
-
-				    <StackPanel Orientation="Horizontal" Spacing="20">
-				
-                        
-
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Spacing="20">
-
-						<TextBlock Text="Период"
-								   Width="55"
-								   VerticalAlignment="Center"/>
-
-						<TextBox Classes="InputField"
-								 Width="60"
-								 Text="{Binding Period_ms, Mode=TwoWay}"
-								 IsEnabled="{Binding !IsStart, Mode=OneWay}"
-								 VerticalAlignment="Center"/>
-
-						<TextBlock Text="мс."
-								   VerticalAlignment="Center"/>
-
-						<Button Width="150"
-								FontSize="14"
-								Content="{Binding Button_Content, Mode=OneWay}"
-								IsEnabled="{Binding UI_IsEnable}"
-								HorizontalAlignment="Center" VerticalAlignment="Center"
-								Command="{Binding Command_Start_Stop_Polling}"/>
-					
-						<Button Content="Удалить выбранные регистры"
-						    FontSize="14"
-						    Command="{Binding Command_RemoveSelectedItems}"
-                            Margin="10,0,0,0"
-						    HorizontalAlignment="Left"
-						    VerticalAlignment="Center"/>
-
-					</StackPanel>
-
-                </StackPanel>
+						  VerticalScrollBarVisibility="Auto">
+                
+                <local:MonitoringSettings/>
 
             </ScrollViewer>
 

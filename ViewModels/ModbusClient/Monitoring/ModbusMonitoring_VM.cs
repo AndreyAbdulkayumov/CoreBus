@@ -1,5 +1,6 @@
 ﻿using Core.Clients.DataTypes;
 using Core.Models;
+using Core.Models.Modbus.DataTypes;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
@@ -17,6 +18,22 @@ public class ModbusMonitoring_VM : ReactiveObject
     {
         get => ui_IsEnable;
         set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+    }
+
+    private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
+
+    public ObservableCollection<string> ReadFunctions
+    {
+        get => _readFunctions;
+        set => this.RaiseAndSetIfChanged(ref _readFunctions, value);
+    }
+
+    private string? _selectedReadFunction;
+
+    public string? SelectedReadFunction
+    {
+        get => _selectedReadFunction;
+        set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
     }
 
     private bool _isStart = false;
@@ -46,6 +63,22 @@ public class ModbusMonitoring_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _button_Content, value);
     }
 
+    private bool _hasSelectedItems;
+
+    public bool HasSelectedItems
+    {
+        get => _hasSelectedItems;
+        set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
+    }
+
+    private bool _shouldPollSelectedRegisters;
+
+    public bool ShouldPollSelectedRegisters
+    {
+        get => _shouldPollSelectedRegisters;
+        set => this.RaiseAndSetIfChanged(ref _shouldPollSelectedRegisters, value);
+    }
+
     private bool _allRowSelected;
 
     public bool AllRowSelected
@@ -67,6 +100,7 @@ public class ModbusMonitoring_VM : ReactiveObject
     public ReactiveCommand<Unit, Unit> Command_SelectAllRows { get; }
     public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
+
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
 
@@ -77,6 +111,25 @@ public class ModbusMonitoring_VM : ReactiveObject
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+        /****************************************************/
+        //
+        // Первоначальная настройка UI
+        //
+        /****************************************************/
+
+        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        {
+            ReadFunctions.Add(element.DisplayedName);
+        }
+
+        SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
+
+        /****************************************************/
+        //
+        // Настройка свойств и команд модели отображения
+        //
+        /****************************************************/
 
         Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
         {
@@ -112,6 +165,7 @@ public class ModbusMonitoring_VM : ReactiveObject
             {
                 item.PropertyChanged -= MonitoringItemOnPropertyChanged;
                 item.IsSelected = AllRowSelected;
+                HasSelectedItems = AllRowSelected;
                 item.PropertyChanged += MonitoringItemOnPropertyChanged;
             }
         });
@@ -136,6 +190,17 @@ public class ModbusMonitoring_VM : ReactiveObject
             AllRowSelected = MonitoringItems.Count > 0 &&
                              MonitoringItems.All(x => x.IsSelected);
         }
+
+        foreach (var item in MonitoringItems)
+        {
+            if (item.IsSelected)
+            {
+                HasSelectedItems = true;
+                return;
+            }
+        }
+
+        HasSelectedItems = false;
     }
     private void Model_DeviceIsConnect(object? sender, IConnection? e)
     {
@@ -159,7 +224,5 @@ public class ModbusMonitoring_VM : ReactiveObject
     {
         Button_Content = Button_Content_Start;
         IsStart = false;
-    }
-
-    
+    }    
 }
