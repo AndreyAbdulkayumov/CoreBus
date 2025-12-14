@@ -3,52 +3,46 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" 
-			 d:DesignWidth="1100" d:DesignHeight="110"
+			 d:DesignWidth="1100" d:DesignHeight="100"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
              x:DataType="ViewModels:ModbusMonitoring_VM">
 
-    <Grid>
+    <StackPanel Orientation="Vertical" Spacing="15">
 					
-        <StackPanel Orientation="Vertical" Spacing="15"
-					Width="403"
-					Margin="20,10,0,0"
-					HorizontalAlignment="Left">
+        <StackPanel Orientation="Horizontal" Spacing="50"
+					Margin="20,10,0,0">
 
 			<StackPanel Orientation="Horizontal" Spacing="15">
 				
 				<TextBlock Text="Функция опроса"
-						   Foreground="{DynamicResource App_Color_Text}" 
-						   VerticalAlignment="Center"/>
+						   Margin="0,6,0,0"
+			               VerticalAlignment="Top"/>
 
 				<ComboBox ItemsSource="{Binding ReadFunctions}"
-						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
-						  Width="275"
-						  MinHeight="5"
-						  Height="30"
-						  FontSize="14"
-						  VerticalAlignment="Center"/>
+							SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
+							Width="275"
+							MinHeight="5"
+							Height="30"
+							FontSize="14"/>
 
 			</StackPanel>
 
-			<Grid>
-							
-				<StackPanel Orientation="Horizontal" Spacing="15">
-
+			<StackPanel Orientation="Horizontal" Spacing="15">
+				
 				<TextBlock Text="Период"
-							Width="55"
-							VerticalAlignment="Center"/>
+						   Margin="0,6,0,0"
+			               VerticalAlignment="Top"/>
 
 				<TextBox Classes="InputField"
-						 Width="60"
-						 MinHeight="5"
-						 Height="30"
+						 Width="70"
+						 MinHeight="30"
 						 Text="{Binding Period_ms, Mode=TwoWay}"
-						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						 VerticalAlignment="Center"/>
+						 IsEnabled="{Binding !IsStart, Mode=OneWay}"/>
 
 				<TextBlock Text="мс."
-						   VerticalAlignment="Center"/>
+			               Margin="0,6,0,0"
+			               VerticalAlignment="Top"/>
 
 			</StackPanel>
 
@@ -56,17 +50,14 @@
 					FontSize="14"
 					Content="{Binding Button_Content, Mode=OneWay}"
 					IsEnabled="{Binding UI_IsEnable}"
-					HorizontalAlignment="Right"
-					Command="{Binding Command_Start_Stop_Polling}"/>
-
-			</Grid>
+					Command="{Binding Command_Start_Stop_Polling}"
+					VerticalAlignment="Top"/>
 
 		</StackPanel>
 
-		<StackPanel Orientation="Vertical" Spacing="15"
+		<StackPanel Orientation="Horizontal" Spacing="50"
 				    IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
-					Margin="0,10,20,0"
-					HorizontalAlignment="Right">
+					Margin="20,0,0,0">
 
 			<Button Content="Удалить выбранные регистры"
 					FontSize="14"
@@ -78,6 +69,6 @@
 
 		</StackPanel>
 
-	</Grid>
+	</StackPanel>
 
 </UserControl>

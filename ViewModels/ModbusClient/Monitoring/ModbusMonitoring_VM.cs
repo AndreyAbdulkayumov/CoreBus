@@ -6,11 +6,14 @@ using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.Net;
 using System.Reactive;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
-public class ModbusMonitoring_VM : ReactiveObject
+public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 {
     private bool ui_IsEnable = false;
 
@@ -44,12 +47,16 @@ public class ModbusMonitoring_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isStart, value);
     }
 
-    private int _period_ms = 600;
+    private string _period_ms = "600";
 
-    public int Period_ms
+    public string Period_ms
     {
         get => _period_ms;
-        set => this.RaiseAndSetIfChanged(ref _period_ms, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _period_ms, value);
+            ValidateInput(nameof(Period_ms), value);
+        }
     }
 
     private const string Button_Content_Start = "Начать опрос";
@@ -224,5 +231,43 @@ public class ModbusMonitoring_VM : ReactiveObject
     {
         Button_Content = Button_Content_Start;
         IsStart = false;
-    }    
+    }
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(Period_ms):
+                return "Период";
+
+            default:
+                return fieldName;
+        }
+    }
+
+    protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
+    {
+        switch (fieldName)
+        {
+            case nameof(Period_ms):
+                return Check_Period(value);
+        }
+
+        return null;
+    }
+
+    private ValidateMessage? Check_Period(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return AllErrorMessages[NotEmptyField];
+        }
+
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+        {
+            return AllErrorMessages[DecError_uint];
+        }
+
+        return null;
+    }
 }

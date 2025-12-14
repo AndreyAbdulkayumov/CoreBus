@@ -168,7 +168,7 @@ namespace ViewModels.ModbusClient.Monitoring
                 return AllErrorMessages[NotEmptyField];
             }
 
-            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out UInt16 _selectedAddress))
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out UInt16 _))
             {
                 return AllErrorMessages[DecError_UInt16];
 
