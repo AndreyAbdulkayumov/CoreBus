@@ -10,8 +10,23 @@
 
     <StackPanel Orientation="Vertical" Spacing="15">
 					
-        <StackPanel Orientation="Horizontal" Spacing="50"
+        <StackPanel Orientation="Horizontal" Spacing="30"
 					Margin="20,10,0,0">
+
+			<StackPanel Orientation="Horizontal" Spacing="15">
+
+				<TextBlock Text="Slave ID"
+			               Margin="0,6,0,0"
+						   VerticalAlignment="Top"/>
+
+				<TextBox Classes="InputField"
+						 Width="70"
+						 MinHeight="30"
+						 Text="{Binding SlaveID, Mode=TwoWay}"
+						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+						 VerticalAlignment="Top"/>
+
+			</StackPanel>
 
 			<StackPanel Orientation="Horizontal" Spacing="15">
 				
@@ -20,11 +35,12 @@
 			               VerticalAlignment="Top"/>
 
 				<ComboBox ItemsSource="{Binding ReadFunctions}"
-							SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
-							Width="275"
-							MinHeight="5"
-							Height="30"
-							FontSize="14"/>
+						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
+						  IsEnabled="{Binding !IsStart, Mode=OneWay}"
+						  Width="275"
+						  MinHeight="5"
+						  Height="30"
+						  FontSize="14"/>
 
 			</StackPanel>
 
@@ -38,7 +54,8 @@
 						 Width="70"
 						 MinHeight="30"
 						 Text="{Binding Period_ms, Mode=TwoWay}"
-						 IsEnabled="{Binding !IsStart, Mode=OneWay}"/>
+						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+						 VerticalAlignment="Top"/>
 
 				<TextBlock Text="мс."
 			               Margin="0,6,0,0"
@@ -61,11 +78,13 @@
 
 			<Button Content="Удалить выбранные регистры"
 					FontSize="14"
+					IsEnabled="{Binding !IsStart, Mode=OneWay}"
 					Command="{Binding Command_RemoveSelectedItems}"/>
 
 			<CheckBox Content="Опрашивать выбранные регистры"
 					  Foreground="{DynamicResource App_Color_Text}"
-					  IsChecked="{Binding ShouldPollSelectedRegisters, Mode=TwoWay}"/>
+					  IsChecked="{Binding ShouldPollSelectedRegisters, Mode=TwoWay}"
+					  IsEnabled="{Binding !IsStart, Mode=OneWay}"/>
 
 		</StackPanel>
 

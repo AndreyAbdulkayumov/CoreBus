@@ -3,7 +3,6 @@ using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Net;
 using System.Reactive;
 using ViewModels.Validation;
 
@@ -116,11 +115,13 @@ namespace ViewModels.ModbusClient.Monitoring
         public ReactiveCommand<Unit, Unit> Command_FormulaChange { get; }
 
 
+        private UInt16 _rawValue = 0;
+
+
         public MonitoringItem_VM(int initAddress, IMessageBoxMainWindow messageBox)
         {
             Address = initAddress.ToString();
             Value = "0";
-            IsNewValue = true;
             TypedValue = "0";
             SelectedValueType = AllValueTypes.First();
             ConvertedValue = "0.00";
@@ -136,6 +137,15 @@ namespace ViewModels.ModbusClient.Monitoring
                 {
                     AliasOpacity = string.IsNullOrEmpty(alias) ? 0.3 : 1;
                 });
+        }
+
+        public void SetReadedValue(UInt16 newValue)
+        {
+            IsNewValue = _rawValue != newValue;
+
+            _rawValue = newValue;
+
+            Value = _rawValue.ToString();
         }
 
         public string GetFieldViewName(string fieldName)

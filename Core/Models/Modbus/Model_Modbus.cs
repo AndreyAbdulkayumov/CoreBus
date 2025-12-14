@@ -6,27 +6,21 @@ namespace Core.Models.Modbus;
 
 public class Model_Modbus
 {
-    public double CycleMode_Period
-    {
-        get => _cycleModeTimer.Interval;
-        set => _cycleModeTimer.Interval = value;
-    }
-
-    public event EventHandler<Exception>? Model_ErrorInCycleMode;
+    public event EventHandler<Exception>? Model_MonitoringError;
 
     private static bool _isBusy = false;
 
     private IConnection? _device;
 
-    private readonly System.Timers.Timer _cycleModeTimer;
+    private readonly System.Timers.Timer _monitoringTimer;
     private const double IntervalDefault = 100;
 
-    private Action? _readRegisterInCycleMode;
+    private Func<Task>? _monitoringAction;
 
     public Model_Modbus()
     {
-        _cycleModeTimer = new System.Timers.Timer(IntervalDefault);
-        _cycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
+        _monitoringTimer = new System.Timers.Timer(IntervalDefault);
+        _monitoringTimer.Elapsed += MonitoringTimer_Elapsed;
     }
 
     public void Host_DeviceIsConnect(object? sender, IConnection? e)
@@ -273,35 +267,33 @@ public class Model_Modbus
         return result;
     }
 
-    public void CycleMode_Start(Action readRegister_Handler)
+    public void MonitoringStart(Func<Task> monitoringActionHandler, int period)
     {
-        _readRegisterInCycleMode = readRegister_Handler;
+        _monitoringAction = monitoringActionHandler;
+        _monitoringTimer.Interval = period;
 
-        _cycleModeTimer.Start();
+        _monitoringTimer.Start();
 
-        _readRegisterInCycleMode.Invoke();
+        _monitoringAction.Invoke();
     }
 
-    public void CycleMode_Stop()
+    public void MonitoringStop()
     {
-        _cycleModeTimer.Stop();
+        _monitoringTimer.Stop();
     }
 
-    private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         try
         {
-            if (_readRegisterInCycleMode != null)
-            {
-                _readRegisterInCycleMode.Invoke();
-            }
+            if (_monitoringAction != null)
+                await _monitoringAction();
         }
 
         catch (Exception error)
         {
-            CycleMode_Stop();
-
-            Model_ErrorInCycleMode?.Invoke(this, error);
+            MonitoringStop();
+            Model_MonitoringError?.Invoke(this, error);
         }
     }
 }

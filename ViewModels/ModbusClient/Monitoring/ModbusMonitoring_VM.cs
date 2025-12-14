@@ -1,14 +1,16 @@
 ﻿using Core.Clients.DataTypes;
 using Core.Models;
+using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.Message;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Net;
 using System.Reactive;
+using System.Text;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -21,6 +23,18 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
     {
         get => ui_IsEnable;
         set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+    }
+
+    private string _slaveID = "7";
+
+    public string SlaveID
+    {
+        get => _slaveID;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _slaveID, value);
+            ValidateInput(nameof(SlaveID), value);
+        }
     }
 
     private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
@@ -110,14 +124,20 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
+    private readonly Model_Modbus _modbusModel;
 
-    public ModbusMonitoring_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel)
+    private byte _selectedSlaveID = 0;
+
+    public ModbusMonitoring_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Modbus modbusModel)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+        _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+        _modbusModel.Model_MonitoringError += Model_MonitoringError;
 
         /****************************************************/
         //
@@ -180,7 +200,7 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
-            int initAddress = MonitoringItems.Any() ? int.Parse(MonitoringItems.Last().Address) + 1 : 0;
+            var initAddress = MonitoringItems.Any() && StringValue.IsValidNumber(MonitoringItems.Last().Address, NumberStyles.Number, out UInt16 init) ? init + 1 : 0;
 
             var newItem = new MonitoringItem_VM(initAddress, _messageBox);
             newItem.PropertyChanged += MonitoringItemOnPropertyChanged;
@@ -188,6 +208,11 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
             MonitoringItems.Add(newItem);
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
+    }
+
+    private void Model_MonitoringError(object? sender, Exception e)
+    {
+        _messageBox.Show($"Ошибка мониторинга.\n\n{e.Message}", MessageType.Error, e);
     }
 
     private void MonitoringItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -223,20 +248,171 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
     private void StartPolling()
     {
-        Button_Content = Button_Content_Stop;
-        IsStart = true;
+        try
+        {
+            string? validationMessage = CheckFields();
+
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                _messageBox.Show(validationMessage, MessageType.Warning);
+                return;
+            }
+
+            Button_Content = Button_Content_Stop;
+            IsStart = true;
+
+            _modbusModel.MonitoringStart(MonitoringRequestAction, int.Parse(Period_ms));
+        }
+        
+        catch (Exception)
+        {
+            StopPolling();
+            throw;
+        }
     }
 
     public void StopPolling()
     {
+        _modbusModel.MonitoringStop();
+
         Button_Content = Button_Content_Start;
         IsStart = false;
+    }
+
+    private async Task MonitoringRequestAction()
+    {
+        if (_connectedHostModel.HostIsConnect == false)
+        {
+            throw new Exception("Клиент отключен.");
+        }
+
+        if (ModbusClient_VM.ModbusMessageType == null)
+        {
+            throw new Exception("Не задан тип протокола Modbus.");
+        }
+
+        byte slaveID = byte.Parse(SlaveID);
+
+        var allAddresses = MonitoringItems.Select(e => UInt16.Parse(e.Address)).ToList();
+
+        ushort address = allAddresses.Min();
+        int numberOfRegisters = allAddresses.Max() - allAddresses.Min();
+
+        ModbusReadFunction readFunction = Function.ReadInputRegisters;
+
+        MessageData data = new ReadTypeMessage(
+            slaveID,
+            address,
+            numberOfRegisters,
+            ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
+
+        ModbusOperationResult result = await _modbusModel.ReadRegister(
+                        readFunction,
+                        data,
+                        ModbusClient_VM.ModbusMessageType);
+
+        if (result.ReadedData == null)
+            return;
+
+        var resultList = ConvertToResultList(result.ReadedData, numberOfRegisters, readFunction);
+
+        foreach (var item in MonitoringItems)
+        {
+            var itemAddress = int.Parse(item.Address);
+
+            if (itemAddress >= 0 && itemAddress < resultList.Count)
+            {
+                item.SetReadedValue(resultList[itemAddress]);
+            }
+        }
+    }
+
+    private List<UInt16> ConvertToResultList(byte[] modbusData, int numberOfRegisters, ModbusReadFunction function)
+    {
+        if (function.Number == Function.ReadCoilStatus.Number ||
+            function.Number == Function.ReadDiscreteInputs.Number)
+        {
+            return GetResultFromBytes(modbusData, numberOfRegisters);
+        }
+
+        return GetResultFromWords(modbusData);
+    }
+
+    private static List<UInt16> GetResultFromBytes(byte[] modbusData, int numberOfRegisters)
+    {
+        var result = new List<UInt16>();
+
+        int registerCounter = 0;
+
+        foreach (byte element in modbusData)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (registerCounter == numberOfRegisters) break;
+
+                result.Add((UInt16)((element & (1 << (i))) != 0 ? 1 : 0));
+                registerCounter++;
+            }
+        }
+
+        return result;
+    }
+
+    private static List<UInt16> GetResultFromWords(byte[] modbusData)
+    {
+        var result = new List<UInt16>();
+
+        for (int i = 0; i < modbusData.Length - 1; i += 2)
+        {
+            result.Add((UInt16)((modbusData[i + 1] << 8) | modbusData[i]));
+        }
+
+        // Обработка последнего байта, если длина массива нечетная
+        if (modbusData.Length % 2 != 0)
+        {
+            result.Add(modbusData.Last());
+        }
+
+        return result;
+    }
+
+    private string? CheckFields()
+    {
+        var validationMessages = new StringBuilder();
+
+        // Проверка полей в настройках мониторинга
+        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        {
+            validationMessages.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+        }
+
+        // Проверка полей в таблице
+        for (int i = 0; i < MonitoringItems.Count; i++)
+        {
+            var checkedItem = MonitoringItems[i];
+
+            foreach (KeyValuePair<string, ValidateMessage> itemElement in checkedItem.ActualErrors)
+            {
+                validationMessages.AppendLine($"[Элемент {i + 1} - {checkedItem.GetFieldViewName(itemElement.Key)}]\n{checkedItem.GetFullErrorMessage(itemElement.Key)}\n");
+            }
+        }
+
+        if (validationMessages.Length > 0)
+        {
+            validationMessages.Insert(0, "Ошибки валидации:\n\n");
+            return validationMessages.ToString().TrimEnd('\r', '\n');
+        }
+
+        return null;
     }
 
     public string GetFieldViewName(string fieldName)
     {
         switch (fieldName)
         {
+            case nameof(SlaveID):
+                return "Slave ID";
+
             case nameof(Period_ms):
                 return "Период";
 
@@ -249,6 +425,9 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
     {
         switch (fieldName)
         {
+            case nameof(SlaveID):
+                return Check_SlaveID(value);
+
             case nameof(Period_ms):
                 return Check_Period(value);
         }
@@ -256,7 +435,29 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
         return null;
     }
 
-    private ValidateMessage? Check_Period(string value)
+    private ValidateMessage? Check_SlaveID(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return AllErrorMessages[NotEmptyField];
+        }
+
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedSlaveID))
+        {
+            switch (NumberStyles.Number)
+            {
+                case NumberStyles.Number:
+                    return AllErrorMessages[DecError_Byte];
+
+                case NumberStyles.HexNumber:
+                    return AllErrorMessages[HexError_Byte];
+            }
+        }
+
+        return null;
+    }
+
+    private ValidateMessage? Check_Period(string? value)
     {
         if (string.IsNullOrEmpty(value))
         {
