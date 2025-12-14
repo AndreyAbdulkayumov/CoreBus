@@ -44,6 +44,7 @@
 			<TextBox Grid.Column="1"
 					 Classes="InputField"
 				     Text="{Binding Address, Mode=TwoWay}"
+					 IsEnabled="{Binding UI_IsEnable}"
 					 Width="80"
 					 MinHeight="22"
 					 FontSize="14"
@@ -56,6 +57,7 @@
 			<TextBox Grid.Column="2"
 			         Classes="InputField"
 					 Text="{Binding Alias, Mode=TwoWay}"
+					 IsEnabled="{Binding UI_IsEnable}"
 					 Opacity="{Binding AliasOpacity, Mode=OneWay}"
 					 MinHeight="22"
 					 Height="22"
@@ -118,6 +120,7 @@
 						  MinHeight="5"
 			              ItemsSource="{Binding AllValueTypes}"
 						  SelectedItem="{Binding SelectedValueType, Mode=TwoWay}"
+						  IsEnabled="{Binding UI_IsEnable}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"/>
 
@@ -151,7 +154,7 @@
 
 				<Button Grid.Column="1"
 						Content="f(x)"
-						FontSize="14"
+						IsEnabled="{Binding UI_IsEnable}"
 						MinHeight="5"
 						Height="22"
 						Padding="8,0,8,0"

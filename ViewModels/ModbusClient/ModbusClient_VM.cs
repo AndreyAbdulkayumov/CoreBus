@@ -65,14 +65,6 @@ public class ModbusClient_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _buttonModbusScanner_IsVisible, value);
     }
 
-    private bool _buttonClearData_IsVisible;
-
-    public bool ButtonClearData_IsVisible
-    {
-        get => _buttonClearData_IsVisible;
-        set => this.RaiseAndSetIfChanged(ref _buttonClearData_IsVisible, value);
-    }
-
     private bool _isMonitoringMode;
 
     public bool IsMonitoringMode
@@ -82,12 +74,10 @@ public class ModbusClient_VM : ReactiveObject
         {
             _settingsModel.AppData.IsModbusMonitoringMode = value;
 
-            //if (!IsMonitoringMode)
-            //{
-            //    _cycleMode_VM.StopPolling();
-            //}
-
-            ButtonClearData_IsVisible = !value;
+            if (CurrentModeViewModel is ModbusMonitoring_VM modbusMonitoring)
+            {
+                modbusMonitoring.StopPolling();
+            }
 
             CurrentModeViewModel = value ? _modbusMonitoring_VM : _modbusManualMode_VM;
 
@@ -137,6 +127,11 @@ public class ModbusClient_VM : ReactiveObject
             {
                 manualMode.ClearData();
             }
+
+            else if (CurrentModeViewModel is ModbusMonitoring_VM modbusMonitoring)
+            {
+                modbusMonitoring.ClearData();
+            }
         });
         Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка очистки данных.\n\n{error.Message}", MessageType.Error, error));
 
@@ -174,8 +169,6 @@ public class ModbusClient_VM : ReactiveObject
         // Действия после запуска приложения
 
         CurrentModeViewModel = _settingsModel.AppData.IsModbusMonitoringMode ? _modbusMonitoring_VM : _modbusManualMode_VM;
-
-        ButtonClearData_IsVisible = !_settingsModel.AppData.IsModbusMonitoringMode;
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)

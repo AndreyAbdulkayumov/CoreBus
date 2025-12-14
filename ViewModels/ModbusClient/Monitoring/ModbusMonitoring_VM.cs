@@ -210,9 +210,31 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
     }
 
+    public void ClearData()
+    {
+        foreach (var item in MonitoringItems)
+        {
+            item.Clear();
+        }
+    }
+
+    private void Model_DeviceIsConnect(object? sender, IConnection? e)
+    {
+        UI_IsEnable = true;
+    }
+
+    private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
+    {
+        UI_IsEnable = false;
+
+        StopPolling();
+    }
+
     private void Model_MonitoringError(object? sender, Exception e)
     {
         _messageBox.Show($"Ошибка мониторинга.\n\n{e.Message}", MessageType.Error, e);
+
+        StopPolling();
     }
 
     private void MonitoringItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -234,22 +256,17 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         HasSelectedItems = false;
     }
-    private void Model_DeviceIsConnect(object? sender, IConnection? e)
-    {
-        UI_IsEnable = true;
-    }
-
-    private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
-    {
-        UI_IsEnable = false;
-
-        StopPolling();
-    }
-
+    
     private void StartPolling()
     {
         try
         {
+            if (!MonitoringItems.Any())
+            {
+                _messageBox.Show("Не заданы регистры для опроса.", MessageType.Warning);
+                return;
+            }
+
             string? validationMessage = CheckFields();
 
             if (!string.IsNullOrEmpty(validationMessage))
@@ -260,6 +277,11 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
             Button_Content = Button_Content_Stop;
             IsStart = true;
+
+            foreach (var item in MonitoringItems)
+            {
+                item.UI_IsEnable = false;
+            }
 
             _modbusModel.MonitoringStart(MonitoringRequestAction, int.Parse(Period_ms));
         }
@@ -277,6 +299,11 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         Button_Content = Button_Content_Start;
         IsStart = false;
+
+        foreach (var item in MonitoringItems)
+        {
+            item.UI_IsEnable = true;
+        }
     }
 
     private async Task MonitoringRequestAction()
@@ -295,14 +322,14 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         var allAddresses = MonitoringItems.Select(e => UInt16.Parse(e.Address)).ToList();
 
-        ushort address = allAddresses.Min();
-        int numberOfRegisters = allAddresses.Max() - allAddresses.Min();
+        ushort startingAddress = allAddresses.Min();
+        int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
 
         ModbusReadFunction readFunction = Function.ReadInputRegisters;
 
         MessageData data = new ReadTypeMessage(
             slaveID,
-            address,
+            startingAddress,
             numberOfRegisters,
             ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
 

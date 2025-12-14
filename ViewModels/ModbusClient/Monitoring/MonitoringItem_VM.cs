@@ -10,6 +10,14 @@ namespace ViewModels.ModbusClient.Monitoring
 {
     public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
+        private bool ui_IsEnable = true;
+
+        public bool UI_IsEnable
+        {
+            get => ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
         private bool _isSelected;
 
         public bool IsSelected
@@ -146,6 +154,17 @@ namespace ViewModels.ModbusClient.Monitoring
             _rawValue = newValue;
 
             Value = _rawValue.ToString();
+        }
+
+        public void Clear()
+        {
+            IsNewValue = false;
+
+            _rawValue = 0;
+
+            Value = "0";
+            TypedValue = "0";
+            ConvertedValue = "0.00";
         }
 
         public string GetFieldViewName(string fieldName)

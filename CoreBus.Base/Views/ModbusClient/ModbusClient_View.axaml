@@ -63,7 +63,6 @@
 			            HorizontalAlignment="Right">
 				
 				<Button Content="Очистить данные"
-						IsVisible="{Binding ButtonClearData_IsVisible, Mode=OneWay}"
 						Width="145"
 						HorizontalContentAlignment="Center"
 						VerticalContentAlignment="Center"
@@ -82,8 +81,6 @@
 							  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"/>	
 
 			</StackPanel>
-			
-			
 			
 		</Grid>
 

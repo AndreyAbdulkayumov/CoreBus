@@ -82,6 +82,7 @@
 					</ItemsControl>
 
 					<Button Content="Добавить регистр"
+							IsEnabled="{Binding !IsStart, Mode=OneWay}"
 							FontSize="14"
 							HorizontalAlignment="Center"
 							Command="{Binding Command_AddRegister}"/>
