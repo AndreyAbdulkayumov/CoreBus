@@ -10,12 +10,26 @@ namespace ViewModels.ModbusClient.Monitoring
 {
     public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
+        public const string TypeName_UInt16 = "UInt16";
+        public const string TypeName_Int16 = "Int16";
+        public const string TypeName_UInt32 = "UInt32";
+        public const string TypeName_Int32 = "Int32";
+        public const string TypeName_Float = "Float";
+
         private bool ui_IsEnable = true;
 
         public bool UI_IsEnable
         {
             get => ui_IsEnable;
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
+        private bool _visibleOnlyRawValue;
+
+        public bool VisibleOnlyRawValue
+        {
+            get => _visibleOnlyRawValue;
+            set => this.RaiseAndSetIfChanged(ref  _visibleOnlyRawValue, value);
         }
 
         private bool _isSelected;
@@ -88,7 +102,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
         private ObservableCollection<string> _allValueTypes = new ObservableCollection<string>()
         {
-            "UInt16", "Int16", "UInt32", "Int32", "Float"
+            TypeName_UInt16, TypeName_Int16, TypeName_UInt32, TypeName_Int32, TypeName_Float
         };
 
         public ObservableCollection<string> AllValueTypes
@@ -122,14 +136,24 @@ namespace ViewModels.ModbusClient.Monitoring
 
         public ReactiveCommand<Unit, Unit> Command_FormulaChange { get; }
 
+        private NumberStyles _numberViewStyle;
+
+        private UInt16 _selectedAddress;
+
+        public UInt16 SelectedAddress => _selectedAddress;
 
         private UInt16 _rawValue = 0;
 
 
-        public MonitoringItem_VM(int initAddress, IMessageBoxMainWindow messageBox)
+        public MonitoringItem_VM(int initAddress, NumberStyles numberStyle, IMessageBoxMainWindow messageBox, Action hiddenNotUsedRegisters)
         {
-            Address = initAddress.ToString();
-            Value = "0";
+            _numberViewStyle = numberStyle;
+
+            _selectedAddress = (UInt16)initAddress;
+            Address = GetDisplayedAddress();            
+
+            Value = GetDisplayedRawValue();
+
             TypedValue = "0";
             SelectedValueType = AllValueTypes.First();
             ConvertedValue = "0.00";
@@ -145,6 +169,12 @@ namespace ViewModels.ModbusClient.Monitoring
                 {
                     AliasOpacity = string.IsNullOrEmpty(alias) ? 0.3 : 1;
                 });
+
+            this.WhenAnyValue(e => e.SelectedValueType)
+                .Subscribe(selectedValueType =>
+                {
+                    hiddenNotUsedRegisters();
+                });
         }
 
         public void SetReadedValue(UInt16 newValue)
@@ -153,7 +183,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
             _rawValue = newValue;
 
-            Value = _rawValue.ToString();
+            Value = GetDisplayedRawValue();
         }
 
         public void Clear()
@@ -165,6 +195,37 @@ namespace ViewModels.ModbusClient.Monitoring
             Value = "0";
             TypedValue = "0";
             ConvertedValue = "0.00";
+        }
+
+        public void SetNumberFormat(NumberStyles newStyle)
+        {
+            _numberViewStyle = newStyle;
+
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            {
+                Address = GetDisplayedAddress();
+            }
+
+            else
+            {
+                _selectedAddress = 0;
+            }
+
+            Value = GetDisplayedRawValue();
+
+            ValidateInput(nameof(Address), Address);
+
+            ChangeNumberStyleInErrors(nameof(Address), newStyle);
+        }
+
+        private string GetDisplayedAddress()
+        {
+            return _numberViewStyle == NumberStyles.HexNumber ? _selectedAddress.ToString("X") : _selectedAddress.ToString();
+        }
+
+        private string GetDisplayedRawValue()
+        {
+            return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
         }
 
         public string GetFieldViewName(string fieldName)
@@ -197,19 +258,16 @@ namespace ViewModels.ModbusClient.Monitoring
                 return AllErrorMessages[NotEmptyField];
             }
 
-            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out UInt16 _))
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
             {
-                return AllErrorMessages[DecError_UInt16];
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        return AllErrorMessages[DecError_UInt16];
 
-                // TODO: на будущее
-                //switch (_numberViewStyle)
-                //{
-                //    case NumberStyles.Number:
-                //        return AllErrorMessages[DecError_UInt16];
-
-                //    case NumberStyles.HexNumber:
-                //        return AllErrorMessages[HexError_UInt16];
-                //}
+                    case NumberStyles.HexNumber:
+                        return AllErrorMessages[HexError_UInt16];
+                }
             }
 
             return null;

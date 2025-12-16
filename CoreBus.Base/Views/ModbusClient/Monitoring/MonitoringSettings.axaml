@@ -8,25 +8,39 @@
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
              x:DataType="ViewModels:ModbusMonitoring_VM">
 
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+
+	</UserControl.Styles>
+
+
     <StackPanel Orientation="Vertical" Spacing="15">
 					
         <StackPanel Orientation="Horizontal" Spacing="30"
 					Margin="20,10,0,0">
 
-			<StackPanel Orientation="Horizontal" Spacing="15">
+			<Grid>
 
 				<TextBlock Text="Slave ID"
 			               Margin="0,6,0,0"
 						   VerticalAlignment="Top"/>
+
+				<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"
+						   Margin="65,6,0,0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 				<TextBox Classes="InputField"
 						 Width="70"
 						 MinHeight="30"
 						 Text="{Binding SlaveID, Mode=TwoWay}"
 						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						 VerticalAlignment="Top"/>
+						 Margin="110,0,0,0"
+						 HorizontalAlignment="Left" VerticalAlignment="Top"
+						 TextChanged="UppercaseTextBox_TextChanged"/>
 
-			</StackPanel>
+			</Grid>
 
 			<StackPanel Orientation="Horizontal" Spacing="15">
 				
@@ -72,21 +86,28 @@
 
 		</StackPanel>
 
-		<StackPanel Orientation="Horizontal" Spacing="50"
-				    IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
+		<StackPanel Orientation="Horizontal" Spacing="20"
 					Margin="20,0,0,0">
+
+			<TextBlock Text="Формат числа"
+						VerticalAlignment="Center"/>
+						
+			<RadioButton Content="hex"
+							IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+							Foreground="{DynamicResource App_Color_Text}"/>
+
+			<RadioButton Content="dec"
+							IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+							Foreground="{DynamicResource App_Color_Text}"/>
 
 			<Button Content="Удалить выбранные регистры"
 					FontSize="14"
 					IsEnabled="{Binding !IsStart, Mode=OneWay}"
-					Command="{Binding Command_RemoveSelectedItems}"/>
+					Command="{Binding Command_RemoveSelectedItems}"
+					IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
+					Margin="20,0,0,0"/>
 
-			<CheckBox Content="Опрашивать выбранные регистры"
-					  Foreground="{DynamicResource App_Color_Text}"
-					  IsChecked="{Binding ShouldPollSelectedRegisters, Mode=TwoWay}"
-					  IsEnabled="{Binding !IsStart, Mode=OneWay}"/>
-
-		</StackPanel>
+		</StackPanel>		
 
 	</StackPanel>
 

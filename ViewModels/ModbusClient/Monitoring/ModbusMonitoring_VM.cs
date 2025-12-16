@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
 using System.Text;
+using ViewModels.ModbusClient.Manual;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -84,20 +85,36 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
         set => this.RaiseAndSetIfChanged(ref _button_Content, value);
     }
 
+    private bool _selectedNumberFormat_Hex;
+
+    public bool SelectedNumberFormat_Hex
+    {
+        get => _selectedNumberFormat_Hex;
+        set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Hex, value);
+    }
+
+    private bool _selectedNumberFormat_Dec;
+
+    public bool SelectedNumberFormat_Dec
+    {
+        get => _selectedNumberFormat_Dec;
+        set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
+    }
+
+    private string? _numberFormat;
+
+    public string? NumberFormat
+    {
+        get => _numberFormat;
+        set => this.RaiseAndSetIfChanged(ref _numberFormat, value);
+    }
+
     private bool _hasSelectedItems;
 
     public bool HasSelectedItems
     {
         get => _hasSelectedItems;
         set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
-    }
-
-    private bool _shouldPollSelectedRegisters;
-
-    public bool ShouldPollSelectedRegisters
-    {
-        get => _shouldPollSelectedRegisters;
-        set => this.RaiseAndSetIfChanged(ref _shouldPollSelectedRegisters, value);
     }
 
     private bool _allRowSelected;
@@ -121,12 +138,14 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
     public ReactiveCommand<Unit, Unit> Command_SelectAllRows { get; }
     public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
+    private NumberStyles _numberViewStyle;
+
+    private byte _selectedSlaveID = 0;
 
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
-
-    private byte _selectedSlaveID = 0;
+        
 
     public ModbusMonitoring_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Modbus modbusModel)
     {
@@ -144,6 +163,8 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
         // Первоначальная настройка UI
         //
         /****************************************************/
+
+        SelectedNumberFormat_Dec = true;
 
         foreach (ModbusReadFunction element in Function.AllReadFunctions)
         {
@@ -181,6 +202,8 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
                 }
             }
 
+            HasSelectedItems = false;
+
             if (MonitoringItems.Count == 0)
                 AllRowSelected = false;
         });
@@ -200,14 +223,47 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
-            var initAddress = MonitoringItems.Any() && StringValue.IsValidNumber(MonitoringItems.Last().Address, NumberStyles.Number, out UInt16 init) ? init + 1 : 0;
+            var initAddress = MonitoringItems.Any() && StringValue.IsValidNumber(MonitoringItems.Last().Address, _numberViewStyle, out UInt16 init) ? init + 1 : 0;
 
-            var newItem = new MonitoringItem_VM(initAddress, _messageBox);
+            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _messageBox, HiddenNotUsedRegisters);
             newItem.PropertyChanged += MonitoringItemOnPropertyChanged;
 
             MonitoringItems.Add(newItem);
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
+
+        this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
+            .Subscribe(values =>
+            {
+                try
+                {
+                    var (hexSelected, decSelected) = values;
+
+                    // Оба выбраны или оба сняты — ничего не делаем
+                    if (hexSelected == decSelected)
+                        return;
+
+                    NumberFormat = hexSelected ? 
+                        ModbusManualMode_VM.ViewContent_NumberStyle_hex : 
+                        ModbusManualMode_VM.ViewContent_NumberStyle_dec;
+
+                    _numberViewStyle = hexSelected ? 
+                        NumberStyles.HexNumber : 
+                        NumberStyles.Number;
+
+                    ChangeNumberFormat(_numberViewStyle);
+
+                    foreach (var item in MonitoringItems)
+                    {
+                        item.SetNumberFormat(_numberViewStyle);
+                    }
+                }
+
+                catch (Exception error)
+                {
+                    messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+                }
+            });
     }
 
     public void ClearData()
@@ -215,6 +271,14 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
         foreach (var item in MonitoringItems)
         {
             item.Clear();
+        }
+    }
+
+    private void HiddenNotUsedRegisters()
+    {
+        foreach (var item in MonitoringItems)
+        {
+            
         }
     }
 
@@ -256,7 +320,23 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         HasSelectedItems = false;
     }
-    
+
+    private void ChangeNumberFormat(NumberStyles newStyle)
+    {
+        if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+        {
+            SlaveID = newStyle == NumberStyles.HexNumber ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
+        }
+
+        else
+        {
+            _selectedSlaveID = 0;
+        }
+
+        ValidateInput(nameof(SlaveID), SlaveID);
+        ChangeNumberStyleInErrors(nameof(SlaveID), newStyle);
+    }
+
     private void StartPolling()
     {
         try
@@ -320,7 +400,7 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         byte slaveID = byte.Parse(SlaveID);
 
-        var allAddresses = MonitoringItems.Select(e => UInt16.Parse(e.Address)).ToList();
+        var allAddresses = MonitoringItems.Select(e => e.SelectedAddress);
 
         ushort startingAddress = allAddresses.Min();
         int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
@@ -345,7 +425,7 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 
         foreach (var item in MonitoringItems)
         {
-            var itemAddress = int.Parse(item.Address);
+            var itemAddress = item.SelectedAddress;
 
             if (itemAddress >= 0 && itemAddress < resultList.Count)
             {
@@ -469,9 +549,9 @@ public class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
             return AllErrorMessages[NotEmptyField];
         }
 
-        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedSlaveID))
+        if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
         {
-            switch (NumberStyles.Number)
+            switch (_numberViewStyle)
             {
                 case NumberStyles.Number:
                     return AllErrorMessages[DecError_Byte];

@@ -44,12 +44,13 @@
 			<TextBox Grid.Column="1"
 					 Classes="InputField"
 				     Text="{Binding Address, Mode=TwoWay}"
-					 IsEnabled="{Binding UI_IsEnable}"
+					 IsReadOnly="{Binding !UI_IsEnable}"
 					 Width="80"
 					 MinHeight="22"
 					 FontSize="14"
 					 HorizontalAlignment="Center" 
-					 VerticalAlignment="Center"/>	
+					 VerticalAlignment="Center"
+					 TextChanged="UppercaseTextBox_TextChanged"/>	
 
 
 			<!-- Псевдоним -->
@@ -57,7 +58,7 @@
 			<TextBox Grid.Column="2"
 			         Classes="InputField"
 					 Text="{Binding Alias, Mode=TwoWay}"
-					 IsEnabled="{Binding UI_IsEnable}"
+					 IsReadOnly="{Binding !UI_IsEnable}"
 					 Opacity="{Binding AliasOpacity, Mode=OneWay}"
 					 MinHeight="22"
 					 Height="22"
@@ -94,7 +95,8 @@
 
 			<Grid Grid.Column="4"
 		          Height="22"
-		          ColumnDefinitions="3*,2*">
+		          ColumnDefinitions="3*,2*"
+				  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}">
 
 				<Grid Grid.Column="0"
 		              Margin="15,0,15,0">
@@ -131,7 +133,8 @@
 
 			<Grid Grid.Column="5" 
 		          Height="22"
-		          ColumnDefinitions="3*,1*">
+		          ColumnDefinitions="3*,1*"
+				  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}">
 
 				<Grid Grid.Column="0"
 					  Margin="15,0,15,0">
@@ -169,6 +172,7 @@
 
 			<CheckBox Grid.Column="6"
 					  IsChecked="{Binding OnChart, Mode=TwoWay}"
+					  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}"
 					  HorizontalAlignment="Center"
 					  VerticalAlignment="Center"/>
 

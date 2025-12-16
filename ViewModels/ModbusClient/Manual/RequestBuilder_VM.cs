@@ -288,22 +288,21 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             {
                 try
                 {
-                    if (values.Item1 == true && values.Item2 == true)
-                    {
+                    var (hexSelected, decSelected) = values;
+
+                    // Оба выбраны или оба сняты — ничего не делаем
+                    if (hexSelected == decSelected)
                         return;
-                    }
 
-                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
-                    if (values.Item1)
-                    {
-                        SelectNumberFormat_Hex();
-                    }
+                    NumberFormat = hexSelected ?
+                        ModbusManualMode_VM.ViewContent_NumberStyle_hex :
+                        ModbusManualMode_VM.ViewContent_NumberStyle_dec;
 
-                    // Выбран десятичный формат числа в полях Адрес и Данные
-                    else if (values.Item2)
-                    {
-                        SelectNumberFormat_Dec();
-                    }
+                    _numberViewStyle = hexSelected ?
+                        NumberStyles.HexNumber :
+                        NumberStyles.Number;
+
+                    ChangeNumberFormat(_numberViewStyle);
                 }
 
                 catch (Exception error)
@@ -368,7 +367,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
     private string? CheckWriteFields()
     {
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
         // Проверка полей в основном контроле
 
@@ -408,7 +407,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return null;
         }
 
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
         // Проверка полей в основном контроле
 
@@ -426,14 +425,11 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         return null;
     }
 
-    private void SelectNumberFormat_Hex()
+    private void ChangeNumberFormat(NumberStyles newStyle)
     {
-        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_hex;
-        _numberViewStyle = NumberStyles.HexNumber;
-
         if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
         {
-            SlaveID = _selectedSlaveID.ToString("X");
+            SlaveID = newStyle == NumberStyles.HexNumber ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
         }
 
         else
@@ -443,7 +439,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
         {
-            Address = _selectedAddress.ToString("X");
+            Address = newStyle == NumberStyles.HexNumber ? _selectedAddress.ToString("X") : _selectedAddress.ToString();
         }
 
         else
@@ -454,40 +450,8 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         ValidateInput(nameof(SlaveID), SlaveID);
         ValidateInput(nameof(Address), Address);
 
-        ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.HexNumber);
-        ChangeNumberStyleInErrors(nameof(Address), NumberStyles.HexNumber);
-    }
-
-    private void SelectNumberFormat_Dec()
-    {
-        NumberFormat = ModbusManualMode_VM.ViewContent_NumberStyle_dec;
-        _numberViewStyle = NumberStyles.Number;
-
-        if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
-        {
-            SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
-        }
-
-        else
-        {
-            _selectedSlaveID = 0;
-        }
-
-        if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
-        {
-            Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
-        }
-
-        else
-        {
-            _selectedAddress = 0;
-        }
-
-        ValidateInput(nameof(SlaveID), SlaveID);
-        ValidateInput(nameof(Address), Address);
-
-        ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.Number);
-        ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
+        ChangeNumberStyleInErrors(nameof(SlaveID), newStyle);
+        ChangeNumberStyleInErrors(nameof(Address), newStyle);
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)
