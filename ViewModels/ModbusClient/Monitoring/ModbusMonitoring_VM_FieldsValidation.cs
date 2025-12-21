@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using ViewModels.Validation;
 
@@ -17,9 +17,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         }
 
         // Проверка полей в таблице
-        for (int i = 0; i < MonitoringItems.Count; i++)
+        for (int i = 0; i < _monitoringDataGrid_VM.Items.Count; i++)
         {
-            var checkedItem = MonitoringItems[i];
+            var checkedItem = _monitoringDataGrid_VM.Items[i];
 
             foreach (KeyValuePair<string, ValidateMessage> itemElement in checkedItem.ActualErrors)
             {

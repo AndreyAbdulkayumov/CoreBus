@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -67,6 +67,7 @@ public partial class App : Application
             .AddSingleton<ModbusManualMode_VM>()
             .AddSingleton<RequestBuilder_VM>()
             .AddSingleton<ModbusMonitoring_VM>()
+            .AddSingleton<MonitoringDataGrid_VM>()
             // Окно настроек
             .AddTransient<Settings_VM>()
             // Компоненты окна настроек

@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
 			 d:DesignWidth="1100" d:DesignHeight="450"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringDataGrid"
-			 x:DataType="ViewModels:ModbusMonitoring_VM">
+			 x:DataType="ViewModels:MonitoringDataGrid_VM">
 
     <Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="1"
@@ -26,7 +26,7 @@
 
 					<CheckBox Grid.Column="0"
 					          IsChecked="{Binding AllRowSelected, Mode=TwoWay}"
-							  IsVisible="{Binding !!MonitoringItems.Count}"
+							  IsVisible="{Binding !!Items.Count}"
 					          HorizontalAlignment="Center"
 							  Command="{Binding Command_SelectAllRows}">
 
@@ -74,7 +74,7 @@
 
 				<StackPanel Orientation="Vertical" Spacing="20">
 
-					<ItemsControl ItemsSource="{Binding MonitoringItems, Mode=TwoWay}"
+					<ItemsControl ItemsSource="{Binding Items, Mode=TwoWay}"
 								  HorizontalAlignment="Stretch" 
 								  VerticalAlignment="Top">
 
@@ -98,7 +98,7 @@
 					</ItemsControl>
 
 					<Button Content="Добавить регистр"
-							IsEnabled="{Binding !IsStart, Mode=OneWay}"
+							IsEnabled="{Binding !BlockAddRegisterButton, Mode=OneWay}"
 							FontSize="14"
 							HorizontalAlignment="Center"
 							Command="{Binding Command_AddRegister}"/>

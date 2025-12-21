@@ -1,4 +1,4 @@
-﻿using Core.Clients.DataTypes;
+using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
@@ -117,7 +117,7 @@ public class ModbusManualMode_VM : ReactiveObject
         _normalMode_VM = ModbusRequestBuilder_VM;
         _normalMode_VM.Subscribe(this);
 
-        this.RequestBuilder_VM = _normalMode_VM;
+        RequestBuilder_VM = _normalMode_VM;
 
         /****************************************************/
         //

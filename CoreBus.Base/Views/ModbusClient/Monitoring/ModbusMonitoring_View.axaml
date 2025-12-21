@@ -38,7 +38,8 @@
         <GridSplitter Grid.Row="1"
                       ResizeDirection="Rows"/>
 
-        <local:MonitoringDataGrid Grid.Row="2"/>
+        <local:MonitoringDataGrid Grid.Row="2"
+                                  DataContext="{Binding DataGrid_VM}"/>
 
     </Grid>	
 

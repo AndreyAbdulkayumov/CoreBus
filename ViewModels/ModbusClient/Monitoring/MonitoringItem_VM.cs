@@ -1,4 +1,4 @@
-﻿using MessageBox.Core;
+using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
@@ -145,7 +145,7 @@ namespace ViewModels.ModbusClient.Monitoring
         private UInt16 _rawValue = 0;
 
 
-        public MonitoringItem_VM(int initAddress, NumberStyles numberStyle, IMessageBoxMainWindow messageBox, Action hiddenNotUsedRegisters)
+        public MonitoringItem_VM(int initAddress, NumberStyles numberStyle, IMessageBoxMainWindow messageBox)
         {
             _numberViewStyle = numberStyle;
 
@@ -168,12 +168,6 @@ namespace ViewModels.ModbusClient.Monitoring
                 .Subscribe(alias =>
                 {
                     AliasOpacity = string.IsNullOrEmpty(alias) ? 0.3 : 1;
-                });
-
-            this.WhenAnyValue(e => e.SelectedValueType)
-                .Subscribe(selectedValueType =>
-                {
-                    hiddenNotUsedRegisters();
                 });
         }
 
