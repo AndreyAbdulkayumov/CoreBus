@@ -1,4 +1,5 @@
 using Core.Models.Modbus.DataTypes;
+using Core.Models.Settings;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
@@ -6,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.ModbusClient.Manual;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -55,21 +57,23 @@ public class MonitoringDataGrid_VM : ReactiveObject
     private NumberStyles _numberViewStyle;
 
 
+    private readonly Model_Settings _settingsModel;
     private readonly IMessageBoxMainWindow _messageBox;
 
 
-    public MonitoringDataGrid_VM(IMessageBoxMainWindow messageBox)
+    public MonitoringDataGrid_VM(Model_Settings settingsModel, IMessageBoxMainWindow messageBox)
     {
+        _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
         Command_SelectAllRows = ReactiveCommand.Create(() =>
         {
             foreach (var item in Items)
             {
-                item.PropertyChanged -= MonitoringItemOnPropertyChanged;
+                item.PropertyChanged -= MonitoringItem_PropertyChanged;
                 item.IsSelected = AllRowSelected;
                 HasSelectedItems = AllRowSelected;
-                item.PropertyChanged += MonitoringItemOnPropertyChanged;
+                item.PropertyChanged += MonitoringItem_PropertyChanged;
             }
         });
         Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка выбора всех регистров.\n\n{error.Message}", MessageType.Error, error));
@@ -78,16 +82,58 @@ public class MonitoringDataGrid_VM : ReactiveObject
         {
             var initAddress = Items.Any() && StringValue.IsValidNumber(Items.Last().Address, _numberViewStyle, out UInt16 init) ? init + 1 : 0;
 
-            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _messageBox);
-            newItem.PropertyChanged += MonitoringItemOnPropertyChanged;
+            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _messageBox);
+            newItem.TypeChanged += MonitoringItem_TypeChanged;
+            newItem.PropertyChanged += MonitoringItem_PropertyChanged;
 
             Items.Add(newItem);
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
     }
 
-    private void MonitoringItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void MonitoringItem_TypeChanged(object? sender, EventArgs e)
     {
+        if (sender == null || sender is not MonitoringItem_VM)
+            return;
+
+        int registerSkipCounter = 0;
+
+        foreach (var item in Items)
+        {
+            if (registerSkipCounter > 0)
+            {
+                item.VisibleOnlyRawValue = true;
+                registerSkipCounter--;
+                continue;
+            }
+
+            item.VisibleOnlyRawValue = false;
+
+            switch (item.SelectedValueType)
+            {
+                case MonitoringItem_VM.TypeName_UInt16:
+                case MonitoringItem_VM.TypeName_Int16:
+                    registerSkipCounter = 0;
+                    break;
+
+                case MonitoringItem_VM.TypeName_UInt32:
+                case MonitoringItem_VM.TypeName_Int32:
+                case MonitoringItem_VM.TypeName_Float:
+                    registerSkipCounter = 1;
+                    break;
+
+                default:
+                    registerSkipCounter = 0;
+                    break;
+            }
+        }
+    }
+
+    private void MonitoringItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not MonitoringItem_VM)
+            return;
+
         if (e.PropertyName == nameof(MonitoringItem_VM.IsSelected))
         {
             AllRowSelected = Items.Count > 0 &&
@@ -106,21 +152,14 @@ public class MonitoringDataGrid_VM : ReactiveObject
         HasSelectedItems = false;
     }
 
-    public void ClearData()
-    {
-        foreach (var item in Items)
-        {
-            item.Clear();
-        }
-    }
-
     public void RemoveSelectedItems()
     {
         for (int i = Items.Count - 1; i >= 0; i--)
         {
             if (Items[i].IsSelected)
             {
-                Items[i].PropertyChanged -= MonitoringItemOnPropertyChanged;
+                Items[i].TypeChanged -= MonitoringItem_TypeChanged;
+                Items[i].PropertyChanged -= MonitoringItem_PropertyChanged;
                 Items.RemoveAt(i);
             }
         }
@@ -131,9 +170,21 @@ public class MonitoringDataGrid_VM : ReactiveObject
             AllRowSelected = false;
     }
 
+    public void ClearData()
+    {
+        foreach (var item in Items)
+        {
+            item.Clear();
+        }
+    }
+
     public void ChangeNumberFormat(NumberStyles newStyle)
     {
         _numberViewStyle = newStyle;
+
+        NumberFormat = newStyle == NumberStyles.HexNumber ?
+            ModbusManualMode_VM.ViewContent_NumberStyle_hex :
+            ModbusManualMode_VM.ViewContent_NumberStyle_dec;
 
         foreach (var item in Items)
         {
@@ -147,7 +198,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         foreach (var item in Items)
         {
-            item.UI_IsEnable = value;
+            item.UI_IsEnable = !value;
         }
     }
 
@@ -162,7 +213,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         {
             if (registers.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
-                item.SetReadedValue(registerValue);
+                item.SetReadedValue(registerValue, registers);
             }
         }
     }
