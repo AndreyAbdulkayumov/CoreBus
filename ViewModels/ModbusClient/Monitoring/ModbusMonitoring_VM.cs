@@ -7,6 +7,7 @@ using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
 using ViewModels.ModbusClient.Manual;
@@ -115,9 +116,12 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _dataGrid_VM, value);
     }
 
+    private bool _hasSelectedItems;
+
     public bool HasSelectedItems
     {
-        get => _monitoringDataGrid_VM != null ? _monitoringDataGrid_VM.HasSelectedItems : false;
+        get => _hasSelectedItems;
+        set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
     }
 
     public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
@@ -147,6 +151,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
         _modbusModel.Model_MonitoringError += Model_MonitoringError;
+
+        _monitoringDataGrid_VM.PropertyChanged += MonitoringDataGrid_VM_PropertyChanged;
                 
         /****************************************************/
         //
@@ -218,6 +224,17 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                     messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                 }
             });
+    }
+
+    private void MonitoringDataGrid_VM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not MonitoringDataGrid_VM dataGrid)
+            return;
+
+        if (e.PropertyName == nameof(dataGrid.HasSelectedItems))
+        {
+            HasSelectedItems = dataGrid.HasSelectedItems;
+        }
     }
 
     public void ClearData()

@@ -122,7 +122,7 @@ namespace ViewModels.ModbusClient.Monitoring
             set
             {
                 this.RaiseAndSetIfChanged(ref _selectedValueType, value);
-                TypeChanged?.Invoke(this, new EventArgs());
+                TypeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

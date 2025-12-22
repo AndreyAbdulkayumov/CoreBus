@@ -8,7 +8,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
 using ViewModels.ModbusClient.Manual;
-using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
@@ -16,7 +15,13 @@ public class MonitoringDataGrid_VM : ReactiveObject
 {
     public bool IsEmpty => !Items.Any();
 
-    public bool HasSelectedItems { get; private set; }
+    private bool _hasSelectedItems;
+
+    public bool HasSelectedItems
+    {
+        get => _hasSelectedItems;
+        set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
+    }
 
     private bool _allRowSelected;
 
@@ -80,13 +85,15 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
-            var initAddress = Items.Any() && StringValue.IsValidNumber(Items.Last().Address, _numberViewStyle, out UInt16 init) ? init + 1 : 0;
+            var initAddress = Items.Any() ? Items.Last().SelectedAddress + 1 : 0;
 
             var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _messageBox);
             newItem.TypeChanged += MonitoringItem_TypeChanged;
             newItem.PropertyChanged += MonitoringItem_PropertyChanged;
 
             Items.Add(newItem);
+
+            AllRowSelected = false;
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
     }
