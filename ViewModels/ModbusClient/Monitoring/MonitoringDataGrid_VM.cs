@@ -1,8 +1,8 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
+using DynamicData;
 using MessageBox.Core;
-using MessageBusTypes.Chart;
-using MessageBusTypes.ModbusClient;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
@@ -98,6 +98,35 @@ public class MonitoringDataGrid_VM : ReactiveObject
             AllRowSelected = false;
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
+
+        // Действия после запуска приложения
+
+        SetMonitoringItems(_settingsModel.ModbusMonitoringItems);
+    }
+
+    private void SetMonitoringItems(ModbusMonitoring itemsData)
+    {
+        if (itemsData.Items == null) 
+            return;
+
+        var monitoringItems = new List<MonitoringItem_VM>();
+
+        foreach (var data in itemsData.Items)
+        {
+            var newItem = new MonitoringItem_VM(data.Address, _numberViewStyle, _settingsModel, _messageBox);
+
+            newItem.Alias = data.Alias;
+            newItem.SelectedValueType = data.ValueType;
+            newItem.VisibleOnlyRawValue = data.VisibleOnlyRawValue;
+            newItem.OnChart = data.OnChart;
+
+            newItem.TypeChanged += MonitoringItem_TypeChanged;
+            newItem.PropertyChanged += MonitoringItem_PropertyChanged;
+
+            monitoringItems.Add(newItem);
+        }
+        
+        Items.AddRange(monitoringItems);
     }
 
     private void MonitoringItem_TypeChanged(object? sender, EventArgs e)
