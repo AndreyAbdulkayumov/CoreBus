@@ -23,6 +23,7 @@ using Core.Models.AppUpdateSystem;
 using ViewModels.ModbusScanner;
 using ViewModels.ModbusClient.Manual;
 using ViewModels.ModbusClient.Monitoring;
+using ViewModels.Chart;
 
 namespace CoreBus.Base;
 
@@ -85,6 +86,8 @@ public partial class App : Application
             .AddScoped<Macros_VM>()
             // Окно редактирования макроса
             .AddScoped<EditMacros_VM>()
+            // Окно графика
+            .AddTransient<Chart_VM>()
             // MessageBox с разными владельцами
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()
@@ -92,6 +95,7 @@ public partial class App : Application
             .AddSingleton<IMessageBoxEditMacros, MessageBoxEditMacros>()
             .AddSingleton<IMessageBoxModbusScanner, MessageBoxModbusScanner>()
             .AddSingleton<IMessageBoxAboutApp, MessageBoxAboutApp>()
+            .AddSingleton<IMessageBoxChart, MessageBoxChart>()
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()

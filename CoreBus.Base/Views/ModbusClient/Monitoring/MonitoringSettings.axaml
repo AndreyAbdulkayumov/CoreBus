@@ -86,28 +86,38 @@
 
 		</StackPanel>
 
-		<StackPanel Orientation="Horizontal" Spacing="20"
-					Margin="20,0,0,0">
+		<Grid>
 
-			<TextBlock Text="Формат числа"
-						VerticalAlignment="Center"/>
+			<StackPanel Orientation="Horizontal" Spacing="20"
+						Margin="20,0,0,0">
+
+				<TextBlock Text="Формат числа"
+							VerticalAlignment="Center"/>
 						
-			<RadioButton Content="hex"
-							IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
-							Foreground="{DynamicResource App_Color_Text}"/>
+				<RadioButton Content="hex"
+								IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+								Foreground="{DynamicResource App_Color_Text}"/>
 
-			<RadioButton Content="dec"
-							IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
-							Foreground="{DynamicResource App_Color_Text}"/>
+				<RadioButton Content="dec"
+								IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+								Foreground="{DynamicResource App_Color_Text}"/>
 
-			<Button Content="Удалить выбранные регистры"
-					FontSize="14"
-					IsEnabled="{Binding !IsStart, Mode=OneWay}"
-					Command="{Binding Command_RemoveSelectedItems}"
-					IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
-					Margin="20,0,0,0"/>
+				<Button Content="Удалить выбранные регистры"
+						FontSize="14"
+						IsEnabled="{Binding !IsStart, Mode=OneWay}"
+						Command="{Binding Command_RemoveSelectedItems}"
+						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
+						Margin="20,0,0,0"/>
 
-		</StackPanel>		
+			</StackPanel>
+
+			<Button Content="График"
+		            FontSize="14"
+					Command="{Binding Command_OpenChart}"
+					Margin="0,0,38,0"
+					HorizontalAlignment="Right"/>
+
+		</Grid>				
 
 	</StackPanel>
 

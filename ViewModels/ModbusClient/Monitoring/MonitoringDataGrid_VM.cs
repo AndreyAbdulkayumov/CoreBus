@@ -1,12 +1,15 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
 using MessageBox.Core;
+using MessageBusTypes.Chart;
+using MessageBusTypes.ModbusClient;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.Chart;
 using ViewModels.ModbusClient.Manual;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -60,7 +63,6 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
 
     private NumberStyles _numberViewStyle;
-
 
     private readonly Model_Settings _settingsModel;
     private readonly IMessageBoxMainWindow _messageBox;
@@ -209,7 +211,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         }
     }
 
-    public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters)
+    public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, double chartXCoordinate)
     {
         var registers =
             ConvertToResultList(data, numberOfRegisters, readFunction)
@@ -220,7 +222,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         {
             if (registers.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
-                item.SetReadedValue(registerValue, registers);
+                item.SetReadedValue(registerValue, registers, chartXCoordinate);
             }
         }
     }

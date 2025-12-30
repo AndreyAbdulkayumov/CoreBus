@@ -23,6 +23,7 @@
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.1.57" />
   </ItemGroup>
 
   <ItemGroup>

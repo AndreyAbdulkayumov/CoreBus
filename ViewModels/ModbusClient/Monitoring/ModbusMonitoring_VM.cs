@@ -4,6 +4,7 @@ using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using MessageBox.Core;
+using MessageBusTypes.Chart;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
@@ -126,27 +127,31 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
     public ReactiveCommand<Unit, Unit> Command_RemoveSelectedItems { get; }    
-    
+    public ReactiveCommand<Unit, Unit> Command_OpenChart { get; }
+
+    private int _chartPointCounter = 0;
 
     private NumberStyles _numberViewStyle;
 
     private byte _selectedSlaveID = 7;
 
+    private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
 
 
-    public ModbusMonitoring_VM(IMessageBoxMainWindow messageBox, 
+    public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel,
         MonitoringDataGrid_VM monitoringDataGrid_VM)
     {
+        _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
-
+        
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
@@ -194,6 +199,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Command_RemoveSelectedItems = ReactiveCommand.Create(_monitoringDataGrid_VM.RemoveSelectedItems);
         Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления выбранных регистров.\n\n{error.Message}", MessageType.Error, error));
 
+        Command_OpenChart = ReactiveCommand.Create(() => _openChildWindowService.Chart());
+        Command_OpenChart.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -301,6 +308,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             _monitoringDataGrid_VM.BlockUI(true);
 
             _modbusModel.MonitoringStart(MonitoringRequestAction, int.Parse(Period_ms));
+
+            var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart).ToDictionary(e => e.Id, e => e.Alias ?? "");
+
+            if (chartAxes.Any())
+            {
+                MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes));
+            }            
         }
         
         catch (Exception)
@@ -316,6 +330,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         Button_Content = Button_Content_Start;
         IsStart = false;
+
+        _chartPointCounter = 0;
 
         _monitoringDataGrid_VM.BlockUI(false);
     }
@@ -353,6 +369,10 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (result.ReadedData == null)
             return;
 
-        _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters);
+        _chartPointCounter++;
+
+        var xCoordinate = int.Parse(Period_ms) * _chartPointCounter;
+
+        _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, xCoordinate);
     }
 }

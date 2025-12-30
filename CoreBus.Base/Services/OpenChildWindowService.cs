@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -16,6 +16,8 @@ using ViewModels.Macros;
 using ViewModels.Macros.MacrosEdit;
 using ViewModels.ModbusScanner;
 using ViewModels.Settings;
+using ViewModels.Chart;
+using CoreBus.Base.Views.Chart;
 
 namespace CoreBus.Base.Services;
 
@@ -26,10 +28,12 @@ public class OpenChildWindowService : IOpenChildWindowService
     private Macros_VM? _macrosVM;
     private EditMacros_VM? _editMacrosVM;
     private ModbusScanner_VM? _modbusScannerVM;
+    private Chart_VM? _chartVM;
 
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
     private static bool _macrosWindowIsOpen = false;
+    private static bool _chartWindowIsOpen = false;
 
     private readonly IServiceProvider _serviceProvider;
 
@@ -232,6 +236,58 @@ public class OpenChildWindowService : IOpenChildWindowService
         });
         
         return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
+    }
+
+    public void Chart()
+    {
+        try
+        {
+            if (_chartWindowIsOpen)
+            {
+                return;
+            }
+
+            if (MainWindow.Instance == null)
+            {
+                throw new Exception("Не задан владелец окна.");
+            }
+
+            _chartWindowIsOpen = true;
+
+            _chartVM = _serviceProvider.GetService<Chart_VM>();
+
+            if (_chartVM == null)
+            {
+                return;
+            }
+
+            var window = new ChartWindow()
+            {
+                DataContext = _chartVM
+            };
+
+            void MainWindowClosedHandler(object? sender, EventArgs e)
+            {
+                window?.Close();
+            }
+
+            window.Closed += (object? sender, EventArgs e) =>
+            {
+                MainWindow.Instance.Closed -= MainWindowClosedHandler;
+                _chartWindowIsOpen = false;
+            };
+
+            MainWindow.Instance.Closed += MainWindowClosedHandler;
+
+            window.Show();
+        }
+
+        catch (Exception error)
+        {
+            _chartWindowIsOpen = false;
+
+            throw new Exception(error.Message);
+        }
     }
 
     private Task WaitForCloseAsync(Window window)

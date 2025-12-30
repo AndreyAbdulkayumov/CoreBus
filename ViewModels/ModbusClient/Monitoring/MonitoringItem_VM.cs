@@ -1,5 +1,6 @@
 using Core.Models.Settings;
 using MessageBox.Core;
+using MessageBusTypes.Chart;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
@@ -188,7 +189,7 @@ namespace ViewModels.ModbusClient.Monitoring
                 });
         }
 
-        public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers)
+        public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, double chartXCoordinate)
         {
             IsNewValue = _rawValue != newRawValue;
 
@@ -202,6 +203,13 @@ namespace ViewModels.ModbusClient.Monitoring
             TypedValue = GetDisplayedTypedValue(registers, out _convertedInnerValue);
 
             ConvertedValue = _convertedInnerValue.ToString();
+
+            if (OnChart)
+            {
+                MessageBus.Current.SendMessage(
+                    new AddingPointMessage(Id, chartXCoordinate, double.Parse(ConvertedValue))
+                    );
+            }
         }
 
         public void Clear()

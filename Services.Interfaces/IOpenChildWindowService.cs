@@ -1,4 +1,4 @@
-﻿namespace Services.Interfaces;
+namespace Services.Interfaces;
 
 public interface IOpenChildWindowService
 {
@@ -8,4 +8,5 @@ public interface IOpenChildWindowService
     Task ModbusScanner();
     void Macros();
     Task<object?> EditMacros(object? parameters);
+    void Chart();
 }
