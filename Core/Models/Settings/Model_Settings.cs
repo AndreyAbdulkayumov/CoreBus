@@ -9,7 +9,7 @@ public class Model_Settings
 
     public AppInfo AppData { get; private set; }
 
-    public ModbusMonitoring ModbusMonitoringItems { get; private set; }
+    public ModbusMonitoringParameters ModbusMonitoringItems { get; private set; }
 
     /// <summary>
     /// Путь к папке с файлами настроек
@@ -222,7 +222,7 @@ public class Model_Settings
     /// </summary>
     /// <param name="data"></param>
     /// <exception cref="Exception"></exception>
-    public void SaveModbusMonitoringItems(ModbusMonitoring data)
+    public void SaveModbusMonitoringItems(ModbusMonitoringParameters data)
     {
         try
         {
@@ -243,16 +243,16 @@ public class Model_Settings
     /// Чтение сохраненых Modbus регистров мониторинга
     /// </summary>
     /// <returns></returns>
-    private ModbusMonitoring ReadModbusMonitoringItems()
+    private ModbusMonitoringParameters ReadModbusMonitoringItems()
     {
         string filePath = DirectoryManager.FindOrCreateFile(
             DirectoryManager.CommonFiles_Directory,
             FileName_ModbusMonitoringItems,
             FileExtension,
-            new ModbusMonitoring()
+            ModbusMonitoringParameters.GetDefault()
             );
 
-        return FileIO.ReadOrCreateDefault(filePath, new ModbusMonitoring());
+        return FileIO.ReadOrCreateDefault(filePath, ModbusMonitoringParameters.GetDefault());
     }
 
     /// <summary>

@@ -178,7 +178,7 @@ public class MainWindow_VM : ReactiveObject
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Settings _settingsModel;
     private readonly Model_AppUpdateSystem _appUpdateSystemModel;
-    private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
+    private readonly ModbusMonitoring_VM _modbusMonitoring_VM;
 
     private readonly object TX_View_Locker = new object();
     private readonly object RX_View_Locker = new object();
@@ -188,7 +188,7 @@ public class MainWindow_VM : ReactiveObject
     public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM,
         ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel,
-        MonitoringDataGrid_VM monitoringDataGrid_VM)
+        ModbusMonitoring_VM modbusMonitoring_VM)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
@@ -199,7 +199,7 @@ public class MainWindow_VM : ReactiveObject
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
-        _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
+        _modbusMonitoring_VM = modbusMonitoring_VM ?? throw new ArgumentNullException(nameof(modbusMonitoring_VM));
 
         SettingsDocument = _settingsModel.AppData.SelectedPresetFileName;
 
@@ -356,20 +356,7 @@ public class MainWindow_VM : ReactiveObject
     {
         _settingsModel.SaveAppInfo(_settingsModel.AppData);
 
-        var monitoringItemsData = new ModbusMonitoring()
-        {
-            Items = _monitoringDataGrid_VM
-                    .Items
-                    .Select(e => new ModbusMonitoringItemData()
-                    {
-                        Address = e.SelectedAddress,
-                        Alias = e.Alias,
-                        ValueType = e.SelectedValueType,
-                        VisibleOnlyRawValue = e.VisibleOnlyRawValue,
-                        OnChart = e.OnChart,
-                    })
-                    .ToList(),
-        };
+        var monitoringItemsData = _modbusMonitoring_VM.GetParametersForSave();
 
         _settingsModel.SaveModbusMonitoringItems(monitoringItemsData);
     }

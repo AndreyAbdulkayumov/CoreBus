@@ -101,17 +101,17 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         // Действия после запуска приложения
 
-        SetMonitoringItems(_settingsModel.ModbusMonitoringItems);
+        SetMonitoringItems(_settingsModel.ModbusMonitoringItems.Items);
     }
 
-    private void SetMonitoringItems(ModbusMonitoring itemsData)
+    private void SetMonitoringItems(List<ModbusMonitoringItemData>? itemsData)
     {
-        if (itemsData.Items == null) 
+        if (itemsData == null) 
             return;
 
         var monitoringItems = new List<MonitoringItem_VM>();
 
-        foreach (var data in itemsData.Items)
+        foreach (var data in itemsData)
         {
             var newItem = new MonitoringItem_VM(data.Address, _numberViewStyle, _settingsModel, _messageBox);
 

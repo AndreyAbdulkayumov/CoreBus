@@ -94,7 +94,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             return AllErrorMessages[NotEmptyField];
         }
 
-        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedPeriod))
         {
             return AllErrorMessages[DecError_uint];
         }

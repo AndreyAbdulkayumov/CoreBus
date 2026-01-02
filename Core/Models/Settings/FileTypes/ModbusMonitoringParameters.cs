@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Core.Models.Settings.FileTypes;
 
 public class ModbusMonitoringItemData : ICloneable
@@ -21,7 +23,23 @@ public class ModbusMonitoringItemData : ICloneable
     }
 }
 
-public class ModbusMonitoring
+public class ModbusMonitoringParameters
 {
+    public byte SlaveID { get; set; }
+    public int FunctionNumber { get; set; }
+    public uint Period { get; set; }
+    public NumberStyles NumberStyle { get; set; }
     public List<ModbusMonitoringItemData>? Items { get; set; }
+
+    public static ModbusMonitoringParameters GetDefault()
+    {
+        return new ModbusMonitoringParameters()
+        {
+            SlaveID = 7,
+            FunctionNumber = 4,
+            Period = 600,
+            NumberStyle = NumberStyles.Number,
+            Items = null,
+        };
+    }
 }

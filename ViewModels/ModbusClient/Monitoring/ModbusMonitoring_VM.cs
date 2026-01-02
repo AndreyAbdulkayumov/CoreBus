@@ -3,6 +3,8 @@ using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
 using ReactiveUI;
@@ -62,9 +64,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _isStart, value);
     }
 
-    private string _period_ms = "600";
+    private string? _period_ms;
 
-    public string Period_ms
+    public string? Period_ms
     {
         get => _period_ms;
         set
@@ -130,24 +132,25 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     public ReactiveCommand<Unit, Unit> Command_OpenChart { get; }
 
     private int _chartPointCounter = 0;
-
     private NumberStyles _numberViewStyle;
-
-    private byte _selectedSlaveID = 7;
+    private byte _selectedSlaveID;
+    private uint _selectedPeriod;
 
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxMainWindow _messageBox;
+    private readonly Model_Settings _settingsModel;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
 
 
     public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
-        ConnectedHost connectedHostModel, Model_Modbus modbusModel,
-        MonitoringDataGrid_VM monitoringDataGrid_VM)
+        Model_Settings settingsModel, ConnectedHost connectedHostModel,
+        Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
@@ -165,16 +168,10 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         //
         /****************************************************/
 
-        SelectedNumberFormat_Dec = true;
-
-        SlaveID = _numberViewStyle == NumberStyles.HexNumber ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
-
         foreach (ModbusReadFunction element in Function.AllReadFunctions)
         {
             ReadFunctions.Add(element.DisplayedName);
         }
-
-        SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
 
         DataGrid_VM = _monitoringDataGrid_VM;
 
@@ -231,6 +228,61 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                     messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                 }
             });
+
+        // Действия после запуска приложения
+
+        SetMonitoringParameters(_settingsModel.ModbusMonitoringItems);
+    }
+
+    public void SetMonitoringParameters(ModbusMonitoringParameters data)
+    {
+        SlaveID = data.SlaveID.ToString();  // SlaveID приведется к нужному формату после смены RadioButton SelectedNumberFormat_Hex или SelectedNumberFormat_Dec
+
+        var function = Function.AllFunctions.FirstOrDefault(e => e.Number == data.FunctionNumber);
+
+        if (function != null && ReadFunctions.Any(displayedName => displayedName == function.DisplayedName))
+        {
+            SelectedReadFunction = function.DisplayedName;
+        }
+
+        else
+        {
+            SelectedReadFunction = ReadFunctions.First();
+        }
+
+        Period_ms = data.Period.ToString();
+
+        if (data.NumberStyle == NumberStyles.HexNumber)
+        {
+            SelectedNumberFormat_Hex = true;
+        }
+
+        else
+        {
+            SelectedNumberFormat_Dec = true;
+        }
+    }
+
+    public ModbusMonitoringParameters GetParametersForSave()
+    {
+        return new ModbusMonitoringParameters()
+        {
+            SlaveID = _selectedSlaveID,
+            FunctionNumber = Function.AllReadFunctions.FirstOrDefault(e => e.DisplayedName == SelectedReadFunction)?.Number ?? 1,
+            Period = _selectedPeriod,
+            NumberStyle = _numberViewStyle,
+            Items = _monitoringDataGrid_VM
+                    .Items
+                    .Select(e => new ModbusMonitoringItemData()
+                    {
+                        Address = e.SelectedAddress,
+                        Alias = e.Alias,
+                        ValueType = e.SelectedValueType,
+                        VisibleOnlyRawValue = e.VisibleOnlyRawValue,
+                        OnChart = e.OnChart,
+                    })
+                    .ToList(),
+        };
     }
 
     private void MonitoringDataGrid_VM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -307,7 +359,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             _monitoringDataGrid_VM.BlockUI(true);
 
-            _modbusModel.MonitoringStart(MonitoringRequestAction, int.Parse(Period_ms));
+            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);
 
             var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart).ToDictionary(e => e.Id, e => e.Alias ?? "");
 
@@ -371,7 +423,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         _chartPointCounter++;
 
-        var xCoordinate = int.Parse(Period_ms) * _chartPointCounter;
+        var xCoordinate = _selectedPeriod * _chartPointCounter;
 
         _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, xCoordinate);
     }
