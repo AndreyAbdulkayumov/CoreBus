@@ -20,7 +20,7 @@ namespace ViewModels.ModbusClient.Monitoring;
 
 public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 {
-    private bool ui_IsEnable = false;
+    private bool ui_IsEnable;
 
     public bool UI_IsEnable
     {
@@ -56,7 +56,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
     }
 
-    private bool _isStart = false;
+    private bool _isStart;
 
     public bool IsStart
     {
