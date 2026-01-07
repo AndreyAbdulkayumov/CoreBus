@@ -147,7 +147,7 @@
 
 						<Button Classes="MenuToolButton"
 								ToolTip.Tip="Видеоролики"
-								Command="{Binding Command_OpenUserManual}">
+								Command="{Binding Command_OpenVideoPage}">
 
 							<Icons:MaterialIcon Kind="Youtube"
 												Foreground="IndianRed"/>

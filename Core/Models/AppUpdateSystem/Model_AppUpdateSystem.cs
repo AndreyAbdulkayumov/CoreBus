@@ -1,4 +1,4 @@
-﻿using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Models.Settings;
 using System.Diagnostics;
 using System.Text.Json;
@@ -10,6 +10,8 @@ public class Model_AppUpdateSystem
     private const string UrlLastestVersion = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/lastestVersion.json";
 
     private const string UrlDonate = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html";
+
+    private const string UrlVideo = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/video.html";
 
     public Model_AppUpdateSystem()
     {
@@ -51,6 +53,11 @@ public class Model_AppUpdateSystem
     public void GoToDonatePage()
     {
         GoToWebPage(UrlDonate);
+    }
+
+    public void GoToVideoPage()
+    {
+        GoToWebPage(UrlVideo);
     }
 
     /// <summary>

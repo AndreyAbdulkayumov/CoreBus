@@ -80,6 +80,7 @@ public class MainWindow_VM : ReactiveObject
     public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
     public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
     public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenVideoPage { get; }
 
     public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
     public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
@@ -251,6 +252,9 @@ public class MainWindow_VM : ReactiveObject
 
         Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
         Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
+        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия страницы с видеороликами.\n\n{error.Message}", MessageType.Error, error));
 
         Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
         {
