@@ -2,11 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ViewModels="using:ViewModels.ModbusClient.Monitoring"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        mc:Ignorable="d"
-        x:Class="CoreBus.Base.Views.ServiceWindow"
-		Title="Сервис"
-		Height="190" Width="300"
+        x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.EditFormulaWindow"
+		x:DataType="ViewModels:EditFormula_VM"
+		Width="300"
+		SizeToContent="Height"
+        MinHeight="150"
+		Title="Редактирование формулы"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -15,7 +18,7 @@
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None">
 
-	 <Window.Styles>
+    <Window.Styles>
 				
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
@@ -55,33 +58,32 @@
 			</Grid>
 
 			<Border Grid.Row="1"
-					Background="{DynamicResource App_Field_Color_Background}">
+					Background="{DynamicResource App_Field_Color_Background}"
+					Padding="20">
 
-				<Grid>
-					
-					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
-							   Margin="0,25,0,0"
-							   FontSize="14"
-							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+				<StackPanel Orientation="Vertical" Spacing="20"
+							HorizontalAlignment="Center" VerticalAlignment="Top">
 
-					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"
-							 Margin="0,60,0,0"
-							 Width="180"
-							 HorizontalAlignment="Center" VerticalAlignment="Top"/>
+					<TextBlock Text="{Binding Title, Mode=OneWay}"
+							   HorizontalAlignment="Center"/>
+
+					<TextBox Classes="InputField"
+							 Text="{Binding Formula, Mode=TwoWay}"
+							 Width="220"
+							 HorizontalAlignment="Center"/>
 					
-					<Button x:Name="Button_Select" Content="Выбрать"
-							Margin="0,110,0,0"
-							Width="80"
+					<Button x:Name="Button_Save" Content="Сохранить"
+							IsEnabled="{Binding SaveIsEnabled, Mode=OneWay}"
 							FontSize="14"
-							HorizontalAlignment="Center" VerticalAlignment="Top"
-							Click="Button_Select_Click"/>
+							HorizontalAlignment="Center"
+							Click="Button_Save_Click"/>
 					
-				</Grid>
+				</StackPanel>
 				
 			</Border>
 
 		</Grid>
 	
 	</Border>
-	
+
 </Window>

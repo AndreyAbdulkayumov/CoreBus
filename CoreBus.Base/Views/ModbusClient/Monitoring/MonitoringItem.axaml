@@ -161,6 +161,7 @@
 						Height="22"
 						Padding="8,0,8,0"
 						Command="{Binding Command_FormulaChange}"
+						ToolTip.Tip="{Binding Formula, Mode=OneWay}"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Stretch"/>
 

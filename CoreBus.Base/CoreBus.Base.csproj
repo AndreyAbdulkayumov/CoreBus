@@ -79,6 +79,9 @@
     <Compile Update="Views\ModbusClient\Manual\WriteFields\SingleRegister.axaml.cs">
       <DependentUpon>SingleRegister.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\ModbusClient\Monitoring\EditFormulaWindow.axaml.cs">
+      <DependentUpon>EditFormulaWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ModbusClient\Monitoring\ModbusMonitoring_View.axaml.cs">
       <DependentUpon>ModbusMonitoring_View.axaml</DependentUpon>
     </Compile>

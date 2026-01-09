@@ -1,9 +1,11 @@
+using Core.Models;
 using Core.Models.Settings;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
 using System.Reactive;
 using ViewModels.Helpers.FloatNumber;
@@ -135,6 +137,14 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _convertedValue, value);
         }
 
+        private string? _formula;
+
+        public string? Formula
+        {
+            get => _formula;
+            set => this.RaiseAndSetIfChanged(ref _formula, value);
+        }
+
         private bool _onChart;
 
         public bool OnChart
@@ -145,11 +155,14 @@ namespace ViewModels.ModbusClient.Monitoring
 
         public ReactiveCommand<Unit, Unit> Command_FormulaChange { get; }
 
-        private NumberStyles _numberViewStyle;
-
         private UInt16 _selectedAddress;
 
         public UInt16 SelectedAddress => _selectedAddress;
+
+
+        private const int _floatRoundedDigit = 6;
+
+        private NumberStyles _numberViewStyle;
 
         public readonly Guid Id;
 
@@ -157,11 +170,14 @@ namespace ViewModels.ModbusClient.Monitoring
         private float _convertedInnerValue = 0;
 
         private readonly Model_Settings _settingsModel;
+        private readonly IOpenChildWindowService _openChildWindowService;
+        private readonly IMessageBoxMainWindow _messageBox;
 
-
-        public MonitoringItem_VM(int initAddress, NumberStyles numberStyle, Model_Settings settingsModel, IMessageBoxMainWindow messageBox)
+        public MonitoringItem_VM(int initAddress, NumberStyles numberStyle, Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox)
         {
             _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+            _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Id = Guid.NewGuid();
 
@@ -176,11 +192,18 @@ namespace ViewModels.ModbusClient.Monitoring
             SelectedValueType = AllValueTypes.First();
             ConvertedValue = "0.00";
 
-            Command_FormulaChange = ReactiveCommand.Create(() =>
+            Command_FormulaChange = ReactiveCommand.CreateFromTask(async () =>
             {
+                var title = string.IsNullOrWhiteSpace(Alias) ? $"Для адреса \'{GetDisplayedAddress()}\"" : Alias;
 
+                var newFormula = await _openChildWindowService.EditFormula(title, Formula);
+
+                if (!string.IsNullOrEmpty(newFormula))
+                {
+                    Formula = newFormula;
+                }
             });
-            Command_FormulaChange.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка изменения формулы.\n\n{error.Message}", MessageType.Error, error));
+            Command_FormulaChange.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка изменения формулы.\n\n{error.Message}", MessageType.Error, error));
 
             this.WhenAnyValue(e => e.Alias)
                 .Subscribe(alias =>
@@ -202,7 +225,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
             TypedValue = GetDisplayedTypedValue(registers, out _convertedInnerValue);
 
-            ConvertedValue = _convertedInnerValue.ToString();
+            ConvertedValue = Math.Round(MathFormula.Solve(Formula, _convertedInnerValue), _floatRoundedDigit).ToString();
 
             if (OnChart)
             {
@@ -280,9 +303,9 @@ namespace ViewModels.ModbusClient.Monitoring
                     return _numberViewStyle == NumberStyles.HexNumber ? resultInt32.ToString("X") : resultInt32.ToString();
 
                 case MonitoringItem_VM.TypeName_Float:
-                    float resultFloat = GetFloatNumber(registers, 2);
+                    float resultFloat = GetFloatNumber(registers);
                     convertedValue = resultFloat;
-                    return resultFloat.ToString();
+                    return resultFloat == 0f ? "0" : resultFloat.ToString();    // Исключаем конвертацию в -0 у чисел типа float
 
                 default:
                     convertedValue = _rawValue;
@@ -300,12 +323,12 @@ namespace ViewModels.ModbusClient.Monitoring
                 .ToArray();
         }
 
-        private float GetFloatNumber(Dictionary<int, UInt16> registers, int numberOfRegisters)
+        private float GetFloatNumber(Dictionary<int, UInt16> registers)
         {
-            var bytes = GetBytesFromRegisters(registers, numberOfRegisters);
+            var bytes = GetBytesFromRegisters(registers, 2);    // т.к. для float числа используется 2 регистра
             var floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(_settingsModel.Settings?.FloatNumberFormat);
 
-            return FloatHelper.GetFloatNumberFromBytes(bytes, floatFormat);
+            return MathF.Round(FloatHelper.GetFloatNumberFromBytes(bytes, floatFormat), _floatRoundedDigit);
         }
 
         public string GetFieldViewName(string fieldName)

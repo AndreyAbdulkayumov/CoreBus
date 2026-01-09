@@ -64,12 +64,14 @@ public class MonitoringDataGrid_VM : ReactiveObject
     private NumberStyles _numberViewStyle;
 
     private readonly Model_Settings _settingsModel;
+    private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxMainWindow _messageBox;
 
 
-    public MonitoringDataGrid_VM(Model_Settings settingsModel, IMessageBoxMainWindow messageBox)
+    public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox)
     {
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
         Command_SelectAllRows = ReactiveCommand.Create(() =>
@@ -88,7 +90,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         {
             var initAddress = Items.Any() ? Items.Last().SelectedAddress + 1 : 0;
 
-            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _messageBox);
+            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
             newItem.TypeChanged += MonitoringItem_TypeChanged;
             newItem.PropertyChanged += MonitoringItem_PropertyChanged;
 
@@ -112,11 +114,12 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         foreach (var data in itemsData)
         {
-            var newItem = new MonitoringItem_VM(data.Address, _numberViewStyle, _settingsModel, _messageBox);
+            var newItem = new MonitoringItem_VM(data.Address, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
 
             newItem.Alias = data.Alias;
             newItem.SelectedValueType = data.ValueType;
             newItem.VisibleOnlyRawValue = data.VisibleOnlyRawValue;
+            newItem.Formula = string.IsNullOrWhiteSpace(data.Formula) ? "x" : data.Formula;
             newItem.OnChart = data.OnChart;
 
             newItem.TypeChanged += MonitoringItem_TypeChanged;

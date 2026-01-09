@@ -279,6 +279,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                         Alias = e.Alias,
                         ValueType = e.SelectedValueType,
                         VisibleOnlyRawValue = e.VisibleOnlyRawValue,
+                        Formula = e.Formula,
                         OnChart = e.OnChart,
                     })
                     .ToList(),

@@ -86,6 +86,8 @@ public partial class App : Application
             .AddScoped<Macros_VM>()
             // Окно редактирования макроса
             .AddScoped<EditMacros_VM>()
+            // Окно редактирования формулы (режим мониторинга Modbus)
+            .AddScoped<EditFormula_VM>()
             // Окно графика
             .AddTransient<Chart_VM>()
             // MessageBox с разными владельцами

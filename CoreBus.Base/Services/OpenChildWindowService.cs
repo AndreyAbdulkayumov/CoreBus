@@ -11,13 +11,15 @@ using CoreBus.Base.Views;
 using CoreBus.Base.Views.Macros;
 using CoreBus.Base.Views.Macros.EditMacros;
 using CoreBus.Base.Views.Settings;
+using CoreBus.Base.Views.ModbusClient.Monitoring;
+using CoreBus.Base.Views.Chart;
 using ViewModels;
 using ViewModels.Macros;
 using ViewModels.Macros.MacrosEdit;
 using ViewModels.ModbusScanner;
 using ViewModels.Settings;
+using ViewModels.ModbusClient.Monitoring;
 using ViewModels.Chart;
-using CoreBus.Base.Views.Chart;
 
 namespace CoreBus.Base.Services;
 
@@ -28,6 +30,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     private Macros_VM? _macrosVM;
     private EditMacros_VM? _editMacrosVM;
     private ModbusScanner_VM? _modbusScannerVM;
+    private EditFormula_VM? _editFormulaVM;
     private Chart_VM? _chartVM;
 
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
@@ -236,6 +239,46 @@ public class OpenChildWindowService : IOpenChildWindowService
         });
         
         return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
+    }
+
+    public async Task<string?> EditFormula(string title, string? formula)
+    {
+        if (MainWindow.Instance == null)
+        {
+            throw new Exception("Не задан владелец окна.");
+        }
+
+        await using var scope = _serviceProvider.CreateAsyncScope();
+
+        _editFormulaVM = scope.ServiceProvider.GetRequiredService<EditFormula_VM>();
+
+        if (_editFormulaVM == null)
+        {
+            return null;
+        }
+
+        _editFormulaVM.InitWindow(title, formula);
+
+        var window = new EditFormulaWindow()
+        {
+            DataContext = _editFormulaVM
+        };
+
+        void MainWindowClosedHandler(object? sender, EventArgs e)
+        {
+            window?.Close();
+        }
+
+        window.Closed += (object? sender, EventArgs e) =>
+        {
+            MainWindow.Instance.Closed -= MainWindowClosedHandler;
+        };
+
+        MainWindow.Instance.Closed += MainWindowClosedHandler;
+
+        await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+
+        return _editFormulaVM.GetResult();
     }
 
     public void Chart()

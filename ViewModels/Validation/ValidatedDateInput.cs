@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace ViewModels.Validation;
 
@@ -15,7 +15,6 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
     protected const string DecError_float = "DecError_float";
     protected const string BinError_UInt16 = "BinError_UInt16";
     protected const string IP_Address_Invalid = "IP-Address Invalid";
-    protected const string MonitoringItem_Address_Invalid = "Monitoring item Address Invalid";
 
     protected Dictionary<string, ValidateMessage> AllErrorMessages = new Dictionary<string, ValidateMessage>()
     {
