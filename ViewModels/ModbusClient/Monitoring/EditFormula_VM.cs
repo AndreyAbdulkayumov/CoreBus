@@ -45,7 +45,6 @@ public class EditFormula_VM : ValidatedDateInput
         ErrorsChanged += EditFormula_VM_ErrorsChanged;
     }
 
-
     private void EditFormula_VM_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
     {
         SaveIsEnabled = ActualErrors.Count == 0;
@@ -64,7 +63,7 @@ public class EditFormula_VM : ValidatedDateInput
 
     public string? GetResult()
     {
-        return _saved && !ActualErrors.Any() ? Formula : null;
+        return _saved && !ActualErrors.Any() ? MathFormula.Normalize(Formula) : null;
     }
 
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
