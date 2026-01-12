@@ -41,81 +41,89 @@
 					  VerticalScrollBarVisibility="Auto"
 					  Margin="3">
 
-			<ItemsControl Margin="3" ItemsSource="{Binding FloatRepresentationItems, Mode=OneWay}">
+			<Grid>
+				
+				<ItemsControl Margin="3" ItemsSource="{Binding FloatRepresentationItems, Mode=OneWay}">
 
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel Orientation="Horizontal" Spacing="10"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" Spacing="10"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
 
-				<ItemsControl.ItemTemplate>
+					<ItemsControl.ItemTemplate>
 
-					<DataTemplate>
+						<DataTemplate>
 
-						<Border Background="{DynamicResource FloatRepresentation_Field_Background}"
-								BorderBrush="{DynamicResource Group_Color_BorderBrush}"
-								BorderThickness="1"
-								CornerRadius="10"
-								Padding="5"
-								Height="145" Width="180">
+							<Border Background="{DynamicResource FloatRepresentation_Field_Background}"
+									BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+									BorderThickness="1"
+									CornerRadius="10"
+									Padding="5"
+									Height="145" Width="180">
 
-							<StackPanel Orientation="Vertical" Spacing="8"
-										HorizontalAlignment="Center" 
-										VerticalAlignment="Center">
+								<StackPanel Orientation="Vertical" Spacing="8"
+											HorizontalAlignment="Center" 
+											VerticalAlignment="Center">
 
-								<TextBlock Text="{Binding Address}"
-										   FontSize="13"
-										   Background="{DynamicResource FloatRepresentation_Address_Background}"
-										   Foreground="Black"
-										   Padding="2"
-										   HorizontalAlignment="Center"/>
+									<TextBlock Text="{Binding Address}"
+											   FontSize="13"
+											   Background="{DynamicResource FloatRepresentation_Address_Background}"
+											   Foreground="Black"
+											   Padding="2"
+											   HorizontalAlignment="Center"/>
 								
-								<Grid>
+									<Grid>
 									
-									<TextBlock Text="AB CD" Classes="FormatName"/>
+										<TextBlock Text="AB CD" Classes="FormatName"/>
 									
-									<TextBox Classes="InputField NumberView"
-											 Text="{Binding AB_CD_View, Mode=OneWay}"/>
+										<TextBox Classes="InputField NumberView"
+												 Text="{Binding AB_CD_View, Mode=OneWay}"/>
 									
-								</Grid>
+									</Grid>
 
-								<Grid>
+									<Grid>
 
-									<TextBlock Text="BA DC" Classes="FormatName"/>
+										<TextBlock Text="BA DC" Classes="FormatName"/>
 
-									<TextBox Classes="InputField NumberView"
-											 Text="{Binding BA_DC_View, Mode=OneWay}"/>
+										<TextBox Classes="InputField NumberView"
+												 Text="{Binding BA_DC_View, Mode=OneWay}"/>
 
-								</Grid>
+									</Grid>
 
-								<Grid>
+									<Grid>
 
-									<TextBlock Text="CD AB" Classes="FormatName"/>
+										<TextBlock Text="CD AB" Classes="FormatName"/>
 
-									<TextBox Classes="InputField NumberView"
-											 Text="{Binding CD_AB_View, Mode=OneWay}"/>
+										<TextBox Classes="InputField NumberView"
+												 Text="{Binding CD_AB_View, Mode=OneWay}"/>
 
-								</Grid>
+									</Grid>
 
-								<Grid>
+									<Grid>
 
-									<TextBlock Text="DC BA" Classes="FormatName"/>
+										<TextBlock Text="DC BA" Classes="FormatName"/>
 
-									<TextBox Classes="InputField NumberView"
-											 Text="{Binding DC_BA_View, Mode=OneWay}"/>
+										<TextBox Classes="InputField NumberView"
+												 Text="{Binding DC_BA_View, Mode=OneWay}"/>
 
-								</Grid>
+									</Grid>
 								
-							</StackPanel>
+								</StackPanel>
 							
-						</Border>
+							</Border>
 						
-					</DataTemplate>
+						</DataTemplate>
 
-				</ItemsControl.ItemTemplate>
+					</ItemsControl.ItemTemplate>
 			
-			</ItemsControl>
+				</ItemsControl>
+
+				<TextBlock Text="Для преобразования в число нужно минимум 2 регистра Modbus"
+			               IsVisible="{Binding !FloatRepresentationItems.Count}"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+			</Grid>			
 				
 		</ScrollViewer>
 		
