@@ -155,6 +155,7 @@
 			</Grid>
 
 			<Border Grid.Row="1"
+					x:Name="Border_ResizeIcon"
 					Background="Transparent"
 					Width="20" Height="20"
 					HorizontalAlignment="Right" VerticalAlignment="Bottom"

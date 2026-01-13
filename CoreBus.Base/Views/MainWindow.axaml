@@ -347,6 +347,7 @@
 				</Border>
 
 				<Border Grid.Row="2" Grid.Column="1"
+						x:Name="Border_ResizeIcon"
 						Background="Transparent"
 						Width="20" Height="20"
 						HorizontalAlignment="Right" VerticalAlignment="Bottom"

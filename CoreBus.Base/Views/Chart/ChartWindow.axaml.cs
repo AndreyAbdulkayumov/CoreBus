@@ -26,7 +26,6 @@ public partial class ChartWindow : Window
         InitializeComponent();
 
         Instance = this;
-
         Workspace = this.FindControl<Grid>("Grid_Workspace") ?? throw new ArgumentNullException(nameof(Workspace));
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon") ?? throw new ArgumentNullException(nameof(_resizeIcon));
