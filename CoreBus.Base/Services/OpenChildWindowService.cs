@@ -20,11 +20,14 @@ using ViewModels.ModbusScanner;
 using ViewModels.Settings;
 using ViewModels.ModbusClient.Monitoring;
 using ViewModels.Chart;
+using MessageBox.Core;
 
 namespace CoreBus.Base.Services;
 
 public class OpenChildWindowService : IOpenChildWindowService
 {
+    public bool ChartWindowIsOpen { get; private set; } = false;
+
     private Settings_VM? _settingsVM;
     private AboutApp_VM? _aboutAppVM;
     private Macros_VM? _macrosVM;
@@ -36,8 +39,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
     private static bool _macrosWindowIsOpen = false;
-    private static bool _chartWindowIsOpen = false;
-
+    
     private readonly IServiceProvider _serviceProvider;
 
     public OpenChildWindowService(IServiceProvider serviceProvider)
@@ -285,7 +287,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         try
         {
-            if (_chartWindowIsOpen)
+            if (ChartWindowIsOpen)
             {
                 return;
             }
@@ -295,7 +297,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception("Не задан владелец окна.");
             }
 
-            _chartWindowIsOpen = true;
+            ChartWindowIsOpen = true;
 
             _chartVM = _serviceProvider.GetService<Chart_VM>();
 
@@ -314,10 +316,41 @@ public class OpenChildWindowService : IOpenChildWindowService
                 window?.Close();
             }
 
+            window.Closing += async (object? sender, WindowClosingEventArgs e) =>
+            {
+                if (!ChartWindowIsOpen)
+                    return;
+
+                var monitoringVM = _serviceProvider.GetService<ModbusMonitoring_VM>();
+                var chartMessageBox = _serviceProvider.GetService<IMessageBoxChart>();
+
+                if (monitoringVM == null || chartMessageBox == null)
+                    return;
+
+                if (monitoringVM.IsStart)
+                {
+                    // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
+                    // Отменять закрытие окна нужно, чтобы успеть показать MessageBox.
+                    // Без этого окно просто закроется, и все что ниже будет проигнорировано.
+                    e.Cancel = true;
+
+                    var closeWindow = await chartMessageBox.ShowYesNoDialog(
+                        "Опрос Modbus регистров еще идет.\n\n" +
+                        "Вы действительно желайте закрыть окно графика и потерять все накопленные данные?", 
+                        MessageType.Warning);
+
+                    if (closeWindow != MessageBoxResult.No)
+                    {
+                        ChartWindowIsOpen = false;
+                        window.Close();                        
+                    }
+                }
+            };
+
             window.Closed += (object? sender, EventArgs e) =>
             {
                 MainWindow.Instance.Closed -= MainWindowClosedHandler;
-                _chartWindowIsOpen = false;
+                ChartWindowIsOpen = false;
             };
 
             MainWindow.Instance.Closed += MainWindowClosedHandler;
@@ -327,7 +360,7 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         catch (Exception error)
         {
-            _chartWindowIsOpen = false;
+            ChartWindowIsOpen = false;
 
             throw new Exception(error.Message);
         }

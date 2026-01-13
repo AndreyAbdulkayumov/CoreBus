@@ -2,6 +2,7 @@ namespace Services.Interfaces;
 
 public interface IOpenChildWindowService
 {
+    bool ChartWindowIsOpen { get; }
     Task Settings();
     Task<string?> UserInput();
     Task About();

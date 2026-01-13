@@ -16,10 +16,10 @@ public partial class ChartWindow : Window
     public static ChartWindow? Instance { get; private set; }
     public static Grid? Workspace { get; private set; }
 
-    private readonly Border? _resizeIcon;
-    private readonly AvaPlot? _chart;
+    private readonly Border _resizeIcon;
+    private readonly AvaPlot _chart;
     
-    private Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
+    private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
 
     public ChartWindow()
     {
@@ -28,6 +28,7 @@ public partial class ChartWindow : Window
         Instance = this;
 
         Workspace = this.FindControl<Grid>("Grid_Workspace") ?? throw new ArgumentNullException(nameof(Workspace));
+
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon") ?? throw new ArgumentNullException(nameof(_resizeIcon));
         _chart = this.FindControl<AvaPlot>("Chart") ?? throw new ArgumentNullException(nameof(_chart));
 
@@ -60,7 +61,7 @@ public partial class ChartWindow : Window
     {
         try
         {
-            _chart?.Plot.Clear();
+            _chart.Plot.Clear();
             _loggers.Clear();
 
             foreach (var axis in e)
@@ -79,9 +80,6 @@ public partial class ChartWindow : Window
 
     private void Chart_VM_AddPointOnChart(object? sender, ChartPoint e)
     {
-        if (_chart == null)
-            return;
-
         if (_loggers.TryGetValue(e.AxisId, out var logger))
         {
             logger.Add(e.X, e.Y);
@@ -104,10 +102,7 @@ public partial class ChartWindow : Window
     {
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
-        if (_resizeIcon != null)
-        {
-            _resizeIcon.IsVisible = WindowState == WindowState.Normal ? true : false;
-        }
+        _resizeIcon.IsVisible = WindowState == WindowState.Normal;
     }
 
     private void Button_Close_Click(object? sender, RoutedEventArgs e)

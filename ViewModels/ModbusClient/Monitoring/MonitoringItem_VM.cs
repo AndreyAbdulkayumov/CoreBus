@@ -227,7 +227,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
             ConvertedValue = Math.Round(MathFormula.Solve(Formula, _convertedInnerValue), _floatRoundedDigit).ToString();
 
-            if (OnChart)
+            if (OnChart && _openChildWindowService.ChartWindowIsOpen)
             {
                 MessageBus.Current.SendMessage(
                     new AddingPointMessage(Id, chartXCoordinate, double.Parse(ConvertedValue))

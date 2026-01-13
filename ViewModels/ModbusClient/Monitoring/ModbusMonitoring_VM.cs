@@ -196,7 +196,15 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Command_RemoveSelectedItems = ReactiveCommand.Create(_monitoringDataGrid_VM.RemoveSelectedItems);
         Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления выбранных регистров.\n\n{error.Message}", MessageType.Error, error));
 
-        Command_OpenChart = ReactiveCommand.Create(() => _openChildWindowService.Chart());
+        Command_OpenChart = ReactiveCommand.Create(() =>
+        {
+            if (_openChildWindowService.ChartWindowIsOpen)
+                return;
+
+            _openChildWindowService.Chart();
+
+            InitChartAxes();
+        });
         Command_OpenChart.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
@@ -360,20 +368,26 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             _monitoringDataGrid_VM.BlockUI(true);
 
-            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);
+            if (_openChildWindowService.ChartWindowIsOpen)
+                InitChartAxes();
 
-            var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart).ToDictionary(e => e.Id, e => e.Alias ?? "");
-
-            if (chartAxes.Any())
-            {
-                MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes));
-            }            
+            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);            
         }
         
         catch (Exception)
         {
             StopPolling();
             throw;
+        }
+    }
+
+    private void InitChartAxes()
+    {
+        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart).ToDictionary(e => e.Id, e => e.Alias ?? $"Адрес \"{e.Address}\"");
+
+        if (chartAxes.Any())
+        {
+            MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes));
         }
     }
 
@@ -419,7 +433,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                         data,
                         ModbusClient_VM.ModbusMessageType);
 
-        if (result.ReadedData == null)
+        if (result.ReadedData == null || !IsStart)
             return;
 
         _chartPointCounter++;
