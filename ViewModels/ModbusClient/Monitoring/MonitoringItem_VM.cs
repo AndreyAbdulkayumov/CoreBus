@@ -212,7 +212,7 @@ namespace ViewModels.ModbusClient.Monitoring
                 });
         }
 
-        public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, double chartXCoordinate)
+        public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, uint chartIncrementX)
         {
             IsNewValue = _rawValue != newRawValue;
 
@@ -230,7 +230,7 @@ namespace ViewModels.ModbusClient.Monitoring
             if (OnChart && _openChildWindowService.ChartWindowIsOpen)
             {
                 MessageBus.Current.SendMessage(
-                    new AddingPointMessage(Id, chartXCoordinate, double.Parse(ConvertedValue))
+                    new AddingPointMessage(Id, double.Parse(ConvertedValue), chartIncrementX)
                     );
             }
         }

@@ -242,7 +242,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         }
     }
 
-    public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, double chartXCoordinate)
+    public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, uint chartIncrementX)
     {
         var registers =
             ConvertToResultList(data, numberOfRegisters, readFunction)
@@ -253,7 +253,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
         {
             if (registers.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
-                item.SetReadedValue(registerValue, registers, chartXCoordinate);
+                item.SetReadedValue(registerValue, registers, chartIncrementX);
             }
         }
     }

@@ -89,7 +89,7 @@ public partial class App : Application
             // Окно редактирования формулы (режим мониторинга Modbus)
             .AddScoped<EditFormula_VM>()
             // Окно графика
-            .AddTransient<Chart_VM>()
+            .AddScoped<Chart_VM>()
             // MessageBox с разными владельцами
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()

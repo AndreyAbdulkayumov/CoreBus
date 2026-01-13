@@ -131,7 +131,6 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     public ReactiveCommand<Unit, Unit> Command_RemoveSelectedItems { get; }    
     public ReactiveCommand<Unit, Unit> Command_OpenChart { get; }
 
-    private int _chartPointCounter = 0;
     private NumberStyles _numberViewStyle;
     private byte _selectedSlaveID;
     private uint _selectedPeriod;
@@ -398,8 +397,6 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Button_Content = Button_Content_Start;
         IsStart = false;
 
-        _chartPointCounter = 0;
-
         _monitoringDataGrid_VM.BlockUI(false);
     }
 
@@ -436,10 +433,6 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (result.ReadedData == null || !IsStart)
             return;
 
-        _chartPointCounter++;
-
-        var xCoordinate = _selectedPeriod * _chartPointCounter;
-
-        _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, xCoordinate);
+        _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
     }
 }

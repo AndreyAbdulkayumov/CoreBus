@@ -41,6 +41,12 @@ public partial class ChartWindow : Window
         _chart.Refresh();
     }
 
+    public void UnsubscribeFromEvents()
+    {
+        Chart_VM.InitAxis -= Chart_VM_InitAxis;
+        Chart_VM.AddPointOnChart -= Chart_VM_AddPointOnChart;
+    }
+
     private DataLogger CreateDataLogger(ChartAxis axisSettings)
     {
         var logger = _chart.Plot.Add.DataLogger();
@@ -81,7 +87,9 @@ public partial class ChartWindow : Window
     {
         if (_loggers.TryGetValue(e.AxisId, out var logger))
         {
-            logger.Add(e.X, e.Y);
+            var xCoordinate = logger.Data.Coordinates.Count == 0 ? 0 : logger.Data.Coordinates[^1].X + e.IncrementX;
+
+            logger.Add(xCoordinate, e.Value);
 
             _chart.Refresh();
         }

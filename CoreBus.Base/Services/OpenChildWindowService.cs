@@ -351,6 +351,8 @@ public class OpenChildWindowService : IOpenChildWindowService
             {
                 MainWindow.Instance.Closed -= MainWindowClosedHandler;
                 ChartWindowIsOpen = false;
+
+                window.UnsubscribeFromEvents();
             };
 
             MainWindow.Instance.Closed += MainWindowClosedHandler;

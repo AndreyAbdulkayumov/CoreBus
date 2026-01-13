@@ -2,14 +2,14 @@ namespace ViewModels.Chart.DataTypes;
 
 public struct ChartPoint
 {
-    public Guid AxisId { get; set; }
-    public double X { get; set; }
-    public double Y { get; set; }
+    public Guid AxisId { get; }
+    public double Value { get; }
+    public uint IncrementX { get; }
 
-    public ChartPoint(Guid axisId, double x, double y)
+    public ChartPoint(Guid axisId, double value, uint incrementX)
     {
         AxisId = axisId;
-        X = x;
-        Y = y;
+        Value = value;
+        IncrementX = incrementX;
     }
 }

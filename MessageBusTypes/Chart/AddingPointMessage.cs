@@ -3,13 +3,13 @@ namespace MessageBusTypes.Chart;
 public class AddingPointMessage
 {
     public Guid AxisId { get; }
-    public double X { get; }
-    public double Y { get; }
+    public double Value { get; }
+    public uint IncrementX { get; }
 
-    public AddingPointMessage(Guid axisId, double x, double y)
+    public AddingPointMessage(Guid axisId, double value, uint incrementX)
     {
         AxisId = axisId;
-        X = x;
-        Y = y;
+        Value = value;
+        IncrementX = incrementX;
     }
 }
