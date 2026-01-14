@@ -225,12 +225,15 @@ namespace ViewModels.ModbusClient.Monitoring
 
             TypedValue = GetDisplayedTypedValue(registers, out _convertedInnerValue);
 
+            if (string.IsNullOrEmpty(Formula))
+                return;
+
             ConvertedValue = Math.Round(MathFormula.Solve(Formula, _convertedInnerValue), _floatRoundedDigit).ToString();
 
             if (OnChart && _openChildWindowService.ChartWindowIsOpen)
             {
                 MessageBus.Current.SendMessage(
-                    new AddingPointMessage(Id, double.Parse(ConvertedValue), chartIncrementX)
+                    new AddingPointMessage(Id, double.Parse(ConvertedValue))
                     );
             }
         }

@@ -8,8 +8,8 @@ namespace ViewModels.Chart;
 public class Chart_VM : ReactiveObject, IDisposable
 {
     // Чтобы исключить работу с UI компонентами управление графиком происходит через события
-    public static event EventHandler<IList<ChartAxis>>? InitAxis;
-    public static event EventHandler<ChartPoint>? AddPointOnChart;
+    public static event EventHandler<InitAxesEventArgs>? InitAxes;
+    public static event EventHandler<ChartValue>? AddPointOnChart;
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -25,16 +25,18 @@ public class Chart_VM : ReactiveObject, IDisposable
             MessageBus.Current.Listen<InitAxesMessage>()
                 .Subscribe(message =>
                 {
-                    var axes = message.Axes.Select(e => new ChartAxis(e.Key, e.Value)).ToList();
+                    var args = new InitAxesEventArgs(
+                        message.Axes.Select(e => new ChartAxis(e.Key, e.Value)).ToList(), 
+                        message.IncrementX);
 
-                    InitAxis?.Invoke(this, axes);
+                    InitAxes?.Invoke(this, args);
                 }));
 
         _disposables.Add(
             MessageBus.Current.Listen<AddingPointMessage>()
                 .Subscribe(message =>
                 {
-                    AddPointOnChart?.Invoke(this, new ChartPoint(message.AxisId, message.Value, message.IncrementX));
+                    AddPointOnChart?.Invoke(this, new ChartValue(message.AxisId, message.Value));
                 }));
     }
 

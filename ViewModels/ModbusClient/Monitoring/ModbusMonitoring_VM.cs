@@ -386,7 +386,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         if (chartAxes.Any())
         {
-            MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes));
+            MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes, _selectedPeriod));
         }
     }
 

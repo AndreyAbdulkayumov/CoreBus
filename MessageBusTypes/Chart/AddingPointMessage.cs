@@ -4,12 +4,10 @@ public class AddingPointMessage
 {
     public Guid AxisId { get; }
     public double Value { get; }
-    public uint IncrementX { get; }
 
-    public AddingPointMessage(Guid axisId, double value, uint incrementX)
+    public AddingPointMessage(Guid axisId, double value)
     {
         AxisId = axisId;
         Value = value;
-        IncrementX = incrementX;
     }
 }
