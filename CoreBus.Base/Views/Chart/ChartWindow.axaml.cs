@@ -67,6 +67,8 @@ public partial class ChartWindow : Window
                 _loggers.Add(axis.Id, logger);             
             }
 
+            _chart.Plot.Axes.Bottom.Label.Text = "Время, мс.";
+
             _incrementX = e.IncrementX;
 
             _chart.Plot.Axes.SetLimits(0, 1000, -100, 100);
