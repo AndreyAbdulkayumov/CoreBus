@@ -1,17 +1,38 @@
 using MessageBusTypes.Chart;
 using ReactiveUI;
-using System.Reactive.Disposables;
 using ViewModels.Chart.DataTypes;
 
 namespace ViewModels.Chart;
 
-public class Chart_VM : ReactiveObject, IDisposable
+public class Chart_VM : ReactiveObject
 {
     // Чтобы исключить работу с UI компонентами управление графиком происходит через события
     public static event EventHandler<InitAxesEventArgs>? InitAxes;
     public static event EventHandler<ChartValue>? AddPointOnChart;
 
-    private readonly CompositeDisposable _disposables = new CompositeDisposable();
+    private bool _windowIsTopmost;
+
+    public bool WindowIsTopmost
+    {
+        get => _windowIsTopmost;
+        set => this.RaiseAndSetIfChanged(ref  _windowIsTopmost, value);
+    }
+
+    private uint _numberOfVisiblePoints = 10;
+
+    public uint NumberOfVisiblePoints
+    {
+        get => _numberOfVisiblePoints;
+        set => this.RaiseAndSetIfChanged(ref _numberOfVisiblePoints, value);
+    }
+
+    private bool _toolsIsEnabled = true;
+
+    public bool ToolsIsEnabled
+    {
+        get => _toolsIsEnabled;
+        set => this.RaiseAndSetIfChanged(ref _toolsIsEnabled, value);
+    }
 
     public Chart_VM()
     {
@@ -21,27 +42,26 @@ public class Chart_VM : ReactiveObject, IDisposable
         //
         /****************************************************/
 
-        _disposables.Add(
-            MessageBus.Current.Listen<InitAxesMessage>()
-                .Subscribe(message =>
-                {
-                    var args = new InitAxesEventArgs(
-                        message.Axes.Select(e => new ChartAxis(e.Key, e.Value)).ToList(), 
-                        message.IncrementX);
+        MessageBus.Current.Listen<InitAxesMessage>()
+            .Subscribe(message =>
+            {
+                var args = new InitAxesEventArgs(
+                    message.Axes.Select(e => new ChartAxis(e.Key, e.Value)).ToList(),
+                    message.IncrementX);
 
-                    InitAxes?.Invoke(this, args);
-                }));
+                InitAxes?.Invoke(this, args);
+            });
 
-        _disposables.Add(
-            MessageBus.Current.Listen<AddingPointMessage>()
-                .Subscribe(message =>
-                {
-                    AddPointOnChart?.Invoke(this, new ChartValue(message.AxisId, message.Value));
-                }));
-    }
+        MessageBus.Current.Listen<AddingPointMessage>()
+            .Subscribe(message =>
+            {
+                AddPointOnChart?.Invoke(this, new ChartValue(message.AxisId, message.Value));
+            });
 
-    public void Dispose()
-    {
-        _disposables.Dispose();
+        MessageBus.Current.Listen<ManageChartToolsMessage>()
+            .Subscribe(message =>
+            {
+                ToolsIsEnabled = message.ToolsIsEnabled;
+            });
     }
 }

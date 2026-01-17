@@ -11,6 +11,7 @@
         x:DataType="ViewModels:Chart_VM"
         Icon="/Resources/MainLogo.ico"
 		Title="График"
+		Topmost="{Binding WindowIsTopmost, Mode=OneWay}"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
@@ -21,6 +22,8 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
@@ -75,20 +78,50 @@
 				
 			</Grid>
 
-			<Grid x:Name="Grid_Workspace" Grid.Row="1">
+			<Grid x:Name="Grid_Workspace" Grid.Row="1" 
+		          RowDefinitions="60,1*">
 
 				<Border Grid.Row="0"
 						Classes="AppField">
 
+					<Grid Margin="20,0,20,0">
+
+						<StackPanel Orientation="Horizontal" Spacing="10">
+
+							<TextBlock Text="Количество отображаемых точек"
+									   VerticalAlignment="Center"/>
+
+							<TextBox Classes="InputField"
+									 Text="{Binding NumberOfVisiblePoints, Mode=TwoWay}"
+									 IsEnabled="{Binding ToolsIsEnabled, Mode=OneWay}"
+									 Width="80"
+									 MinHeight="22"
+									 FontSize="14"
+									 VerticalAlignment="Center"/>
+
+						</StackPanel>	
+				
+						<CheckBox IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
+								  Content="Поверх всех окон"
+								  Foreground="{DynamicResource App_Color_Text}"
+								  HorizontalAlignment="Right"/>
+
+					</Grid>
+					
+				</Border>
+
+				<Border Grid.Row="1"
+						Classes="AppField">
+
 					<Grid>
 
-						<ScottPlot:AvaPlot x:Name="Chart"/>
+						<ScottPlot:AvaPlot x:Name="Chart" Margin="10"/>
 						
 					</Grid>					
 					
 				</Border>
 
-				<Border x:Name="Border_ResizeIcon"
+				<Border x:Name="Border_ResizeIcon" Grid.Row="1"
 			            Background="Transparent"
 						Width="20" Height="20"
 						HorizontalAlignment="Right" VerticalAlignment="Bottom"

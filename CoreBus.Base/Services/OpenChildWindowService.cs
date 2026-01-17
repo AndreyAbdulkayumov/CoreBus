@@ -368,6 +368,11 @@ public class OpenChildWindowService : IOpenChildWindowService
         }
     }
 
+    public void RaiseChartWindow()
+    {
+        ChartWindow.Instance?.Activate();
+    }
+
     private Task WaitForCloseAsync(Window window)
     {
         var tcs = new TaskCompletionSource<object?>();

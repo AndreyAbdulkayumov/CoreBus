@@ -11,4 +11,5 @@ public interface IOpenChildWindowService
     Task<object?> EditMacros(object? parameters);
     Task<string?> EditFormula(string title, string? formula);
     void Chart();
+    void RaiseChartWindow();
 }

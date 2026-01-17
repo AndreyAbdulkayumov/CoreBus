@@ -198,7 +198,10 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Command_OpenChart = ReactiveCommand.Create(() =>
         {
             if (_openChildWindowService.ChartWindowIsOpen)
+            {
+                _openChildWindowService.RaiseChartWindow();
                 return;
+            }
 
             _openChildWindowService.Chart();
 
@@ -370,6 +373,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             if (_openChildWindowService.ChartWindowIsOpen)
                 InitChartAxes();
 
+            MessageBus.Current.SendMessage(new ManageChartToolsMessage(false));
+
             _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);            
         }
         
@@ -398,6 +403,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         IsStart = false;
 
         _monitoringDataGrid_VM.BlockUI(false);
+        MessageBus.Current.SendMessage(new ManageChartToolsMessage(true));
     }
 
     private async Task MonitoringRequestAction()

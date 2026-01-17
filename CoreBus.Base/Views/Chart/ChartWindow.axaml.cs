@@ -22,8 +22,6 @@ public partial class ChartWindow : Window
     
     private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
 
-    private const int _numberOfVisiblePoints = 10;
-
     private uint _incrementX;
 
 
@@ -55,34 +53,31 @@ public partial class ChartWindow : Window
 
     private void Chart_VM_InitAxis(object? sender, InitAxesEventArgs e)
     {
-        try
+        _chart.Plot.Clear();
+        _loggers.Clear();
+
+        var numberOfVisiblePoints = DataContext is Chart_VM vm ? vm.NumberOfVisiblePoints : 10;
+
+        var AxesXWidth = numberOfVisiblePoints * e.IncrementX;
+
+        foreach (var axis in e.Axes)
         {
-            _chart.Plot.Clear();
-            _loggers.Clear();
+            var logger = CreateDataLogger(axis, AxesXWidth);
 
-            foreach (var axis in e.Axes)
-            {
-                var logger = CreateDataLogger(axis, e.IncrementX);
-
-                _loggers.Add(axis.Id, logger);             
-            }
-
-            _chart.Plot.Axes.Bottom.Label.Text = "Время, мс.";
-
-            _incrementX = e.IncrementX;
-
-            _chart.Plot.Axes.SetLimits(0, 1000, -100, 100);
-
-            _chart.Refresh();
+            _loggers.Add(axis.Id, logger);
         }
-        
-        catch (Exception)
-        {
-            // А как?
-        }
+
+        _chart.Plot.Axes.Bottom.Label.Text = "Время, мс.";
+        _chart.Plot.Axes.Bottom.Label.Bold = false;
+
+        _incrementX = e.IncrementX;
+
+        _chart.Plot.Axes.SetLimits(0, 1000, -100, 100);
+
+        _chart.Refresh();
     }
 
-    private DataLogger CreateDataLogger(ChartAxis axisSettings, uint incrementX)
+    private DataLogger CreateDataLogger(ChartAxis axisSettings, double axesXWidth)
     {
         var logger = _chart.Plot.Add.DataLogger();
 
@@ -92,7 +87,11 @@ public partial class ChartWindow : Window
         logger.MarkerShape = MarkerShape.FilledCircle;
         logger.MarkerStyle.Size = 6;
 
-        logger.AxisManager = new Slide { Width = _numberOfVisiblePoints * incrementX };
+        logger.AxisManager = new Slide()
+        {
+            Width = axesXWidth,
+            PaddingFractionX = 0.05
+        };
 
         return logger;
     }
@@ -105,8 +104,7 @@ public partial class ChartWindow : Window
 
             logger.Add(xCoordinate, e.Value);
 
-            if (logger.Data.Coordinates.Count <= _numberOfVisiblePoints)
-                _chart.Plot.Axes.AutoScale();
+            //_chart.Plot.Axes.AutoScaleY();
 
             _chart.Refresh();
         }
