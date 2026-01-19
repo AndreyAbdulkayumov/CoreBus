@@ -190,7 +190,8 @@ namespace ViewModels.ModbusClient.Monitoring
 
             TypedValue = "0";
             SelectedValueType = AllValueTypes.First();
-            ConvertedValue = "0.00";
+            ConvertedValue = "0";
+            Formula = "x";
 
             Command_FormulaChange = ReactiveCommand.CreateFromTask(async () =>
             {

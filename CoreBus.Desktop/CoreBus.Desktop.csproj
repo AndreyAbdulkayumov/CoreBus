@@ -16,7 +16,7 @@
 		<!--<PublishAot>true</PublishAot>
 		<TrimMode>partial</TrimMode>-->
 		<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-		<!-- Для публикации используем уже определенную версию SkiaSharp, чтобы исключить конфликты на Linux -->
+		<!-- Для публикации используем уже определенную версию SkiaSharp, чтобы исключить случайное подтягивание встроенной версии библиотеки на Linux -->
 		<SkiaSharpNativeAssets>UseBundled|NoDependencies</SkiaSharpNativeAssets>
 	</PropertyGroup>
 
