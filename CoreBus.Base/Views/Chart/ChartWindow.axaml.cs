@@ -7,6 +7,8 @@ using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
 
@@ -19,10 +21,12 @@ public partial class ChartWindow : Window
 
     private readonly Border _resizeIcon;
     private readonly AvaPlot _chart;
-    
+
     private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
 
     private uint _incrementX;
+
+    private Chart_VM? _viewModel;
 
 
     public ChartWindow()
@@ -56,7 +60,7 @@ public partial class ChartWindow : Window
         _chart.Plot.Clear();
         _loggers.Clear();
 
-        var numberOfVisiblePoints = DataContext is Chart_VM vm ? vm.NumberOfVisiblePoints : 10;
+        var numberOfVisiblePoints = _viewModel?.NumberOfVisiblePoints ?? 10;
 
         var AxesXWidth = numberOfVisiblePoints * e.IncrementX;
 
@@ -110,6 +114,11 @@ public partial class ChartWindow : Window
         }
     }
 
+    private void Window_DataContextChanged(object? sender, EventArgs e)
+    {
+        _viewModel = DataContext as Chart_VM ?? throw new Exception("Окну графика задана неправильная ViewModel.");
+    }
+
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         BeginMoveDrag(e);
@@ -137,5 +146,66 @@ public partial class ChartWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
+    }
+
+    private async void Button_UploadPoints_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_viewModel == null || ChartIsEmpty())
+                return;
+
+            var firstLogger = _loggers.First();
+
+            var numberOfPoints = firstLogger.Value.Data.Coordinates.Count;
+
+            var builder = new StringBuilder();
+
+            // Заполняем шапку
+
+            builder.Append("Время (мс.)\t");
+
+            foreach (var logger in _loggers)
+            {
+                builder.Append($"{logger.Value.LegendText}\t");
+            }
+
+            builder.Append('\n');
+
+            // Добавляем точки
+
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                builder.Append($"{firstLogger.Value.Data.Coordinates[i].X}\t");
+
+                foreach (var logger in _loggers)
+                {
+                    builder.Append($"{logger.Value.Data.Coordinates[i].Y}\t");
+                }
+
+                builder.Append('\n');
+            }
+
+            await _viewModel.UploadChartData(builder.ToString(), DateTime.Now);
+        }
+
+        catch (Exception error)
+        {
+            _viewModel?.ShowMessage("Ошибка чтения точек графика.", error);
+        }
+    }
+
+    private bool ChartIsEmpty()
+    {
+        if (_loggers.Count == 0)
+            return true;
+
+        foreach (var logger in _loggers)
+        {
+            if (logger.Value.Data.Coordinates.Count > 0) 
+                return false;
+        }
+
+        return true;
     }
 }

@@ -1,5 +1,8 @@
+using Core.Models.Settings;
+using MessageBox.Core;
 using MessageBusTypes.Chart;
 using ReactiveUI;
+using Services.Interfaces;
 using ViewModels.Chart.DataTypes;
 
 namespace ViewModels.Chart;
@@ -34,8 +37,17 @@ public class Chart_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _toolsIsEnabled, value);
     }
 
-    public Chart_VM()
+    private readonly Model_Settings _settingsModel;
+    private readonly IFileSystemService _fileSystemService;
+    private readonly IMessageBoxChart _messageBox;
+    
+
+    public Chart_VM(Model_Settings settingsModel, IFileSystemService fileSystemService, IMessageBoxChart messageBox)
     {
+        _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+
         /****************************************************/
         //
         // Настройка прослушивания MessageBus
@@ -63,5 +75,30 @@ public class Chart_VM : ReactiveObject
             {
                 ToolsIsEnabled = message.ToolsIsEnabled;
             });
+    }
+
+    public async Task UploadChartData(string data, DateTime uploadDate)
+    {
+        var path = await _fileSystemService.GetFolderPath("Выгрузка точек графика");
+
+        if (path == null)
+            return;
+
+        string outputFilePath = Path.Combine(path, $"CoreBus {uploadDate:dd.MM.yyyy HH.mm.ss}.txt");
+
+        _settingsModel.SaveInFile(outputFilePath, data);
+
+        _messageBox.Show($"Данные с графика сохранены!\n\nПуть к файлу:\n{outputFilePath}", MessageType.Information);
+    }
+
+    public void ShowMessage(string message, Exception? error = null)
+    {
+        if (error != null)
+        {
+            _messageBox.Show(message, MessageType.Error, error);
+            return;
+        }
+
+        _messageBox.Show(message, MessageType.Information);
     }
 }

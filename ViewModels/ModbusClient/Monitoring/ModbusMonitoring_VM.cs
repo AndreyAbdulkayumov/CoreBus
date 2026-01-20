@@ -190,10 +190,10 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             StartPolling();
         });
-        Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => messageBox.Show(error.Message, MessageType.Error, error));
+        Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_RemoveSelectedItems = ReactiveCommand.Create(_monitoringDataGrid_VM.RemoveSelectedItems);
-        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления выбранных регистров.\n\n{error.Message}", MessageType.Error, error));
+        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка удаления выбранных регистров.\n\n{error.Message}", MessageType.Error, error));
 
         Command_OpenChart = ReactiveCommand.Create(() =>
         {
@@ -203,11 +203,17 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
             }
 
+            if (!_monitoringDataGrid_VM.Items.Any(e => e.OnChart))
+            {
+                _messageBox.Show("Не выбрано ни одного регистра для отображения на графике.", MessageType.Warning);
+                return;
+            }
+
             _openChildWindowService.Chart();
 
             InitChartAxes();
         });
-        Command_OpenChart.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -235,7 +241,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
                 catch (Exception error)
                 {
-                    messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+                    _messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                 }
             });
 

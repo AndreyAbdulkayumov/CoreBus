@@ -16,7 +16,8 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly">
+		SystemDecorations="BorderOnly"
+		DataContextChanged="Window_DataContextChanged">
 
 	<Window.Styles>
 
@@ -89,6 +90,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="10">
 
 							<TextBlock Text="Количество отображаемых точек"
+									   FontSize="13"
 									   VerticalAlignment="Center"/>
 
 							<TextBox Classes="InputField"
@@ -96,16 +98,28 @@
 									 IsEnabled="{Binding ToolsIsEnabled, Mode=OneWay}"
 									 Width="80"
 									 MinHeight="22"
-									 FontSize="14"
+									 FontSize="13"
 									 VerticalAlignment="Center"/>
 
-						</StackPanel>	
-				
-						<CheckBox IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
-								  Content="Поверх всех окон"
-								  Foreground="{DynamicResource App_Color_Text}"
-								  HorizontalAlignment="Right"/>
+						</StackPanel>
+						
+						<StackPanel Orientation="Horizontal" Spacing="20"
+									HorizontalAlignment="Right">
+							
+							<CheckBox IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
+									  Content="Поверх всех окон"
+									  FontSize="13"
+									  Foreground="{DynamicResource App_Color_Text}"/>
 
+							<Button Content="Выгрузить данные"
+									IsEnabled="{Binding ToolsIsEnabled, Mode=OneWay}"
+			                        Height="24"
+									FontSize="13"
+									Padding="6,0,6,0"
+									Click="Button_UploadPoints_Click"/>
+
+						</StackPanel>	
+						
 					</Grid>
 					
 				</Border>

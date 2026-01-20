@@ -1,4 +1,4 @@
-﻿using System.Text.Encodings.Web;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Core.Models.Settings;
@@ -84,6 +84,16 @@ internal static class FileIO
         {
             return defaultData;
         }
+    }
+
+    public static void WriteInFile(string fullFilePath, string data)
+    {
+        if (!File.Exists(fullFilePath))
+        {
+            File.Create(fullFilePath).Close();
+        }
+
+        File.WriteAllText(fullFilePath, data);
     }
 
     public static void Copy(string sourceFileName, string destFileName)
