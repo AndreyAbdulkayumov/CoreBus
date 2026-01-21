@@ -2,6 +2,21 @@ using System.Globalization;
 
 namespace Core.Models.Settings.FileTypes;
 
+public class MonitoringChart : ICloneable
+{
+    public uint NumberOfVisiblePoints { get; set; }
+    public bool ChartIsTopmost { get; set; }
+
+    public object Clone()
+    {
+        return new MonitoringChart()
+        {
+            NumberOfVisiblePoints = NumberOfVisiblePoints,
+            ChartIsTopmost = ChartIsTopmost
+        };
+    }
+}
+
 public class ModbusMonitoringItemData : ICloneable
 {
     public UInt16 Address { get; set; }
@@ -31,6 +46,7 @@ public class ModbusMonitoringParameters
     public int FunctionNumber { get; set; }
     public uint Period { get; set; }
     public NumberStyles NumberStyle { get; set; }
+    public MonitoringChart? ChartInfo { get; set; }
     public List<ModbusMonitoringItemData>? Items { get; set; }
 
     public static ModbusMonitoringParameters GetDefault()
@@ -41,6 +57,11 @@ public class ModbusMonitoringParameters
             FunctionNumber = 4,
             Period = 600,
             NumberStyle = NumberStyles.Number,
+            ChartInfo = new MonitoringChart()
+            {
+                NumberOfVisiblePoints = 10,
+                ChartIsTopmost = false
+            },
             Items = null,
         };
     }

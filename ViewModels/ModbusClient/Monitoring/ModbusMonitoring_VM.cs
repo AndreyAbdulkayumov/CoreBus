@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.Chart;
 using ViewModels.ModbusClient.Manual;
 using ViewModels.Validation;
 
@@ -141,11 +142,12 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
+    private readonly Chart_VM _chart_VM;
 
 
     public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
         Model_Settings settingsModel, ConnectedHost connectedHostModel,
-        Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM)
+        Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
@@ -153,6 +155,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
+        _chart_VM = chart_VM ?? throw new ArgumentNullException(nameof(chart_VM));
         
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -287,6 +290,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             FunctionNumber = Function.AllReadFunctions.FirstOrDefault(e => e.DisplayedName == SelectedReadFunction)?.Number ?? 1,
             Period = _selectedPeriod,
             NumberStyle = _numberViewStyle,
+            ChartInfo = new MonitoringChart()
+            {
+                NumberOfVisiblePoints = _chart_VM.NumberOfVisiblePoints,
+                ChartIsTopmost = _chart_VM.WindowIsTopmost,
+            },
             Items = _monitoringDataGrid_VM
                     .Items
                     .Select(e => new ModbusMonitoringItemData()

@@ -1,4 +1,5 @@
 using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
 using ReactiveUI;
@@ -21,7 +22,7 @@ public class Chart_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref  _windowIsTopmost, value);
     }
 
-    private uint _numberOfVisiblePoints = 10;
+    private uint _numberOfVisiblePoints;
 
     public uint NumberOfVisiblePoints
     {
@@ -75,6 +76,16 @@ public class Chart_VM : ReactiveObject
             {
                 ToolsIsEnabled = message.ToolsIsEnabled;
             });
+
+        // Действия после запуска приложения
+
+        SetParameters(_settingsModel.ModbusMonitoringItems);
+    }
+
+    public void SetParameters(ModbusMonitoringParameters data)
+    {
+        NumberOfVisiblePoints = data.ChartInfo != null ? data.ChartInfo.NumberOfVisiblePoints : 10;
+        WindowIsTopmost = data.ChartInfo != null ? data.ChartInfo.ChartIsTopmost : false;
     }
 
     public async Task UploadChartData(string data, DateTime uploadDate)
@@ -99,6 +110,6 @@ public class Chart_VM : ReactiveObject
             return;
         }
 
-        _messageBox.Show(message, MessageType.Information);
+        _messageBox.Show(message, MessageType.Warning);
     }
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
 
@@ -150,48 +151,64 @@ public partial class ChartWindow : Window
 
     private async void Button_UploadPoints_Click(object? sender, RoutedEventArgs e)
     {
+        if (_viewModel == null || ChartIsEmpty())
+        {
+            _viewModel?.ShowMessage("На графике нет точек.");
+            return;
+        }
+
         try
         {
-            if (_viewModel == null || ChartIsEmpty())
-                return;
-
-            var firstLogger = _loggers.First();
-
-            var numberOfPoints = firstLogger.Value.Data.Coordinates.Count;
-
-            var builder = new StringBuilder();
-
-            // Заполняем шапку
-
-            builder.Append("Время (мс.)\t");
-
-            foreach (var logger in _loggers)
+            var result = await Task.Run(() =>
             {
-                builder.Append($"{logger.Value.LegendText}\t");
-            }
+                var firstLogger = _loggers.First();
 
-            builder.Append('\n');
+                var numberOfPoints = firstLogger.Value.Data.Coordinates.Count;
 
-            // Добавляем точки
+                var builder = new StringBuilder();
 
-            for (int i = 0; i < numberOfPoints; i++)
-            {
-                builder.Append($"{firstLogger.Value.Data.Coordinates[i].X}\t");
+                // Заполняем шапку
+
+                builder.Append("Время (мс.)\t");
 
                 foreach (var logger in _loggers)
                 {
-                    builder.Append($"{logger.Value.Data.Coordinates[i].Y}\t");
+                    builder.Append($"{logger.Value.LegendText}\t");
                 }
 
                 builder.Append('\n');
-            }
 
-            await _viewModel.UploadChartData(builder.ToString(), DateTime.Now);
+                // Добавляем точки
+
+                for (int i = 0; i < numberOfPoints; i++)
+                //for (int i = 0; i < 1000000000; i++)
+                {
+                    builder.Append($"{firstLogger.Value.Data.Coordinates[i].X}\t");
+                    //builder.Append($"{i}\t");
+
+                    foreach (var logger in _loggers)
+                    {
+                        builder.Append($"{logger.Value.Data.Coordinates[i].Y}\t");
+                        //builder.Append($"{i}\t");
+                    }
+
+                    builder.Append('\n');
+                }
+
+                return builder.ToString();
+            });
+
+            await _viewModel.UploadChartData(result, DateTime.Now);
         }
 
         catch (Exception error)
         {
             _viewModel?.ShowMessage("Ошибка чтения точек графика.", error);
+        }
+        
+        finally
+        {
+
         }
     }
 
