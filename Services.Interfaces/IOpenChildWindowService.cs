@@ -9,7 +9,7 @@ public interface IOpenChildWindowService
     Task ModbusScanner();
     void Macros();
     Task<object?> EditMacros(object? parameters);
-    Task<string?> EditFormula(string title, string? formula);
+    Task<string?> EditFormula(string description, string? formula, bool isEnable);
     void Chart();
     void RaiseChartWindow();
 }

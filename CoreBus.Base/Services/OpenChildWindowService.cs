@@ -243,7 +243,7 @@ public class OpenChildWindowService : IOpenChildWindowService
         return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
     }
 
-    public async Task<string?> EditFormula(string title, string? formula)
+    public async Task<string?> EditFormula(string description, string? formula, bool isEnable)
     {
         if (MainWindow.Instance == null)
         {
@@ -259,7 +259,7 @@ public class OpenChildWindowService : IOpenChildWindowService
             return null;
         }
 
-        _editFormulaVM.InitWindow(title, formula);
+        _editFormulaVM.InitWindow(description, formula, isEnable);
 
         var window = new EditFormulaWindow()
         {

@@ -9,7 +9,7 @@
 		Width="300"
 		SizeToContent="Height"
         MinHeight="150"
-		Title="Редактирование формулы"
+		Title="{Binding WindowTitle, Mode=OneWay}"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -64,16 +64,18 @@
 				<StackPanel Orientation="Vertical" Spacing="20"
 							HorizontalAlignment="Center" VerticalAlignment="Top">
 
-					<TextBlock Text="{Binding Title, Mode=OneWay}"
+					<TextBlock Text="{Binding Description, Mode=OneWay}"
 							   HorizontalAlignment="Center"/>
 
 					<TextBox Classes="InputField"
 							 Text="{Binding Formula, Mode=TwoWay}"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							 Width="220"
 							 HorizontalAlignment="Center"/>
 					
 					<Button x:Name="Button_Save" Content="Сохранить"
 							IsEnabled="{Binding SaveIsEnabled, Mode=OneWay}"
+							IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
 							FontSize="14"
 							HorizontalAlignment="Center"
 							Click="Button_Save_Click"/>

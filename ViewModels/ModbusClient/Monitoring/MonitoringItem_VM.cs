@@ -195,9 +195,9 @@ namespace ViewModels.ModbusClient.Monitoring
 
             Command_FormulaChange = ReactiveCommand.CreateFromTask(async () =>
             {
-                var title = string.IsNullOrWhiteSpace(Alias) ? $"Для адреса \'{GetDisplayedAddress()}\"" : Alias;
+                var description = string.IsNullOrWhiteSpace(Alias) ? $"Для адреса \'{GetDisplayedAddress()}\"" : Alias;
 
-                var newFormula = await _openChildWindowService.EditFormula(title, Formula);
+                var newFormula = await _openChildWindowService.EditFormula(description, Formula, UI_IsEnable);
 
                 if (!string.IsNullOrEmpty(newFormula))
                 {

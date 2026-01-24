@@ -156,7 +156,6 @@
 
 				<Button Grid.Column="1"
 						Content="f(x)"
-						IsEnabled="{Binding UI_IsEnable}"
 						MinHeight="5"
 						Height="22"
 						Padding="8,0,8,0"

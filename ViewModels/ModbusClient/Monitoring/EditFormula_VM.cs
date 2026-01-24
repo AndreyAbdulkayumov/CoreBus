@@ -6,12 +6,28 @@ namespace ViewModels.ModbusClient.Monitoring;
 
 public class EditFormula_VM : ValidatedDateInput
 {
-    private string? _title;
+    private bool _ui_IsEnable;
 
-    public string? Title
+    public bool UI_IsEnable
     {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
+        get => _ui_IsEnable;
+        set => this.RaiseAndSetIfChanged(ref _ui_IsEnable, value);
+    }
+
+    private string? _windowTitle;
+
+    public string? WindowTitle
+    {
+        get => _windowTitle;
+        set => this.RaiseAndSetIfChanged(ref _windowTitle, value);
+    }
+
+    private string? _description;
+
+    public string? Description
+    {
+        get => _description;
+        set => this.RaiseAndSetIfChanged(ref _description, value);
     }
 
     private string? _formula;
@@ -48,10 +64,12 @@ public class EditFormula_VM : ValidatedDateInput
         SaveIsEnabled = ActualErrors.Count == 0;
     }
 
-    public void InitWindow(string title, string? formula)
+    public void InitWindow(string description, string? formula, bool isEnable)
     {
-        Title = title;
+        WindowTitle = isEnable ? "Редактирование формулы" : "Просмотр формулы";
+        Description = description;
         Formula = formula;
+        UI_IsEnable = isEnable;
     }
 
     public void MarkAsSaved()
