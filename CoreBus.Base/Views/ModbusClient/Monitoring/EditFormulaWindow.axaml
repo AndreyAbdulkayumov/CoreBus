@@ -69,7 +69,7 @@
 
 					<TextBox Classes="InputField"
 							 Text="{Binding Formula, Mode=TwoWay}"
-							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+							 IsReadOnly="{Binding !UI_IsEnable, Mode=OneWay}"
 							 Width="220"
 							 HorizontalAlignment="Center"/>
 					
