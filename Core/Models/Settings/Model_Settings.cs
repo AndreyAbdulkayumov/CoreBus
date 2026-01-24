@@ -149,16 +149,6 @@ public class Model_Settings
     }
 
     /// <summary>
-    /// Запись строки в файл. Если файл содержит данные, то они будут перезаписаны.
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="data"></param>
-    public void SaveInFile(string filePath, string data)
-    {
-        FileIO.WriteInFile(filePath, data);
-    }
-
-    /// <summary>
     /// Копирует файл с указанным путем в директорию пресетов.
     /// </summary>
     /// <param name="filePath"></param>

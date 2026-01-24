@@ -86,16 +86,6 @@ internal static class FileIO
         }
     }
 
-    public static void WriteInFile(string fullFilePath, string data)
-    {
-        if (!File.Exists(fullFilePath))
-        {
-            File.Create(fullFilePath).Close();
-        }
-
-        File.WriteAllText(fullFilePath, data);
-    }
-
     public static void Copy(string sourceFileName, string destFileName)
     {
         if (File.Exists(destFileName))

@@ -7,8 +7,8 @@ using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
@@ -159,56 +159,59 @@ public partial class ChartWindow : Window
 
         try
         {
-            var result = await Task.Run(() =>
+            var filePath = await _viewModel.GetFilePath();
+
+            this.Activate();
+
+            if (filePath == null)
+                return;
+
+            _viewModel.IsConverted = true;
+
+            await Task.Run(() =>
             {
+                using var writer = new StreamWriter(filePath);
+
+                // Шапка
+
+                writer.Write("Время (мс.)\t");
+
+                foreach (var logger in _loggers)
+                {
+                    writer.Write($"{logger.Value.LegendText}\t");
+                }
+
+                writer.WriteLine();
+
+
+                // Данные
+
                 var firstLogger = _loggers.First();
 
                 var numberOfPoints = firstLogger.Value.Data.Coordinates.Count;
 
-                var builder = new StringBuilder();
-
-                // Заполняем шапку
-
-                builder.Append("Время (мс.)\t");
-
-                foreach (var logger in _loggers)
-                {
-                    builder.Append($"{logger.Value.LegendText}\t");
-                }
-
-                builder.Append('\n');
-
-                // Добавляем точки
-
                 for (int i = 0; i < numberOfPoints; i++)
-                //for (int i = 0; i < 1000000000; i++)
                 {
-                    builder.Append($"{firstLogger.Value.Data.Coordinates[i].X}\t");
-                    //builder.Append($"{i}\t");
+                    writer.Write($"{firstLogger.Value.Data.Coordinates[i].X}\t");
 
                     foreach (var logger in _loggers)
                     {
-                        builder.Append($"{logger.Value.Data.Coordinates[i].Y}\t");
-                        //builder.Append($"{i}\t");
+                        writer.Write($"{logger.Value.Data.Coordinates[i].Y}\t");
                     }
 
-                    builder.Append('\n');
+                    writer.WriteLine();
                 }
-
-                return builder.ToString();
             });
 
-            await _viewModel.UploadChartData(result, DateTime.Now);
+            _viewModel.IsConverted = false;
+
+            _viewModel.ShowMessage($"Данные с графика сохранены!\n\nПуть к файлу:\n{filePath}", null, true);
         }
 
         catch (Exception error)
         {
+            _viewModel?.IsConverted = false;
             _viewModel?.ShowMessage("Ошибка чтения точек графика.", error);
-        }
-        
-        finally
-        {
-
         }
     }
 
@@ -219,7 +222,7 @@ public partial class ChartWindow : Window
 
         foreach (var logger in _loggers)
         {
-            if (logger.Value.Data.Coordinates.Count > 0) 
+            if (logger.Value.Data.Coordinates.Count > 0)
                 return false;
         }
 

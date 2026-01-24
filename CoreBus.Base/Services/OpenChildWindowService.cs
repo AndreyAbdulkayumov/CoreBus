@@ -322,28 +322,39 @@ public class OpenChildWindowService : IOpenChildWindowService
                     return;
 
                 var monitoringVM = _serviceProvider.GetService<ModbusMonitoring_VM>();
+                var chartVM = _serviceProvider.GetService<Chart_VM>();
                 var chartMessageBox = _serviceProvider.GetService<IMessageBoxChart>();
 
-                if (monitoringVM == null || chartMessageBox == null)
+                if (monitoringVM == null || chartVM == null || chartMessageBox == null)
                     return;
+
+                var hasActiveOperations = monitoringVM.IsStart || chartVM.IsConverted;
+
+                if (!hasActiveOperations)
+                    return;
+
+                // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
+                // Отменять закрытие окна нужно, чтобы успеть показать MessageBox.
+                // Без этого окно просто закроется, и все что ниже будет проигнорировано.
+                e.Cancel = true;
 
                 if (monitoringVM.IsStart)
                 {
-                    // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
-                    // Отменять закрытие окна нужно, чтобы успеть показать MessageBox.
-                    // Без этого окно просто закроется, и все что ниже будет проигнорировано.
-                    e.Cancel = true;
-
                     var closeWindow = await chartMessageBox.ShowYesNoDialog(
                         "Опрос Modbus регистров еще идет.\n\n" +
-                        "Вы действительно желайте закрыть окно графика и потерять все накопленные данные?", 
+                        "Вы действительно желайте закрыть окно графика и потерять все накопленные данные?",
                         MessageType.Warning);
 
                     if (closeWindow != MessageBoxResult.No)
                     {
                         ChartWindowIsOpen = false;
-                        window.Close();                        
+                        window.Close();
                     }
+                }
+
+                if (chartVM.IsConverted)
+                {
+                    chartMessageBox.Show("Дождитесь окончания записи данных в файл.", MessageType.Warning);
                 }
             };
 

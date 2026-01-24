@@ -38,6 +38,14 @@ public class Chart_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _toolsIsEnabled, value);
     }
 
+    private bool _isConverted;
+
+    public bool IsConverted
+    {
+        get => _isConverted;
+        set => this.RaiseAndSetIfChanged(ref _isConverted, value);
+    }
+
     private readonly Model_Settings _settingsModel;
     private readonly IFileSystemService _fileSystemService;
     private readonly IMessageBoxChart _messageBox;
@@ -88,21 +96,17 @@ public class Chart_VM : ReactiveObject
         WindowIsTopmost = data.ChartInfo != null ? data.ChartInfo.ChartIsTopmost : false;
     }
 
-    public async Task UploadChartData(string data, DateTime uploadDate)
+    public async Task<string?> GetFilePath()
     {
         var path = await _fileSystemService.GetFolderPath("Выгрузка точек графика");
 
-        if (path == null)
-            return;
+        if (path == null) 
+            return null;
 
-        string outputFilePath = Path.Combine(path, $"CoreBus {uploadDate:dd.MM.yyyy HH.mm.ss}.txt");
-
-        _settingsModel.SaveInFile(outputFilePath, data);
-
-        _messageBox.Show($"Данные с графика сохранены!\n\nПуть к файлу:\n{outputFilePath}", MessageType.Information);
+        return Path.Combine(path, $"CoreBus {DateTime.Now:dd.MM.yyyy HH.mm.ss}.txt");
     }
 
-    public void ShowMessage(string message, Exception? error = null)
+    public void ShowMessage(string message, Exception? error = null, bool isInfo = false)
     {
         if (error != null)
         {
@@ -110,6 +114,6 @@ public class Chart_VM : ReactiveObject
             return;
         }
 
-        _messageBox.Show(message, MessageType.Warning);
+        _messageBox.Show(message, isInfo ? MessageType.Information : MessageType.Warning);
     }
 }
