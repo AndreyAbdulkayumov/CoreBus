@@ -70,7 +70,7 @@
 					<TextBox Classes="InputField"
 							 Text="{Binding Formula, Mode=TwoWay}"
 							 IsReadOnly="{Binding !UI_IsEnable, Mode=OneWay}"
-							 Width="220"
+							 Width="250"
 							 HorizontalAlignment="Center"/>
 					
 					<Button x:Name="Button_Save" Content="Сохранить"
