@@ -74,6 +74,8 @@ public class MonitoringDataGrid_VM : ReactiveObject
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
+        Items.CollectionChanged += Items_CollectionChanged;
+
         Command_SelectAllRows = ReactiveCommand.Create(() =>
         {
             foreach (var item in Items)
@@ -88,9 +90,8 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
-            var initAddress = Items.Any() ? Items.Last().SelectedAddress + 1 : 0;
+            var newItem = CreateNewItem(null);
 
-            var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
             newItem.TypeChanged += MonitoringItem_TypeChanged;
             newItem.PropertyChanged += MonitoringItem_PropertyChanged;
 
@@ -105,30 +106,48 @@ public class MonitoringDataGrid_VM : ReactiveObject
         SetMonitoringItems(_settingsModel.ModbusMonitoringItems.Items);
     }
 
+    private MonitoringItem_VM CreateNewItem(ModbusMonitoringItemData? initData)
+    {
+        int initAddress = initData?.Address ?? (Items.Count > 0 ? Items.Last().SelectedAddress + 1 : 0);
+
+        var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
+
+        if (initData != null)
+        {
+            newItem.Alias = initData.Alias;
+            newItem.SelectedValueType = initData.ValueType;
+            newItem.VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
+            newItem.Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
+            newItem.OnChart = initData.OnChart;
+        }
+
+        newItem.TypeChanged += MonitoringItem_TypeChanged;
+        newItem.PropertyChanged += MonitoringItem_PropertyChanged;
+
+        return newItem;
+    }
+
+    private void Items_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (Items.Count == 0)
+            return;
+
+        var lastIndex = Items.Count - 1;
+
+        for (int i = 0; i < lastIndex; i++)
+        {
+            Items[i].SetAsLast(false);
+        }
+
+        Items[lastIndex].SetAsLast(true);
+    }
+
     private void SetMonitoringItems(List<ModbusMonitoringItemData>? itemsData)
     {
         if (itemsData == null) 
             return;
 
-        var monitoringItems = new List<MonitoringItem_VM>();
-
-        foreach (var data in itemsData)
-        {
-            var newItem = new MonitoringItem_VM(data.Address, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
-
-            newItem.Alias = data.Alias;
-            newItem.SelectedValueType = data.ValueType;
-            newItem.VisibleOnlyRawValue = data.VisibleOnlyRawValue;
-            newItem.Formula = string.IsNullOrWhiteSpace(data.Formula) ? "x" : data.Formula;
-            newItem.OnChart = data.OnChart;
-
-            newItem.TypeChanged += MonitoringItem_TypeChanged;
-            newItem.PropertyChanged += MonitoringItem_PropertyChanged;
-
-            monitoringItems.Add(newItem);
-        }
-        
-        Items.AddRange(monitoringItems);
+        Items.AddRange(itemsData.Select(CreateNewItem));
     }
 
     private void MonitoringItem_TypeChanged(object? sender, EventArgs e)

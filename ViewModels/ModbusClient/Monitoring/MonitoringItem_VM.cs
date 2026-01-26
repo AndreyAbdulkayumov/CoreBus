@@ -1,5 +1,6 @@
 using Core.Models;
 using Core.Models.Settings;
+using DynamicData;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
 using ReactiveUI;
@@ -107,14 +108,15 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _isNewTypedValue, value);
         }
 
-        private ObservableCollection<string> _allValueTypes = new ObservableCollection<string>()
-        {
-            TypeName_UInt16, TypeName_Int16, TypeName_UInt32, TypeName_Int32, TypeName_Float
-        };
+        private ObservableCollection<string> _allValueTypes = new ObservableCollection<string>();
+
+        private readonly string[] _allValueTypes_Regular = { TypeName_UInt16, TypeName_Int16, TypeName_UInt32, TypeName_Int32, TypeName_Float };
+        private readonly string[] _allValueTypes_Last = { TypeName_UInt16, TypeName_Int16 };
 
         public ObservableCollection<string> AllValueTypes
         {
             get => _allValueTypes;
+            set => this.RaiseAndSetIfChanged(ref _allValueTypes, value);
         }
 
         private string? _selectedValueType;
@@ -166,8 +168,8 @@ namespace ViewModels.ModbusClient.Monitoring
 
         public readonly Guid Id;
 
-        private UInt16 _rawValue = 0;
-        private float _convertedInnerValue = 0;
+        private UInt16 _rawValue;
+        private float _convertedInnerValue;
 
         private readonly Model_Settings _settingsModel;
         private readonly IOpenChildWindowService _openChildWindowService;
@@ -179,19 +181,27 @@ namespace ViewModels.ModbusClient.Monitoring
             _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
+            /****************************************************/
+            //
+            // Первоначальная инициализация компонента
+            //
+            /****************************************************/
+
             Id = Guid.NewGuid();
 
             _numberViewStyle = numberStyle;
 
             _selectedAddress = (UInt16)initAddress;
-            Address = GetDisplayedAddress();            
+            Address = GetDisplayedAddress();
 
-            Value = GetDisplayedRawValue();
-
-            TypedValue = "0";
-            SelectedValueType = AllValueTypes.First();
-            ConvertedValue = "0";
+            SelectedValueType = TypeName_UInt16;
             Formula = "x";
+
+            /****************************************************/
+            //
+            // Настройка свойств и команд модели отображения
+            //
+            /****************************************************/
 
             Command_FormulaChange = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -211,6 +221,22 @@ namespace ViewModels.ModbusClient.Monitoring
                 {
                     AliasOpacity = string.IsNullOrEmpty(alias) ? 0.3 : 1;
                 });
+
+            // Действия после создания
+
+            SetDefaultValues();
+        }
+
+        private void SetDefaultValues()
+        {
+            IsNewValue = false;
+
+            _rawValue = 0;
+            _convertedInnerValue = 0;
+
+            Value = "0";
+            TypedValue = "0";
+            ConvertedValue = "0.00";
         }
 
         public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, uint chartIncrementX)
@@ -241,14 +267,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
         public void Clear()
         {
-            IsNewValue = false;
-
-            _rawValue = 0;
-            _convertedInnerValue = 0;
-
-            Value = "0";
-            TypedValue = "0";
-            ConvertedValue = "0.00";
+            SetDefaultValues();
         }
 
         public void SetNumberFormat(NumberStyles newStyle)
@@ -270,6 +289,22 @@ namespace ViewModels.ModbusClient.Monitoring
             ValidateInput(nameof(Address), Address);
 
             ChangeNumberStyleInErrors(nameof(Address), newStyle);
+        }
+
+        public void SetAsLast(bool isLast)
+        {
+            var selectedType = SelectedValueType;
+
+            AllValueTypes.Clear();
+            AllValueTypes.AddRange(isLast ? _allValueTypes_Last : _allValueTypes_Regular);
+
+            if (!string.IsNullOrEmpty(selectedType) && AllValueTypes.Contains(selectedType))
+            {
+                SelectedValueType = selectedType;
+                return;
+            }
+
+            SelectedValueType = AllValueTypes.First();
         }
 
         private string GetDisplayedAddress()
