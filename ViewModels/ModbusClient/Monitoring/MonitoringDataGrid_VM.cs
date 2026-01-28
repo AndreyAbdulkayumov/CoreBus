@@ -1,11 +1,11 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
-using DynamicData;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
@@ -33,12 +33,12 @@ public class MonitoringDataGrid_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _allRowSelected, value);
     }
 
-    private ObservableCollection<MonitoringItem_VM> items = new ObservableCollection<MonitoringItem_VM>();
+    private ObservableCollection<MonitoringItem_VM> _items = new ObservableCollection<MonitoringItem_VM>();
 
     public ObservableCollection<MonitoringItem_VM> Items
     {
-        get => items;
-        set => this.RaiseAndSetIfChanged(ref items, value);
+        get => _items;
+        set => this.RaiseAndSetIfChanged(ref _items, value);
     }
 
     private string? _numberFormat;
@@ -67,6 +67,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxMainWindow _messageBox;
 
+    private bool _ignorePropertyChanged;
 
     public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox)
     {
@@ -74,17 +75,18 @@ public class MonitoringDataGrid_VM : ReactiveObject
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
-        Items.CollectionChanged += Items_CollectionChanged;
-
         Command_SelectAllRows = ReactiveCommand.Create(() =>
         {
+            _ignorePropertyChanged = true;
+
             foreach (var item in Items)
             {
-                item.PropertyChanged -= MonitoringItem_PropertyChanged;
                 item.IsSelected = AllRowSelected;
-                HasSelectedItems = AllRowSelected;
-                item.PropertyChanged += MonitoringItem_PropertyChanged;
             }
+
+            _ignorePropertyChanged = false;
+
+            HasSelectedItems = AllRowSelected;
         });
         Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка выбора всех регистров.\n\n{error.Message}", MessageType.Error, error));
 
@@ -103,7 +105,16 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         // Действия после запуска приложения
 
-        SetMonitoringItems(_settingsModel.ModbusMonitoringItems.Items);
+        var presetItems = _settingsModel.ModbusMonitoringItems.Items;
+
+        if (presetItems != null)
+        {
+            Items = new ObservableCollection<MonitoringItem_VM>(presetItems.Select(CreateNewItem));
+            SetAvailableValueTypes();
+        }
+
+        // Подписка на это событие должна быть именно после возможного изменения Items
+        Items.CollectionChanged += (object? sender, NotifyCollectionChangedEventArgs e) => SetAvailableValueTypes();        
     }
 
     private MonitoringItem_VM CreateNewItem(ModbusMonitoringItemData? initData)
@@ -114,20 +125,16 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         if (initData != null)
         {
-            newItem.Alias = initData.Alias;
-            newItem.SelectedValueType = initData.ValueType;
-            newItem.VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
-            newItem.Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
-            newItem.OnChart = initData.OnChart;
+            newItem.SetExistingValues(initData);
         }
 
         newItem.TypeChanged += MonitoringItem_TypeChanged;
         newItem.PropertyChanged += MonitoringItem_PropertyChanged;
 
         return newItem;
-    }
+    }    
 
-    private void Items_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void SetAvailableValueTypes()
     {
         if (Items.Count == 0)
             return;
@@ -140,14 +147,6 @@ public class MonitoringDataGrid_VM : ReactiveObject
         }
 
         Items[lastIndex].SetAsLast(true);
-    }
-
-    private void SetMonitoringItems(List<ModbusMonitoringItemData>? itemsData)
-    {
-        if (itemsData == null) 
-            return;
-
-        Items.AddRange(itemsData.Select(CreateNewItem));
     }
 
     private void MonitoringItem_TypeChanged(object? sender, EventArgs e)
@@ -190,6 +189,9 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     private void MonitoringItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (_ignorePropertyChanged)
+            return;
+
         if (sender is not MonitoringItem_VM)
             return;
 

@@ -1,5 +1,6 @@
 using Core.Models;
 using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using DynamicData;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
@@ -237,6 +238,15 @@ namespace ViewModels.ModbusClient.Monitoring
             Value = "0";
             TypedValue = "0";
             ConvertedValue = "0.00";
+        }
+
+        public void SetExistingValues(ModbusMonitoringItemData initData)
+        {
+            Alias = initData.Alias;
+            SelectedValueType = initData.ValueType;
+            VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
+            Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
+            OnChart = initData.OnChart;
         }
 
         public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, uint chartIncrementX)
