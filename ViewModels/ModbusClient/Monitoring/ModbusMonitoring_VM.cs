@@ -401,7 +401,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void InitChartAxes()
     {
-        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart).ToDictionary(e => e.Id, e => e.Alias ?? $"Адрес \"{e.Address}\"");
+        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.Alias ?? $"Адрес \"{e.Address}\"");
 
         if (chartAxes.Any())
         {
