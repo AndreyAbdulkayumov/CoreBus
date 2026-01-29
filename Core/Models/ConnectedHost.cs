@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+using Core.Clients;
 using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
@@ -17,6 +17,11 @@ public class ConnectedHost
     public int Host_ReadTimeout
     {
         get => Client == null ? 0 : Client.ReadTimeout;
+    }
+
+    public bool? IsSerialPortConnection
+    {
+        get => Client == null ? null : Client is SerialPortClient;
     }
 
     public event EventHandler<IConnection?>? DeviceIsConnect;

@@ -340,6 +340,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void Model_MonitoringError(object? sender, Exception e)
     {
+        if (!IsStart)
+            return;
+
         _messageBox.Show($"Ошибка мониторинга.\n\n{e.Message}", MessageType.Error, e);
 
         StopPolling();
@@ -376,6 +379,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             if (!string.IsNullOrEmpty(validationMessage))
             {
                 _messageBox.Show(validationMessage, MessageType.Warning);
+                return;
+            }
+
+            if (_connectedHostModel.IsSerialPortConnection == true && 
+                int.TryParse(Period_ms, NumberStyles.Number, CultureInfo.InvariantCulture, out int period) && period < 200)
+            {
+                _messageBox.Show("Не рекомендуется выставлять значение периода меньше 200 мс.", MessageType.Warning);
                 return;
             }
 
