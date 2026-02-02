@@ -19,11 +19,6 @@ public class ConnectedHost
         get => Client == null ? 0 : Client.ReadTimeout;
     }
 
-    public bool? IsSerialPortConnection
-    {
-        get => Client == null ? null : Client is SerialPortClient;
-    }
-
     public event EventHandler<IConnection?>? DeviceIsConnect;
     public event EventHandler<IConnection?>? DeviceIsDisconnected;
 

@@ -382,12 +382,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
             }
 
-            if (_connectedHostModel.IsSerialPortConnection == true && 
-                int.TryParse(Period_ms, NumberStyles.Number, CultureInfo.InvariantCulture, out int period) && period < 200)
+            if (int.TryParse(Period_ms, NumberStyles.Number, CultureInfo.InvariantCulture, out int period) && period < 200)
             {
                 _messageBox.Show("Не рекомендуется выставлять значение периода меньше 200 мс.", MessageType.Warning);
                 return;
-            }
+            }            
 
             Button_Content = Button_Content_Stop;
             IsStart = true;
