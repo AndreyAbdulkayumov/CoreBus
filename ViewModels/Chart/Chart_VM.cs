@@ -30,6 +30,22 @@ public class Chart_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _numberOfVisiblePoints, value);
     }
 
+    private string? _startDate;
+
+    public string? StartDate
+    {
+        get => _startDate;
+        set => this.RaiseAndSetIfChanged(ref _startDate, value);
+    }
+
+    private bool _startDateIsVisible;
+
+    public bool StartDateIsVisible
+    {
+        get => _startDateIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _startDateIsVisible, value);
+    }
+
     private bool _toolsIsEnabled = true;
 
     public bool ToolsIsEnabled
@@ -45,6 +61,8 @@ public class Chart_VM : ReactiveObject
         get => _isConverted;
         set => this.RaiseAndSetIfChanged(ref _isConverted, value);
     }
+
+    private DateTime? _startDateValue;
 
     private readonly Model_Settings _settingsModel;
     private readonly IFileSystemService _fileSystemService;
@@ -66,8 +84,12 @@ public class Chart_VM : ReactiveObject
         MessageBus.Current.Listen<InitAxesMessage>()
             .Subscribe(message =>
             {
+                _startDateValue = DateTime.Now;
+                StartDate = message.IsStart ? _startDateValue?.ToString("dd.MM.yyyy HH:mm:ss") : null;
+                StartDateIsVisible = message.IsStart;
+
                 var args = new InitAxesEventArgs(
-                    message.Axes.Select(e => new ChartAxis(e.Key, e.Value)).ToList(),
+                    message.Axes.Select(e => new ChartAxis(e.Key, e.Value)),
                     message.IncrementX);
 
                 InitAxes?.Invoke(this, args);
@@ -103,7 +125,7 @@ public class Chart_VM : ReactiveObject
         if (path == null) 
             return null;
 
-        return Path.Combine(path, $"CoreBus {DateTime.Now:dd.MM.yyyy HH.mm.ss}.txt");
+        return Path.Combine(path, $"CoreBus {_startDateValue:dd.MM.yyyy HH.mm.ss}.txt");
     }
 
     public void ShowMessage(string message, Exception? error = null, bool isInfo = false)

@@ -412,9 +412,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     {
         var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.Alias ?? $"Адрес \"{e.Address}\"");
 
-        if (chartAxes.Any())
+        if (chartAxes.Count != 0)
         {
-            MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes, _selectedPeriod));
+            MessageBus.Current.SendMessage(new InitAxesMessage(chartAxes, _selectedPeriod, IsStart));
         }
     }
 

@@ -90,18 +90,31 @@
 						<StackPanel Orientation="Horizontal" Spacing="10">
 
 							<TextBlock Text="Количество отображаемых точек"
-									   FontSize="13"
+				                       FontSize="13"
 									   VerticalAlignment="Center"/>
 
 							<TextBox Classes="InputField"
 									 Text="{Binding NumberOfVisiblePoints, Mode=TwoWay}"
 									 IsEnabled="{Binding ToolsIsEnabled, Mode=OneWay}"
-									 Width="80"
+									 Width="80"									 
 									 MinHeight="22"
 									 FontSize="13"
 									 VerticalAlignment="Center"/>
 
 						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" Spacing="10"
+				                    IsVisible="{Binding StartDateIsVisible, Mode=OneWay}"
+									HorizontalAlignment="Center" VerticalAlignment="Center">
+
+							<TextBlock Text="Начало записи:"
+				                       FontSize="13"/>
+
+							<TextBlock Text="{Binding StartDate, Mode=OneWay}"
+				                       FontSize="13"
+				                       Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+						</StackPanel>						
 						
 						<StackPanel Orientation="Horizontal" Spacing="20"
 									HorizontalAlignment="Right">
