@@ -23,7 +23,7 @@
 		<!-- Подсветка строки -->
 
 		<Border Grid.Row="0" Grid.RowSpan="2"
-		        Background="#375E75"
+		        Background="{DynamicResource Modbus_Monitoring_Row_Selected}"
 				IsVisible="{Binding IsSelected, Mode=OneWay}"/>
 
 
@@ -74,7 +74,7 @@
 		          Height="22"
 		          Margin="15,0,15,0">
 
-				<Border Background="PeachPuff"
+				<Border Background="{DynamicResource Modbus_Monitoring_Item_Updated}"
 			            CornerRadius="4"
 						IsVisible="{Binding IsNewValue, Mode=OneWay}"/>
 

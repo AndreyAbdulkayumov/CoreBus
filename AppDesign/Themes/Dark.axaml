@@ -135,5 +135,11 @@
 	<!-- Macros -->
 
 	<SolidColorBrush x:Key="Macros_Edit_CommandItem_Selected" Color="#355E87"/>
+
+	<!-- Modbus Monitoring -->
+
+	<SolidColorBrush x:Key="Modbus_Monitoring_Row_Selected" Color="#375E75"/>
+
+	<SolidColorBrush x:Key="Modbus_Monitoring_Item_Updated" Color="PeachPuff"/>
 	
 </ResourceDictionary>
