@@ -158,7 +158,7 @@ public class Example_VM_NoFieldName : ValidatedDateInput
     {
         if (string.IsNullOrEmpty(value))
         {
-            return new ValidateMessage("Введите формулу", "Поле не может быть пустым");
+            return new ValidateMessage("Введите значение", "Поле не может быть пустым");
         }
 
         if (!Checker.IsValid(value, out string errorMessage))
