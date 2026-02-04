@@ -231,6 +231,7 @@ namespace ViewModels.ModbusClient.Monitoring
         private void SetDefaultValues()
         {
             IsNewValue = false;
+            IsNewTypedValue = false;
 
             _rawValue = 0;
             _convertedInnerValue = 0;
@@ -249,7 +250,7 @@ namespace ViewModels.ModbusClient.Monitoring
             OnChart = initData.OnChart;
         }
 
-        public void SetReadedValue(UInt16 newRawValue, Dictionary<int, UInt16> registers, uint chartIncrementX)
+        public void SetReadedValue(UInt16 newRawValue, IEnumerable<KeyValuePair<int, UInt16>> registers, uint chartIncrementX)
         {
             IsNewValue = _rawValue != newRawValue;
 
@@ -260,7 +261,11 @@ namespace ViewModels.ModbusClient.Monitoring
             // _convertedInnerValue берется из типизированного значения.
             // Затем именно _convertedInnerValue преобразовывается по формуле.
 
+            var oldTypedValue = TypedValue;
+
             TypedValue = GetDisplayedTypedValue(registers, out _convertedInnerValue);
+
+            IsNewTypedValue = TypedValue != oldTypedValue;
 
             if (string.IsNullOrEmpty(Formula))
                 return;
@@ -327,7 +332,7 @@ namespace ViewModels.ModbusClient.Monitoring
             return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
         }
 
-        private string GetDisplayedTypedValue(Dictionary<int, UInt16> registers, out float convertedValue)
+        private string GetDisplayedTypedValue(IEnumerable<KeyValuePair<int, UInt16>> registers, out float convertedValue)
         {
 
             switch (SelectedValueType)
@@ -362,7 +367,7 @@ namespace ViewModels.ModbusClient.Monitoring
             }
         }
 
-        private byte[] GetBytesFromRegisters(Dictionary<int, UInt16> registers, int numberOfRegisters)
+        private byte[] GetBytesFromRegisters(IEnumerable<KeyValuePair<int, UInt16>> registers, int numberOfRegisters)
         {
             return registers
                 .SkipWhile(kvp => kvp.Key != _selectedAddress)
@@ -372,7 +377,7 @@ namespace ViewModels.ModbusClient.Monitoring
                 .ToArray();
         }
 
-        private float GetFloatNumber(Dictionary<int, UInt16> registers)
+        private float GetFloatNumber(IEnumerable<KeyValuePair<int, UInt16>> registers)
         {
             var bytes = GetBytesFromRegisters(registers, 2);    // т.к. для float числа используется 2 регистра
             var floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(_settingsModel.Settings?.FloatNumberFormat);

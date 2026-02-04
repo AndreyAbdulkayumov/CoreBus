@@ -265,14 +265,20 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, uint chartIncrementX)
     {
-        var registers =
+        var readRegisters =
             ConvertToResultList(data, numberOfRegisters, readFunction)
             .Select((value, index) => (address: startingAddress + index, value))
             .ToDictionary(e => e.address, e => e.value);
 
+        // Тут важно сопоставить порядок регистров с Items, иначе может сломаться преобразование в многобайтовые числа.
+        var registers = Items
+            .Select(e => (int)e.SelectedAddress)
+            .Where(readRegisters.ContainsKey)
+            .Select(key => new KeyValuePair<int, ushort>(key, readRegisters[key]));
+
         foreach (var item in Items)
         {
-            if (registers.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
+            if (readRegisters.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
                 item.SetReadedValue(registerValue, registers, chartIncrementX);
             }
