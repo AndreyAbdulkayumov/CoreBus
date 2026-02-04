@@ -84,6 +84,7 @@ public class Example_VM : ValidatedDateInput, IValidationFieldInfo
     }
 
     private UInt16 _selectedField = 0;
+
     ...
 
     #region Валидация
@@ -151,6 +152,8 @@ public class Example_VM_NoFieldName : ValidatedDateInput
             ValidateInput(nameof(Field), value);
         }
     }
+
+    ...
 
     #region Валидация
 
