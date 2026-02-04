@@ -1,8 +1,7 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
-using ViewModels.ModbusClient.Manual.WriteFields;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.Validation;
 
@@ -146,6 +145,8 @@ public class MultipleRegisters_Item : ModbusDataFormatter
         }
     }
 
+    #region Валидация
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -185,4 +186,6 @@ public class MultipleRegisters_Item : ModbusDataFormatter
 
         return null;
     }
+
+    #endregion Валидация
 }

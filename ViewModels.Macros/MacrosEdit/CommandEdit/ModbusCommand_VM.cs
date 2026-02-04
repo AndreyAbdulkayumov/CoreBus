@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
@@ -470,6 +470,8 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         ChangeNumberStyleInErrors(nameof(Address), newStyle);
     }
 
+    #region Валидация
+
     public string GetFieldViewName(string fieldName)
     {
         switch (fieldName)
@@ -553,4 +555,6 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         return null;
     }
+
+# endregion Валидация
 }

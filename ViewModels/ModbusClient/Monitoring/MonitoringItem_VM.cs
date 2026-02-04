@@ -385,6 +385,8 @@ namespace ViewModels.ModbusClient.Monitoring
             return MathF.Round(FloatHelper.GetFloatNumberFromBytes(bytes, floatFormat), _floatRoundedDigit);
         }
 
+        #region Валидация
+
         public string GetFieldViewName(string fieldName)
         {
             switch (fieldName)
@@ -429,5 +431,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
             return null;
         }
+
+        #endregion Валидация
     }
 }

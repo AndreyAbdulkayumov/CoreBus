@@ -1,4 +1,4 @@
-﻿using Core.Models;
+using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
@@ -364,6 +364,20 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         }
     }
 
+    #region Валидация
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(PauseBetweenRequests):
+                return "Пауза";
+
+            default:
+                return fieldName;
+        }
+    }
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -379,15 +393,5 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         return null;
     }
 
-    public string GetFieldViewName(string fieldName)
-    {
-        switch (fieldName)
-        {
-            case nameof(PauseBetweenRequests):
-                return "Пауза";
-
-            default:
-                return fieldName;
-        }
-    }
+    #endregion Валидация
 }

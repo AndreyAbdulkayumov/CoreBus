@@ -82,6 +82,8 @@ public class EditFormula_VM : ValidatedDateInput
         return _saved && !ActualErrors.Any() ? MathFormula.Normalize(Formula) : null;
     }
 
+    #region Валидация
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (fieldName != nameof(Formula))
@@ -102,4 +104,6 @@ public class EditFormula_VM : ValidatedDateInput
 
         return null;
     }
+
+    #endregion Валидация
 }

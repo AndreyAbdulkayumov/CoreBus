@@ -1,4 +1,4 @@
-﻿using Core.Clients.DataTypes;
+using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
@@ -347,24 +347,6 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         CheckSum_IsVisible = e;
     }
 
-    public string GetFieldViewName(string fieldName)
-    {
-        switch (fieldName)
-        {
-            case nameof(SlaveID):
-                return "Slave ID";
-
-            case nameof(Address):
-                return "Адрес";
-
-            case nameof(NumberOfRegisters):
-                return "Кол-во регистров";
-
-            default:
-                return fieldName;
-        }
-    }
-
     private string? CheckWriteFields()
     {
         var message = new StringBuilder();
@@ -464,6 +446,26 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         UI_IsEnable = false;
     }
 
+    #region Валидация
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(SlaveID):
+                return "Slave ID";
+
+            case nameof(Address):
+                return "Адрес";
+
+            case nameof(NumberOfRegisters):
+                return "Кол-во регистров";
+
+            default:
+                return fieldName;
+        }
+    }
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -529,4 +531,6 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         return null;
     }
+
+    #endregion Валидация
 }

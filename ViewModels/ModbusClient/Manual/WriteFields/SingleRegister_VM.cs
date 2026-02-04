@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Core.Models.Settings.DataTypes;
@@ -113,6 +113,8 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
         ViewData = ConvertNumberToString(_data, DataFormat);
     }
 
+    #region Валидация
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -138,4 +140,6 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
 
         return null;
     }
+
+    #endregion Валидация
 }

@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
@@ -44,6 +44,8 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 
     }
 
+    #region Валидация
+
     public string GetFieldViewName(string fieldName)
     {
         switch (fieldName)
@@ -73,4 +75,6 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 
         return null;
     }
+
+    #endregion Валидация
 }

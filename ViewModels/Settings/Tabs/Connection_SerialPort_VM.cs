@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using MessageBox.Core;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -190,19 +190,7 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
         });
 
         Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
-    }
-
-    public string GetFieldViewName(string fieldName)
-    {
-        switch (fieldName)
-        {
-            case nameof(Custom_BaudRate_Value):
-                return "Custom BaudRate";
-
-            default:
-                return fieldName;
-        }
-    }
+    }    
 
     public void SettingsFileChanged()
     {
@@ -299,6 +287,20 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
         }
     }
 
+    #region Валидация
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(Custom_BaudRate_Value):
+                return "Custom BaudRate";
+
+            default:
+                return fieldName;
+        }
+    }
+
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -313,4 +315,6 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
         return null;
     }
+
+    #endregion Валидация
 }

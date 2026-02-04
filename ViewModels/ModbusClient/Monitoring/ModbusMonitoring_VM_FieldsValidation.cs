@@ -36,6 +36,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         return null;
     }
 
+    #region Валидация
+
     public string GetFieldViewName(string fieldName)
     {
         switch (fieldName)
@@ -101,4 +103,6 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         return null;
     }
+
+    #endregion Валидация
 }

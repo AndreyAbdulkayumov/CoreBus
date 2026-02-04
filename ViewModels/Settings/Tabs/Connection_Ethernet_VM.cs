@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using MessageBox.Core;
@@ -44,21 +44,6 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
     }
 
-    public string GetFieldViewName(string fieldName)
-    {
-        switch (fieldName)
-        {
-            case nameof(IP_Address):
-                return "IP-адрес";
-
-            case nameof(Port):
-                return "Порт";
-
-            default:
-                return fieldName;
-        }
-    }
-
     public void SettingsFileChanged()
     {
         try
@@ -83,6 +68,24 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
         catch (Exception error)
         {
             _messageBox.Show($"Ошибка обновления значений на странице Ethernet.\n\n{error.Message}", MessageType.Error, error);
+        }
+    }
+
+
+    #region Валидация
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(IP_Address):
+                return "IP-адрес";
+
+            case nameof(Port):
+                return "Порт";
+
+            default:
+                return fieldName;
         }
     }
 
@@ -127,4 +130,6 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
 
         return null;
     }
+
+    #endregion Валидация
 }
