@@ -2,8 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 mc:Ignorable="d" 
-			 d:DesignWidth="1100" d:DesignHeight="100"
+			 d:DesignWidth="1100" d:DesignHeight="120"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
              x:DataType="ViewModels:ModbusMonitoring_VM">
@@ -12,113 +13,228 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 
+		<Style Selector="Button">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Height" Value="32"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+		
 	</UserControl.Styles>
 
+	
+	<Grid ColumnDefinitions="120, 1*, 1*">
 
-    <StackPanel Orientation="Vertical" Spacing="15">
+		<!-- Кнопки управления -->
+		
+		<Border Grid.Column="0"
+			    BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="10,10,5,10"
+				Padding="11">
+
+			<StackPanel Orientation="Vertical" Spacing="10"
+			            HorizontalAlignment="Center">
+
+				<Button Content="График"
+						Command="{Binding Command_OpenChart}"
+						HorizontalAlignment="Center"/>
+
+				<Button IsEnabled="{Binding !IsStart, Mode=OneWay}"
+						Command="{Binding Command_RemoveSelectedItems}"
+						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
+						ToolTip.Tip="Удалить выбранные регистры"
+						Foreground="{DynamicResource WindowChrome_Color_CloseApp_Background}"
+						BorderBrush="{DynamicResource WindowChrome_Color_CloseApp_Background}"
+						BorderThickness="3"
+						Padding="1"
+						HorizontalAlignment="Center">
+
+					<Icons:MaterialIcon Kind="TrashCanOutline"
+										Height="22" Width="30"/>
+
+					<Button.Styles>
+
+						<Style Selector="Button:pointerover /template/ ContentPresenter">
+							<Setter Property="Foreground" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							<Setter Property="BorderBrush" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+						</Style>
+
+						<Style Selector="Button:pressed /template/ ContentPresenter">
+							<Setter Property="Foreground" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							<Setter Property="BorderBrush" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+						</Style>
+
+					</Button.Styles>
+
+				</Button>
+
+			</StackPanel>
+
+		</Border>
+
+		<!-- Настройка опроса -->
+		
+		<Border Grid.Column="1"
+				BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="5,10,5,10"
+				Padding="10"
+				ClipToBounds="True">
+
+			<Grid ColumnDefinitions="Auto,Auto"
+				  ColumnSpacing="35"
+				  HorizontalAlignment="Center">
+				
+				<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="10">
+
+					<StackPanel Orientation="Horizontal" Spacing="20">
+						 
+						<Grid>
+
+							<TextBlock Text="Slave ID"
+				                       Margin="0,8,0,0" />
+
+							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="65,8,0,0"/>
+
+							<TextBox Classes="InputField"
+									 Width="70"
+									 Text="{Binding SlaveID, Mode=TwoWay}"
+									 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+									 Margin="110,1,0,0"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
+
+						</Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="15"
+				                    VerticalAlignment="Top">
+
+							<TextBlock Text="Формат числа"
+									   VerticalAlignment="Center"/>
+
+							<RadioButton Content="hex"
+										 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+										 Foreground="{DynamicResource App_Color_Text}"/>
+
+							<RadioButton Content="dec"
+										 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+										 Foreground="{DynamicResource App_Color_Text}"/>
+
+						</StackPanel>					
+
+					</StackPanel>
+
+					<StackPanel Orientation="Horizontal" Spacing="15">
+
+						<TextBlock Text="Функция опроса"
+								   VerticalAlignment="Center"/>
+
+						<ComboBox ItemsSource="{Binding ReadFunctions}"
+								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
+								  IsEnabled="{Binding !IsStart, Mode=OneWay}"
+								  Width="275"/>				
+
+					</StackPanel>
+
+				</StackPanel>
+			
+				<!-- Для того, чтобы кнопка опроса полностью растянулась под периодом. -->
+				
+				<StackPanel Grid.Column="1" Orientation="Vertical" Spacing="10">
+
+					<StackPanel Grid.Row="0" 
+								Orientation="Horizontal" Spacing="10"
+								VerticalAlignment="Top">
+
+						<TextBlock Text="Период"
+							       Margin="0,8,0,0"/>
+
+						<TextBox Classes="InputField"
+								 Width="70"
+								 Text="{Binding Period_ms, Mode=TwoWay}"
+								 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+								 Margin="0,1,0,0"/>
+
+						<TextBlock Text="мс."
+				                   Margin="0,8,0,0"/>
+
+					</StackPanel>
 					
-        <StackPanel Orientation="Horizontal" Spacing="30"
-					Margin="20,10,0,0">
-
-			<Grid>
-
-				<TextBlock Text="Slave ID"
-			               Margin="0,6,0,0"
-						   VerticalAlignment="Top"/>
-
-				<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-						   Foreground="{DynamicResource App_Color_Text_Bright}"
-						   Margin="65,6,0,0"
-						   HorizontalAlignment="Left" VerticalAlignment="Top"/>
-
-				<TextBox Classes="InputField"
-						 Width="70"
-						 MinHeight="30"
-						 Text="{Binding SlaveID, Mode=TwoWay}"
-						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						 Margin="110,0,0,0"
-						 HorizontalAlignment="Left" VerticalAlignment="Top"
-						 TextChanged="UppercaseTextBox_TextChanged"/>
+					<Button Grid.Row="1" 
+							Content="{Binding Button_Content, Mode=OneWay}"
+							IsEnabled="{Binding UI_IsEnable}"
+							Command="{Binding Command_Start_Stop_Polling}"
+							HorizontalAlignment="Stretch"/>
+					
+				</StackPanel>
 
 			</Grid>
 
-			<StackPanel Orientation="Horizontal" Spacing="15">
-				
-				<TextBlock Text="Функция опроса"
-						   Margin="0,6,0,0"
-			               VerticalAlignment="Top"/>
+		</Border>
 
-				<ComboBox ItemsSource="{Binding ReadFunctions}"
-						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
-						  IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						  Width="275"
-						  MinHeight="5"
-						  Height="30"
-						  FontSize="14"/>
+		<!-- Логирование -->
+		
+		<Border Grid.Column="2"
+				BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="5,10,10,10"
+				Padding="10">
 
-			</StackPanel>
+			<StackPanel Orientation="Vertical" Spacing="18"
+			            HorizontalAlignment="Center">
 
-			<StackPanel Orientation="Horizontal" Spacing="15">
-				
-				<TextBlock Text="Период"
-						   Margin="0,6,0,0"
-			               VerticalAlignment="Top"/>
+				<StackPanel Orientation="Horizontal" Spacing="15">
 
-				<TextBox Classes="InputField"
-						 Width="70"
-						 MinHeight="30"
-						 Text="{Binding Period_ms, Mode=TwoWay}"
-						 IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						 VerticalAlignment="Top"/>
+					<TextBlock Text="Логирование"
+							   FontSize="14"
+							   VerticalAlignment="Center"/>
 
-				<TextBlock Text="мс."
-			               Margin="0,6,0,0"
-			               VerticalAlignment="Top"/>
+					<Button Padding="1"
+							ToolTip.Tip="Запуск">
 
-			</StackPanel>
+						<Icons:MaterialIcon Kind="PlayArrow"
+											Height="22" Width="30"/>
 
-			<Button Width="150"
-					FontSize="14"
-					Content="{Binding Button_Content, Mode=OneWay}"
-					IsEnabled="{Binding UI_IsEnable}"
-					Command="{Binding Command_Start_Stop_Polling}"
-					VerticalAlignment="Top"/>
+					</Button>
 
-		</StackPanel>
+					<Button Padding="1"
+							ToolTip.Tip="Остановка">
 
-		<Grid>
+						<Icons:MaterialIcon Kind="Stop"
+											Height="22" Width="30"/>
 
-			<StackPanel Orientation="Horizontal" Spacing="20"
-						Margin="20,0,0,0">
+					</Button>
 
-				<TextBlock Text="Формат числа"
-							VerticalAlignment="Center"/>
-						
-				<RadioButton Content="hex"
-								IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
-								Foreground="{DynamicResource App_Color_Text}"/>
+					<Button Padding="1"
+							ToolTip.Tip="Открыть папку с логами">
 
-				<RadioButton Content="dec"
-								IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
-								Foreground="{DynamicResource App_Color_Text}"/>
+						<Icons:MaterialIcon Kind="FolderCheck"
+											Height="22" Width="30"/>
 
-				<Button Content="Удалить выбранные регистры"
-						FontSize="14"
-						IsEnabled="{Binding !IsStart, Mode=OneWay}"
-						Command="{Binding Command_RemoveSelectedItems}"
-						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
-						Margin="20,0,0,0"/>
+					</Button>
+
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" Spacing="10">
+
+					<TextBlock Text="Начало записи:"
+							   FontSize="14"/>
+
+					<TextBlock Text="20.12.1986 20:56:15"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"
+							   FontSize="14"/>
+
+				</StackPanel>
 
 			</StackPanel>
 
-			<Button Content="График"
-		            FontSize="14"
-					Command="{Binding Command_OpenChart}"
-					Margin="0,0,38,0"
-					HorizontalAlignment="Right"/>
+		</Border>
 
-		</Grid>				
-
-	</StackPanel>
+	</Grid>	
 
 </UserControl>

@@ -20,20 +20,13 @@
 
     <Grid RowDefinitions="120,3,1*">
 
-        <Border Grid.Row="0"
-                BorderBrush="{DynamicResource Group_Color_BorderBrush}"
-			    BorderThickness="2"
-			    CornerRadius="4"
-			    Margin="10">
+		<ScrollViewer Grid.Row="0"
+					  HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Auto">
 
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-						  VerticalScrollBarVisibility="Auto">
-                
-                <local:MonitoringSettings/>
+			<local:MonitoringSettings/>
 
-            </ScrollViewer>
-
-        </Border>
+		</ScrollViewer>
 
         <GridSplitter Grid.Row="1"
                       ResizeDirection="Rows"/>
