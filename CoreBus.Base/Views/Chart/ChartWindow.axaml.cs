@@ -7,9 +7,6 @@ using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
 
@@ -147,85 +144,5 @@ public partial class ChartWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
-    }
-
-    private async void Button_UploadPoints_Click(object? sender, RoutedEventArgs e)
-    {
-        if (_viewModel == null || ChartIsEmpty())
-        {
-            _viewModel?.ShowMessage("На графике нет точек.");
-            return;
-        }
-
-        try
-        {
-            var filePath = await _viewModel.GetFilePath();
-
-            this.Activate();
-
-            if (filePath == null)
-                return;
-
-            _viewModel.IsConverted = true;
-
-            await Task.Run(() =>
-            {
-                using var writer = new StreamWriter(filePath);
-
-                // Шапка
-
-                writer.Write("Время (мс.)\t");
-
-                foreach (var logger in _loggers)
-                {
-                    writer.Write($"{logger.Value.LegendText}\t");
-                }
-
-                writer.WriteLine();
-
-
-                // Данные
-
-                var firstLogger = _loggers.First();
-
-                var numberOfPoints = firstLogger.Value.Data.Coordinates.Count;
-
-                for (int i = 0; i < numberOfPoints; i++)
-                {
-                    writer.Write($"{firstLogger.Value.Data.Coordinates[i].X}\t");
-
-                    foreach (var logger in _loggers)
-                    {
-                        writer.Write($"{logger.Value.Data.Coordinates[i].Y}\t");
-                    }
-
-                    writer.WriteLine();
-                }
-            });
-
-            _viewModel.IsConverted = false;
-
-            _viewModel.ShowMessage($"Данные с графика сохранены!\n\nПуть к файлу:\n{filePath}", null, true);
-        }
-
-        catch (Exception error)
-        {
-            _viewModel?.IsConverted = false;
-            _viewModel?.ShowMessage("Ошибка чтения точек графика.", error);
-        }
-    }
-
-    private bool ChartIsEmpty()
-    {
-        if (_loggers.Count == 0)
-            return true;
-
-        foreach (var logger in _loggers)
-        {
-            if (logger.Value.Data.Coordinates.Count > 0)
-                return false;
-        }
-
-        return true;
     }
 }

@@ -328,9 +328,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 if (monitoringVM == null || chartVM == null || chartMessageBox == null)
                     return;
 
-                var hasActiveOperations = monitoringVM.IsStart || chartVM.IsConverted;
-
-                if (!hasActiveOperations)
+                if (!monitoringVM.IsStart)
                     return;
 
                 // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
@@ -342,7 +340,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 {
                     var closeWindow = await chartMessageBox.ShowYesNoDialog(
                         "Опрос Modbus регистров еще идет.\n\n" +
-                        "Вы действительно желайте закрыть окно графика и потерять все накопленные данные?",
+                        "Вы действительно желайте закрыть окно графика и потерять все отображаемые данные?",
                         MessageType.Warning);
 
                     if (closeWindow != MessageBoxResult.No)
@@ -350,11 +348,6 @@ public class OpenChildWindowService : IOpenChildWindowService
                         ChartWindowIsOpen = false;
                         window.Close();
                     }
-                }
-
-                if (chartVM.IsConverted)
-                {
-                    chartMessageBox.Show("Дождитесь окончания записи данных в файл.", MessageType.Warning);
                 }
             };
 
