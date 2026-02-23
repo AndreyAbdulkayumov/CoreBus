@@ -122,6 +122,7 @@
 						  MinHeight="5"
 			              ItemsSource="{Binding AllValueTypes}"
 						  SelectedItem="{Binding SelectedValueType, Mode=TwoWay}"
+						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"/>
 
@@ -140,11 +141,11 @@
 
 					<Border Background="{DynamicResource Modbus_Monitoring_Item_Updated}"
 							CornerRadius="4"
-							IsVisible="{Binding IsNewTypedValue, Mode=OneWay}"/>
+							IsVisible="{Binding IsNewConvertedValue, Mode=OneWay}"/>
 
 					<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
 							CornerRadius="4"
-							IsVisible="{Binding !IsNewTypedValue, Mode=OneWay}"/>
+							IsVisible="{Binding !IsNewConvertedValue, Mode=OneWay}"/>
 
 					<SelectableTextBlock Text="{Binding ConvertedValue, Mode=TwoWay}"
 										 FontSize="14"

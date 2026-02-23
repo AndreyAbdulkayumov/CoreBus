@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings;
+namespace Core.Models.Settings;
 
 internal class AppDirectoryManager
 {
@@ -87,6 +87,14 @@ internal class AppDirectoryManager
         Macros_Directory = Path.Combine(folderInDocuments, Macros_FolderName);
 
         SendFiles_Directory = Path.Combine(folderInDocuments, SendFiles_FolderName);
+
+        CreateDirectories();
+    }
+
+    private void CreateDirectories()
+    {
+        if (!Directory.Exists(LogFiles_Directory))
+            Directory.CreateDirectory(LogFiles_Directory);
     }
 
     /// <summary>

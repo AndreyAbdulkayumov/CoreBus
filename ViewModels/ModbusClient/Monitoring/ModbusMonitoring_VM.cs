@@ -1,5 +1,6 @@
 using Core.Clients.DataTypes;
 using Core.Models;
+using Core.Models.Logging;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
@@ -13,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
+using System.Text;
 using ViewModels.Chart;
 using ViewModels.ModbusClient.Manual;
 using ViewModels.Validation;
@@ -128,34 +130,66 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
     }
 
+    private string? _startLogDate;
+
+    public string? StartLogDate
+    {
+        get => _startLogDate;
+        set => this.RaiseAndSetIfChanged(ref _startLogDate, value);
+    }
+
+    private bool _startLogDateIsVisible;
+
+    public bool StartLogDateIsVisible
+    {
+        get => _startLogDateIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _startLogDateIsVisible, value);
+    }
+
+    private bool _waitStartLogMessageIsVisible;
+
+    public bool WaitStartLogMessageIsVisible
+    {
+        get => _waitStartLogMessageIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _waitStartLogMessageIsVisible, value);
+    }
+
     public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
     public ReactiveCommand<Unit, Unit> Command_RemoveSelectedItems { get; }    
     public ReactiveCommand<Unit, Unit> Command_OpenChart { get; }
+    public ReactiveCommand<Unit, Unit> Command_StartLogging { get; }
+    public ReactiveCommand<Unit, Unit> Command_StopLogging { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenLogFolder { get; }
 
     private NumberStyles _numberViewStyle;
     private byte _selectedSlaveID;
     private uint _selectedPeriod;
 
     private readonly IOpenChildWindowService _openChildWindowService;
+    private readonly IFileSystemService _fileSystemService;
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly Model_Settings _settingsModel;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
     private readonly Chart_VM _chart_VM;
+    private readonly FileLogger _logger;
 
 
-    public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
+    public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         Model_Settings settingsModel, ConnectedHost connectedHostModel,
-        Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM)
+        Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM,
+        FileLogger logger)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
         _chart_VM = chart_VM ?? throw new ArgumentNullException(nameof(chart_VM));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -217,6 +251,15 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             InitChartAxes();
         });
         Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_StartLogging = ReactiveCommand.Create(StartLogging);
+        Command_StartLogging.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска логгирования.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_StopLogging = ReactiveCommand.CreateFromTask(StopLogging);
+        Command_StopLogging.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка остановки логгирования.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_OpenLogFolder = ReactiveCommand.CreateFromTask(async () => await _fileSystemService.OpenFolder(_settingsModel.LogFolderPath));
+        Command_OpenLogFolder.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия папки с логами.\n\n{error.Message}", MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -364,6 +407,50 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         ChangeNumberStyleInErrors(nameof(SlaveID), newStyle);
     }
 
+    #region Логгирование
+
+    private void StartLogging()
+    {
+        if (_logger.IsRunning)
+            return;
+
+        if (!IsStart)
+        {
+            WaitStartLogMessageIsVisible = true;
+            return;
+        }
+
+        var startDate = DateTime.Now;
+        var filePath = Path.Combine(_settingsModel.LogFolderPath, $"CoreBus {startDate:dd.MM.yyyy HH.mm.ss}.txt");
+
+        var columnNames = new StringBuilder();
+
+        foreach (var item in _monitoringDataGrid_VM.Items)
+        {
+            if (item.IsLogging)
+                columnNames.Append($"{item.GetDisplayedItemName()}\t");
+        }
+
+        _logger.Start(filePath, columnNames.ToString());
+
+        WaitStartLogMessageIsVisible = false;
+
+        StartLogDateIsVisible = true;
+        StartLogDate = startDate.ToString("dd.MM.yyyy HH:mm:ss");
+    }
+
+    private async Task StopLogging()
+    {
+        await _logger.StopAsync();
+
+        WaitStartLogMessageIsVisible = false;
+        StartLogDateIsVisible = false;
+    }
+
+    #endregion Логгирование
+
+    #region Опрос
+
     private void StartPolling()
     {
         try
@@ -398,6 +485,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             MessageBus.Current.SendMessage(new ManageChartToolsMessage(false));
 
+            if (WaitStartLogMessageIsVisible)
+                StartLogging();
+
             _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);            
         }
         
@@ -410,7 +500,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void InitChartAxes()
     {
-        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.Alias ?? $"Адрес \"{e.Address}\"");
+        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.GetDisplayedItemName());
 
         if (chartAxes.Count != 0)
         {
@@ -462,6 +552,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (result.ReadedData == null || !IsStart)
             return;
 
-        _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
+        var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
+
+        if (_logger.IsRunning)
+            _logger.WriteLine(logString);
     }
+
+    #endregion Опрос
 }

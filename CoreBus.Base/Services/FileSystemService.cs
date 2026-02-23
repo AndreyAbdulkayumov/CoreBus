@@ -1,13 +1,13 @@
-﻿using System;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using CoreBus.Base.Views;
+using Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using CoreBus.Base.Views;
-using Services.Interfaces;
 
 namespace CoreBus.Base.Services;
 
@@ -91,5 +91,20 @@ public class FileSystemService : IFileSystemService
         }
 
         throw new Exception("Неподдерживаемый тип ОС.");
+    }
+
+    public async Task OpenFolder(string folderPath)
+    {
+        var topLevel = TopLevel.GetTopLevel(MainWindow.Instance);
+
+        var dirInfo = new DirectoryInfo(folderPath);
+
+        if (Directory.Exists(folderPath) && topLevel != null)
+        {
+            bool successOpen = await topLevel.Launcher.LaunchDirectoryInfoAsync(dirInfo);
+
+            if (!successOpen)
+                throw new Exception("Не удалось открыть папку с логами");
+        }
     }
 }

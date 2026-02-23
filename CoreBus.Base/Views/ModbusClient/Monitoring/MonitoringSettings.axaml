@@ -183,9 +183,10 @@
 			    BorderThickness="2"
 			    CornerRadius="4"
 			    Margin="5,10,10,10"
-				Padding="10">
+				Padding="10,10,0,10">
 
 			<StackPanel Orientation="Vertical" Spacing="18"
+			            Width="260"
 			            HorizontalAlignment="Center">
 
 				<StackPanel Orientation="Horizontal" Spacing="15">
@@ -195,7 +196,9 @@
 							   VerticalAlignment="Center"/>
 
 					<Button Padding="1"
-							ToolTip.Tip="Запуск">
+							ToolTip.Tip="Запуск"
+							Background="#328448"
+							Command="{Binding Command_StartLogging}">
 
 						<Icons:MaterialIcon Kind="PlayArrow"
 											Height="22" Width="30"/>
@@ -203,7 +206,9 @@
 					</Button>
 
 					<Button Padding="1"
-							ToolTip.Tip="Остановка">
+							ToolTip.Tip="Остановка"
+							Background="IndianRed"
+							Command="{Binding Command_StopLogging}">
 
 						<Icons:MaterialIcon Kind="Stop"
 											Height="22" Width="30"/>
@@ -211,7 +216,9 @@
 					</Button>
 
 					<Button Padding="1"
-							ToolTip.Tip="Открыть папку с логами">
+							ToolTip.Tip="Открыть папку с логами"
+							Background="#EBA729"
+							Command="{Binding Command_OpenLogFolder}">
 
 						<Icons:MaterialIcon Kind="FolderCheck"
 											Height="22" Width="30"/>
@@ -220,16 +227,22 @@
 
 				</StackPanel>
 
-				<StackPanel Orientation="Horizontal" Spacing="10">
+				<StackPanel Orientation="Horizontal" Spacing="5"
+				            IsVisible="{Binding StartLogDateIsVisible, Mode=OneWay}">
 
 					<TextBlock Text="Начало записи:"
 							   FontSize="14"/>
 
-					<TextBlock Text="20.12.1986 20:56:15"
+					<TextBlock Text="{Binding StartLogDate, Mode=OneWay}"
 							   Foreground="{DynamicResource App_Color_Text_Bright}"
 							   FontSize="14"/>
 
 				</StackPanel>
+
+				<TextBlock Text="Запись начнется с запуском опроса"
+						   FontSize="14"
+						   IsVisible="{Binding WaitStartLogMessageIsVisible, Mode=OneWay}"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
 
 			</StackPanel>
 

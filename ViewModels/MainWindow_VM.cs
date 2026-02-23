@@ -2,13 +2,13 @@ using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.AppUpdateSystem;
 using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Models.Logging;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using MessageBusTypes.Settings;
 using ReactiveUI;
 using Services.Interfaces;
-using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -180,6 +180,7 @@ public class MainWindow_VM : ReactiveObject
     private readonly Model_Settings _settingsModel;
     private readonly Model_AppUpdateSystem _appUpdateSystemModel;
     private readonly ModbusMonitoring_VM _modbusMonitoring_VM;
+    private readonly FileLogger _logger;
 
     private readonly object TX_View_Locker = new object();
     private readonly object RX_View_Locker = new object();
@@ -189,7 +190,7 @@ public class MainWindow_VM : ReactiveObject
     public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM,
         ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel,
-        ModbusMonitoring_VM modbusMonitoring_VM)
+        ModbusMonitoring_VM modbusMonitoring_VM, FileLogger logger)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
@@ -201,6 +202,7 @@ public class MainWindow_VM : ReactiveObject
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
         _modbusMonitoring_VM = modbusMonitoring_VM ?? throw new ArgumentNullException(nameof(modbusMonitoring_VM));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         SettingsDocument = _settingsModel.AppData.SelectedPresetFileName;
 
@@ -356,13 +358,15 @@ public class MainWindow_VM : ReactiveObject
         }
     }
 
-    public void WindowClosing()
+    public async Task WindowClosing()
     {
+        await _logger.StopAsync();
+
         _settingsModel.SaveAppInfo(_settingsModel.AppData);
 
         var monitoringItemsData = _modbusMonitoring_VM.GetParametersForSave();
 
-        _settingsModel.SaveModbusMonitoringItems(monitoringItemsData);
+        _settingsModel.SaveModbusMonitoringItems(monitoringItemsData);        
     }
 
     private async Task CheckAppUpdate()

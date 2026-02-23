@@ -29,6 +29,8 @@ public class Model_Settings
         get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_Modbus + FileExtension);
     }
 
+    public string LogFolderPath => DirectoryManager.LogFiles_Directory;
+
     private const string FileName_DefaultPreset = "Unknown";
 
     private const string FileName_AppData = "AppData";

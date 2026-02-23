@@ -24,6 +24,7 @@ using ViewModels.ModbusScanner;
 using ViewModels.ModbusClient.Manual;
 using ViewModels.ModbusClient.Monitoring;
 using ViewModels.Chart;
+using Core.Models.Logging;
 
 namespace CoreBus.Base;
 
@@ -69,6 +70,8 @@ public partial class App : Application
             .AddSingleton<Model_Modbus>()
             .AddSingleton<Model_Settings>()
             .AddSingleton<Model_AppUpdateSystem>()
+            // Логгер
+            .AddSingleton<FileLogger>()
             // Главное окно
             .AddSingleton<MainWindow_VM>()
             // Компоненты главного окна
@@ -137,14 +140,19 @@ public partial class App : Application
                 (desktop.MainWindow.DataContext as MainWindow_VM)?.MainWindowLoaded();
             };
 
-            desktop.MainWindow.Closing += (object? sender, WindowClosingEventArgs e) =>
-            {
-                (desktop.MainWindow.DataContext as MainWindow_VM)?.WindowClosing();
-            };
+            desktop.MainWindow.Closing += MainWindow_Closing;
 
             _ = _serviceProvider.GetService<Chart_VM>();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private async void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        if (MainWindow.Instance?.DataContext is MainWindow_VM mainViewModel)
+        {
+            await mainViewModel.WindowClosing();
+        }
     }
 }

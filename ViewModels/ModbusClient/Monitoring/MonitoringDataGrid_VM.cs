@@ -263,7 +263,16 @@ public class MonitoringDataGrid_VM : ReactiveObject
         }
     }
 
-    public void DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, uint chartIncrementX)
+    /// <summary>
+    /// Отображает данные в таблице.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="readFunction"></param>
+    /// <param name="startingAddress"></param>
+    /// <param name="numberOfRegisters"></param>
+    /// <param name="chartIncrementX"></param>
+    /// <returns>Строка для записи в лог.</returns>
+    public string DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, uint chartIncrementX)
     {
         var readRegisters =
             ConvertToResultList(data, numberOfRegisters, readFunction)
@@ -276,13 +285,22 @@ public class MonitoringDataGrid_VM : ReactiveObject
             .Where(readRegisters.ContainsKey)
             .Select(key => new KeyValuePair<int, ushort>(key, readRegisters[key]));
 
+        string logString = string.Empty;
+
         foreach (var item in Items)
         {
             if (readRegisters.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
                 item.SetReadedValue(registerValue, registers, chartIncrementX);
+                
+                if (item.IsLogging)
+                {
+                    logString += item.ConvertedValue + "\t";
+                }
             }
         }
+
+        return logString;
     }
 
     private static List<UInt16> ConvertToResultList(byte[] modbusData, int numberOfRegisters, ModbusReadFunction function)

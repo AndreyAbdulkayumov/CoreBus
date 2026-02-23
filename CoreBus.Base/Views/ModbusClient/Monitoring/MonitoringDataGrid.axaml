@@ -64,7 +64,7 @@
 
 					<Label Grid.Column="5" Content="Преобразованное значение"/>
 
-					<Label Grid.Column="6" Content="На графике"/>
+					<Label Grid.Column="6" Content="График / Лог"/>
 
 				</Grid>
 

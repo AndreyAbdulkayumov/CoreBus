@@ -17,6 +17,8 @@ namespace ViewModels.ModbusClient.Monitoring
 {
     public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
+        public bool IsLogging => !VisibleOnlyRawValue && OnChart;
+
         public event EventHandler<EventArgs>? TypeChanged;
 
         public const string TypeName_UInt16 = "UInt16";
@@ -140,6 +142,14 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _convertedValue, value);
         }
 
+        private bool _isNewConvertedValue;
+
+        public bool IsNewConvertedValue
+        {
+            get => _isNewConvertedValue;
+            set => this.RaiseAndSetIfChanged(ref _isNewConvertedValue, value);
+        }
+
         private string? _formula;
 
         public string? Formula
@@ -228,6 +238,11 @@ namespace ViewModels.ModbusClient.Monitoring
             SetDefaultValues();
         }
 
+        public string GetDisplayedItemName()
+        {
+            return Alias ?? $"Адрес \"{Address}\"";
+        }
+
         private void SetDefaultValues()
         {
             IsNewValue = false;
@@ -270,7 +285,11 @@ namespace ViewModels.ModbusClient.Monitoring
             if (string.IsNullOrEmpty(Formula))
                 return;
 
+            var oldConvertedValue = ConvertedValue;
+
             ConvertedValue = Math.Round(MathFormula.Solve(Formula, _convertedInnerValue), _floatRoundedDigit).ToString();
+
+            IsNewConvertedValue = ConvertedValue != oldConvertedValue;
 
             if (OnChart && _openChildWindowService.ChartWindowIsOpen)
             {
