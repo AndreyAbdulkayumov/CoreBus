@@ -130,6 +130,14 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _hasSelectedItems, value);
     }
 
+    private bool _logWillStart;
+
+    public bool LogWillStart
+    {
+        get => _logWillStart;
+        set => this.RaiseAndSetIfChanged(ref _logWillStart, value);
+    }
+
     private string? _startLogDate;
 
     public string? StartLogDate
@@ -414,6 +422,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (_logger.IsRunning)
             return;
 
+        LogWillStart = true;
+
         if (!IsStart)
         {
             WaitStartLogMessageIsVisible = true;
@@ -442,6 +452,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     private async Task StopLogging()
     {
         await _logger.StopAsync();
+
+        LogWillStart = false;
 
         WaitStartLogMessageIsVisible = false;
         StartLogDateIsVisible = false;
