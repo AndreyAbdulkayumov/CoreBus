@@ -1,3 +1,4 @@
+using Core.Models.Settings.FileTypes;
 using System.Globalization;
 using System.Text;
 using System.Threading.Channels;
@@ -15,10 +16,14 @@ public class FileLogger : IAsyncDisposable
 
     public bool IsRunning => _channel != null;
 
-    public void Start(string filePath, string columnNames)
+    private TimestampFormat _selectedTimestampFormat;
+
+    public void Start(string filePath, string columnNames, TimestampFormat logTimestampFormat)
     {
         if (IsRunning)
             return;
+
+        _selectedTimestampFormat = logTimestampFormat;
 
         _cts = new CancellationTokenSource();
 
@@ -42,7 +47,7 @@ public class FileLogger : IAsyncDisposable
             AutoFlush = true
         };
 
-        _writer.WriteLine($"Время\t{columnNames}");
+        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? "Время\t" : string.Empty)}{columnNames}");
 
         _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token));
     }
@@ -81,7 +86,25 @@ public class FileLogger : IAsyncDisposable
         await foreach (var entry in _channel!.Reader.ReadAllAsync(token))
         {
             await _writer!.WriteLineAsync(
-                $"{entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t{entry.Data}");
+                $"{GetTimestamp(entry)}{entry.Data}");
+        }
+    }
+
+    private string GetTimestamp(LogEntry entry)
+    {
+        switch (_selectedTimestampFormat)
+        {
+            case TimestampFormat.None:
+                return string.Empty;
+
+            case TimestampFormat.Time:
+                return $"{entry.Timestamp.ToString("HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t";
+
+            case TimestampFormat.DateTime:
+                return $"{entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t";
+
+            default:
+                return $"{entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t";
         }
     }
 

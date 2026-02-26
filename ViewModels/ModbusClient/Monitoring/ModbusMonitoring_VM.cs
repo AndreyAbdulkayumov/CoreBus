@@ -441,7 +441,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 columnNames.Append($"{item.GetDisplayedItemName()}\t");
         }
 
-        _logger.Start(filePath, columnNames.ToString());
+        _logger.Start(filePath, columnNames.ToString(), _settingsModel.Settings.LogTimestampFormat);
 
         WaitStartLogMessageIsVisible = false;
 
@@ -529,6 +529,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         _monitoringDataGrid_VM.BlockUI(false);
         MessageBus.Current.SendMessage(new ManageChartToolsMessage(true));
+
+        Task.Run(StopLogging);
     }
 
     private async Task MonitoringRequestAction()

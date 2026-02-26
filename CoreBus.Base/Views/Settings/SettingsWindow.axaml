@@ -9,7 +9,7 @@
         x:Class="CoreBus.Base.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:Settings_VM"
         Title="Настройки"
-		Width="540" Height="530"
+		Width="540" Height="510"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"

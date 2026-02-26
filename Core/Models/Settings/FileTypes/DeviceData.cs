@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings.FileTypes;
+namespace Core.Models.Settings.FileTypes;
 
 public class SerialPort_Info
 {
@@ -15,6 +15,14 @@ public class IP_Info
 {
     public string? IP_Address { get; set; }
     public string? Port { get; set; }
+}
+
+// Вариант по умолчанию должен быть первым
+public enum TimestampFormat
+{
+    DateTime,
+    None,
+    Time
 }
 
 public class DeviceData : ICloneable
@@ -42,12 +50,13 @@ public class DeviceData : ICloneable
     // Настройки режима "Modbus"
     public string? TimeoutWrite { get; set; }
     public string? TimeoutRead { get; set; }
+    public TimestampFormat LogTimestampFormat { get; set; }
     public string? FloatNumberFormat { get; set; }
 
     public const string TimeoutWrite_Default = "300";
     public const string TimeoutRead_Default = "300";
     public const string FloatNumberFormat_Default = FloatWriteFormat_BA_DC;
-
+    public const TimestampFormat LogTimestampFormat_Default = TimestampFormat.DateTime;
 
     public static DeviceData GetDefault()
     {
@@ -61,6 +70,7 @@ public class DeviceData : ICloneable
 
             TimeoutWrite = TimeoutWrite_Default,
             TimeoutRead = TimeoutRead_Default,
+            LogTimestampFormat = LogTimestampFormat_Default,
             FloatNumberFormat = FloatNumberFormat_Default,
         };
     }
@@ -114,6 +124,7 @@ public class DeviceData : ICloneable
 
             TimeoutWrite = TimeoutWrite,
             TimeoutRead = TimeoutRead,
+            LogTimestampFormat = LogTimestampFormat,
             FloatNumberFormat = FloatNumberFormat,
         };
     }

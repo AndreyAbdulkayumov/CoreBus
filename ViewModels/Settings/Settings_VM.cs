@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -103,6 +103,8 @@ public class Settings_VM : ReactiveObject
 
         Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? DeviceData.TimeoutWrite_Default;
         Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? DeviceData.TimeoutRead_Default;
+
+        Tab_Modbus_VM.PresetLogTimestampFormat(settings.LogTimestampFormat);
 
         Tab_Modbus_VM.FloatFormat = FloatHelper.GetFloatNumberFormatOrDefault(settings.FloatNumberFormat);
 
@@ -267,6 +269,9 @@ public class Settings_VM : ReactiveObject
 
                 TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
                 TimeoutRead = Tab_Modbus_VM.ReadTimeout,
+
+                LogTimestampFormat = Tab_Modbus_VM.GetLogTimestampFormat(),
+
                 FloatNumberFormat = floatFormat,
             };
 
