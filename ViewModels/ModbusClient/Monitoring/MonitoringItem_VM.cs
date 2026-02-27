@@ -17,7 +17,7 @@ namespace ViewModels.ModbusClient.Monitoring
 {
     public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
-        public bool IsLogging => !VisibleOnlyRawValue && OnChart;
+        public bool IsLogging => !VisibleOnlyRawValue && ShowOnChartAndLog;
 
         public event EventHandler<EventArgs>? TypeChanged;
 
@@ -158,12 +158,12 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _formula, value);
         }
 
-        private bool _onChart;
+        private bool _showOnChartAndLog;
 
-        public bool OnChart
+        public bool ShowOnChartAndLog
         {
-            get => _onChart;
-            set => this.RaiseAndSetIfChanged(ref _onChart, value);
+            get => _showOnChartAndLog;
+            set => this.RaiseAndSetIfChanged(ref _showOnChartAndLog, value);
         }
 
         public ReactiveCommand<Unit, Unit> Command_FormulaChange { get; }
@@ -262,7 +262,7 @@ namespace ViewModels.ModbusClient.Monitoring
             SelectedValueType = initData.ValueType;
             VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
             Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
-            OnChart = initData.OnChart;
+            ShowOnChartAndLog = initData.OnChart;
         }
 
         public void SetReadedValue(UInt16 newRawValue, IEnumerable<KeyValuePair<int, UInt16>> registers, uint chartIncrementX)
@@ -291,7 +291,7 @@ namespace ViewModels.ModbusClient.Monitoring
 
             IsNewConvertedValue = ConvertedValue != oldConvertedValue;
 
-            if (OnChart && _openChildWindowService.ChartWindowIsOpen)
+            if (ShowOnChartAndLog && _openChildWindowService.ChartWindowIsOpen)
             {
                 MessageBus.Current.SendMessage(
                     new AddingPointMessage(Id, double.Parse(ConvertedValue))

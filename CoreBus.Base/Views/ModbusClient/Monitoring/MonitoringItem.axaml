@@ -168,10 +168,10 @@
 			</Grid>
 
 
-			<!-- На графике -->
+			<!-- Отображение на графике и запись в лог -->
 
 			<CheckBox Grid.Column="6"
-					  IsChecked="{Binding OnChart, Mode=TwoWay}"
+					  IsChecked="{Binding ShowOnChartAndLog, Mode=TwoWay}"
 					  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}"
 					  IsEnabled="{Binding UI_IsEnable}"
 					  HorizontalAlignment="Center"

@@ -12,6 +12,7 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RemoveRowsButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Logging_Start.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Logging_Stop.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Logging_OpenFolder.axaml"/>
@@ -44,32 +45,14 @@
 						Command="{Binding Command_OpenChart}"
 						HorizontalAlignment="Center"/>
 
-				<Button IsEnabled="{Binding !IsStart, Mode=OneWay}"
+				<Button Classes="RemoveRowsButton"
+			            IsEnabled="{Binding !IsStart, Mode=OneWay}"
 						Command="{Binding Command_RemoveSelectedItems}"
 						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
 						ToolTip.Tip="Удалить выбранные регистры"
-						Foreground="{DynamicResource WindowChrome_Color_CloseApp_Background}"
-						BorderBrush="{DynamicResource WindowChrome_Color_CloseApp_Background}"
-						BorderThickness="3"
-						Padding="1"
 						HorizontalAlignment="Center">
 
-					<Icons:MaterialIcon Kind="TrashCanOutline"
-										Height="22" Width="30"/>
-
-					<Button.Styles>
-
-						<Style Selector="Button:pointerover /template/ ContentPresenter">
-							<Setter Property="Foreground" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
-							<Setter Property="BorderBrush" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
-						</Style>
-
-						<Style Selector="Button:pressed /template/ ContentPresenter">
-							<Setter Property="Foreground" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
-							<Setter Property="BorderBrush" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
-						</Style>
-
-					</Button.Styles>
+					<Icons:MaterialIcon Kind="CloseBoxMultiple"/>
 
 				</Button>
 

@@ -248,7 +248,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
             }
 
-            if (!_monitoringDataGrid_VM.Items.Any(e => e.OnChart))
+            if (!_monitoringDataGrid_VM.Items.Any(e => e.ShowOnChartAndLog))
             {
                 _messageBox.Show("Не выбрано ни одного регистра для отображения на графике.", MessageType.Warning);
                 return;
@@ -355,7 +355,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                         ValueType = e.SelectedValueType,
                         VisibleOnlyRawValue = e.VisibleOnlyRawValue,
                         Formula = e.Formula,
-                        OnChart = e.OnChart,
+                        OnChart = e.ShowOnChartAndLog,
                     })
                     .ToList(),
         };
@@ -422,7 +422,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (_logger.IsRunning)
             return;
 
-        if (!_monitoringDataGrid_VM.Items.Any(e => e.OnChart))
+        if (!_monitoringDataGrid_VM.Items.Any(e => e.ShowOnChartAndLog))
         {
             _messageBox.Show("Не выбрано ни одного регистра для записи в лог.", MessageType.Warning);
             ResetLogFlags();
@@ -524,7 +524,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void InitChartAxes()
     {
-        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.OnChart && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.GetDisplayedItemName());
+        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.ShowOnChartAndLog && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.GetDisplayedItemName());
 
         if (chartAxes.Count != 0)
         {
