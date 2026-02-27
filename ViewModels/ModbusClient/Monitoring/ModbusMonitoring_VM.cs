@@ -422,6 +422,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (_logger.IsRunning)
             return;
 
+        if (!_monitoringDataGrid_VM.Items.Any(e => e.OnChart))
+        {
+            _messageBox.Show("Не выбрано ни одного регистра для записи в лог.", MessageType.Warning);
+            ResetLogFlags();
+            return;
+        }
+
         LogWillStart = true;
 
         if (!IsStart)
@@ -441,7 +448,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 columnNames.Append($"{item.GetDisplayedItemName()}\t");
         }
 
-        _logger.Start(filePath, columnNames.ToString(), _settingsModel.Settings.LogTimestampFormat);
+        _logger.Start(filePath, columnNames.ToString(), _settingsModel.Settings?.LogTimestampFormat ?? DeviceData.LogTimestampFormat_Default);
 
         WaitStartLogMessageIsVisible = false;
 
@@ -453,6 +460,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     {
         await _logger.StopAsync();
 
+        ResetLogFlags();
+    }
+
+    private void ResetLogFlags()
+    {
         LogWillStart = false;
 
         WaitStartLogMessageIsVisible = false;

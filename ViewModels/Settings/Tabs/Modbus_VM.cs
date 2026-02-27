@@ -39,6 +39,7 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
             new TimestampFormatItem(TimestampFormat.None, "Нет"),
             new TimestampFormatItem(TimestampFormat.Time, "Только время"),
             new TimestampFormatItem(TimestampFormat.DateTime, "Дата и время"),
+            new TimestampFormatItem(TimestampFormat.ISO8601, "ISO 8601")
         ];
 
 

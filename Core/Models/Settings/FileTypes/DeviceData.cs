@@ -22,7 +22,8 @@ public enum TimestampFormat
 {
     DateTime,
     None,
-    Time
+    Time,
+    ISO8601
 }
 
 public class DeviceData : ICloneable

@@ -103,6 +103,9 @@ public class FileLogger : IAsyncDisposable
             case TimestampFormat.DateTime:
                 return $"{entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t";
 
+            case TimestampFormat.ISO8601:
+                return $"{entry.Timestamp.ToString("o", CultureInfo.InvariantCulture)}\t";
+
             default:
                 return $"{entry.Timestamp.ToString("dd.MM.yyyy HH:mm:ss:fff", CultureInfo.InvariantCulture)}\t";
         }
