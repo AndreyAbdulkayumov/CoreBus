@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Avalonia;
 using ReactiveUI.Avalonia;
@@ -21,5 +21,5 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
-            .UseReactiveUI();
+            .UseReactiveUI(builder => { });
 }
