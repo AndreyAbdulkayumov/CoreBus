@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
 
-	<Style Selector="Button.MenuToolButton">
+	<Style Selector="Button.ToolBarButton">
 
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="Foreground" Value="{DynamicResource MenuButton_Color_Foreground}"/>
@@ -20,12 +20,12 @@
 
 		<Style Selector="^:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource Button_Color_MouseOver_Background}"/>
-			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>
+			<Setter Property="Foreground" Value="{DynamicResource ToolBar_Icon_PointerOver_Foreground}"/>
 		</Style>
 
 		<Style Selector="^:pressed /template/ ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource Button_Color_Pressed_Background}"/>
-			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>
+			<Setter Property="Foreground" Value="{DynamicResource ToolBar_Icon_PointerOver_Foreground}"/>
 		</Style>
 
 		<Style Selector="^:disabled /template/ ContentPresenter">

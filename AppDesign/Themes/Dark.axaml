@@ -42,7 +42,10 @@
 	<SolidColorBrush x:Key="ToolBar_Icon_Settings" Color="Gray"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_About" Color="#2B67A8"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_UserManual" Color="#3A81B0"/>
+	<SolidColorBrush x:Key="ToolBar_Icon_Video" Color="IndianRed"/>
 	
+	<SolidColorBrush x:Key="ToolBar_Icon_PointerOver_Foreground" Color="#424242"/>
+
 	<!-- Connection String -->
 
 	<SolidColorBrush x:Key="ConnectionString_LedBrush_Active" Color="#A3D049"/>
@@ -144,7 +147,7 @@
 	
 	<!-- Logging -->
 
-	<SolidColorBrush x:Key="Logging_Color_Foreground" Color="Black"/>
+	<SolidColorBrush x:Key="Logging_Color_Foreground" Color="#202020"/>
 
 	<SolidColorBrush x:Key="Logging_Color_Start_Background" Color="#328448"/>
 	<SolidColorBrush x:Key="Logging_Color_Start_PointerOver_Background" Color="#5A9A6C"/>

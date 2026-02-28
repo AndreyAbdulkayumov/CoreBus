@@ -23,7 +23,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToolBarButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
@@ -81,7 +81,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="10"
 									Margin="10">
 							
-							<Button Classes="MenuToolButton"
+							<Button Classes="ToolBarButton"
 									ToolTip.Tip="Сохранить макрос"
 									Command="{Binding Command_SaveMacros}">
 
@@ -89,7 +89,7 @@
 
 							</Button>
 
-							<Button Classes="MenuToolButton"
+							<Button Classes="ToolBarButton"
 									ToolTip.Tip="Запустить макрос"
 									Command="{Binding Command_RunMacros}">
 

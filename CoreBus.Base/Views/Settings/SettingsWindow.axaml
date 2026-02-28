@@ -24,7 +24,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToolBarButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
@@ -82,7 +82,7 @@
 									Spacing="10"
 									Margin="10">
 
-							<Button Classes="MenuToolButton" 
+							<Button Classes="ToolBarButton" 
 									ToolTip.Tip="Создать новый файл"
 									Command="{Binding Command_File_AddNew}">
 								
@@ -91,7 +91,7 @@
 							</Button>
 
 
-							<Button Classes="MenuToolButton" 
+							<Button Classes="ToolBarButton" 
 									ToolTip.Tip="Добавить существующий файл"
 									Command="{Binding Command_File_AddExisting}">
 
@@ -99,7 +99,7 @@
 								
 							</Button>
 
-							<Button Classes="MenuToolButton" 
+							<Button Classes="ToolBarButton" 
 									ToolTip.Tip="Удалить выбранный файл"
 									Command="{Binding Command_File_Delete}">
 
@@ -107,7 +107,7 @@
 								
 							</Button>
 
-							<Button Classes="MenuToolButton" 
+							<Button Classes="ToolBarButton" 
 									ToolTip.Tip="Сохранить выбранный файл"
 									Command="{Binding Command_File_Save}">
 

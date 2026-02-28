@@ -13,7 +13,7 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToolBarButton.axaml"/>
 
 	</UserControl.Styles>
 
@@ -54,7 +54,7 @@
 									  Margin="10">
 
 									<Button Grid.Column="0"
-											Classes="MenuToolButton"
+											Classes="ToolBarButton"
 											ToolTip.Tip="Отправить файл"
 											IsEnabled="{Binding SendIsEnable, Mode=OneWay}"
 											Command="{Binding Command_SendFile}"
@@ -94,7 +94,7 @@
 														 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 									<Button Grid.Column="4"
-											Classes="MenuToolButton"
+											Classes="ToolBarButton"
 											ToolTip.Tip="Удалить файл"
 											Command="{Binding Command_RemoveFile}"
 											HorizontalAlignment="Center" VerticalAlignment="Center">

@@ -17,7 +17,7 @@
 					Margin="10"
 					HorizontalAlignment="Center">
 
-			<Button Classes="MenuToolButton"
+			<Button Classes="ToolBarButton"
 					ToolTip.Tip="Запустить команду"
 					Command="{Binding Command_RunCommand}">
 
@@ -30,7 +30,7 @@
 					 IsReadOnly="True"
 					 Text="{Binding CommandName, Mode=TwoWay}"/>
 
-			<Button Classes="MenuToolButton"
+			<Button Classes="ToolBarButton"
 					ToolTip.Tip="Редактировать команду"
 					Command="{Binding Command_EditCommand}">
 
@@ -38,7 +38,7 @@
 
 			</Button>
 
-			<Button Classes="MenuToolButton"
+			<Button Classes="ToolBarButton"
 					ToolTip.Tip="Удалить команду"
 					Command="{Binding Command_RemoveCommand}">
 
