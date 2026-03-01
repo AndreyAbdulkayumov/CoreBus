@@ -248,7 +248,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
             }
 
-            if (!_monitoringDataGrid_VM.Items.Any(e => e.ShowOnChartAndLog))
+            if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
             {
                 _messageBox.Show("Не выбрано ни одного регистра для отображения на графике.", MessageType.Warning);
                 return;
@@ -304,6 +304,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         SetMonitoringParameters(_settingsModel.ModbusMonitoringItems);
     }
 
+    public void ClearData()
+    {
+        _monitoringDataGrid_VM.ClearData();
+    }
+
     public void SetMonitoringParameters(ModbusMonitoringParameters data)
     {
         SlaveID = data.SlaveID.ToString();  // SlaveID приведется к нужному формату после смены RadioButton SelectedNumberFormat_Hex или SelectedNumberFormat_Dec
@@ -355,7 +360,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                         ValueType = e.SelectedValueType,
                         VisibleOnlyRawValue = e.VisibleOnlyRawValue,
                         Formula = e.Formula,
-                        OnChart = e.ShowOnChartAndLog,
+                        ShowOnChartAndLog = e.ShowOnChartAndLog,
                     })
                     .ToList(),
         };
@@ -370,11 +375,6 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         {
             HasSelectedItems = dataGrid.HasSelectedItems;
         }
-    }
-
-    public void ClearData()
-    {
-        _monitoringDataGrid_VM.ClearData();
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)
@@ -422,7 +422,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (_logger.IsRunning)
             return;
 
-        if (!_monitoringDataGrid_VM.Items.Any(e => e.ShowOnChartAndLog))
+        if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
         {
             _messageBox.Show("Не выбрано ни одного регистра для записи в лог.", MessageType.Warning);
             ResetLogFlags();
@@ -444,7 +444,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         foreach (var item in _monitoringDataGrid_VM.Items)
         {
-            if (item.IsLogging)
+            if (item.ItemShowOnChartAndLog)
                 columnNames.Append($"{item.GetDisplayedItemName()}\t");
         }
 
@@ -524,7 +524,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void InitChartAxes()
     {
-        var chartAxes = _monitoringDataGrid_VM.Items.Where(e => e.ShowOnChartAndLog && !e.VisibleOnlyRawValue).ToDictionary(e => e.Id, e => e.GetDisplayedItemName());
+        var chartAxes = _monitoringDataGrid_VM.GetItemsForChartAndLog().ToDictionary(e => e.Id, e => e.GetDisplayedItemName());
 
         if (chartAxes.Count != 0)
         {

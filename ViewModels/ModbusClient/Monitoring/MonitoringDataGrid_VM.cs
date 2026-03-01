@@ -117,6 +117,11 @@ public class MonitoringDataGrid_VM : ReactiveObject
         Items.CollectionChanged += (object? sender, NotifyCollectionChangedEventArgs e) => SetAvailableValueTypes();        
     }
 
+    public IEnumerable<MonitoringItem_VM> GetItemsForChartAndLog()
+    {
+        return Items.Where(e => e.ItemShowOnChartAndLog).ToList();
+    }
+
     private MonitoringItem_VM CreateNewItem(ModbusMonitoringItemData? initData)
     {
         int initAddress = initData?.Address ?? (Items.Count > 0 ? Items.Last().SelectedAddress + 1 : 0);
@@ -293,7 +298,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
             {
                 item.SetReadedValue(registerValue, registers, chartIncrementX);
                 
-                if (item.IsLogging)
+                if (item.ItemShowOnChartAndLog)
                 {
                     logString += item.ConvertedValue + "\t";
                 }

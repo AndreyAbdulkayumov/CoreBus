@@ -17,7 +17,7 @@ namespace ViewModels.ModbusClient.Monitoring
 {
     public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
     {
-        public bool IsLogging => !VisibleOnlyRawValue && ShowOnChartAndLog;
+        public bool ItemShowOnChartAndLog => ShowOnChartAndLog && !VisibleOnlyRawValue;
 
         public event EventHandler<EventArgs>? TypeChanged;
 
@@ -262,7 +262,7 @@ namespace ViewModels.ModbusClient.Monitoring
             SelectedValueType = initData.ValueType;
             VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
             Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
-            ShowOnChartAndLog = initData.OnChart;
+            ShowOnChartAndLog = initData.ShowOnChartAndLog;
         }
 
         public void SetReadedValue(UInt16 newRawValue, IEnumerable<KeyValuePair<int, UInt16>> registers, uint chartIncrementX)

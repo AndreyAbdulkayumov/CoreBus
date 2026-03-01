@@ -24,7 +24,7 @@ public class ModbusMonitoringItemData : ICloneable
     public string? ValueType { get; set; }
     public bool VisibleOnlyRawValue { get; set; }
     public string? Formula { get; set; }
-    public bool OnChart { get; set; }
+    public bool ShowOnChartAndLog { get; set; }
 
     public object Clone()
     {
@@ -35,7 +35,7 @@ public class ModbusMonitoringItemData : ICloneable
             ValueType = ValueType,
             VisibleOnlyRawValue = VisibleOnlyRawValue,
             Formula = Formula,
-            OnChart = OnChart
+            ShowOnChartAndLog = ShowOnChartAndLog
         };
     }
 }
