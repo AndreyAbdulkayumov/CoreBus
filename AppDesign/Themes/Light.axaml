@@ -42,7 +42,7 @@
 	<SolidColorBrush x:Key="ToolBar_Icon_Settings" Color="#949494"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_About" Color="#4372A8"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_UserManual" Color="#4090C4"/>
-	<SolidColorBrush x:Key="ToolBar_Icon_Video" Color="#E68787"/>
+	<SolidColorBrush x:Key="ToolBar_Icon_Video" Color="#BB7E8C"/>
 
 	<SolidColorBrush x:Key="ToolBar_Icon_PointerOver_Foreground" Color="WhiteSmoke"/>
 	
