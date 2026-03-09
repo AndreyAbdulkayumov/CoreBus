@@ -247,6 +247,7 @@ namespace ViewModels.ModbusClient.Monitoring
         {
             IsNewValue = false;
             IsNewTypedValue = false;
+            IsNewConvertedValue = false;
 
             _rawValue = 0;
             _convertedInnerValue = 0;

@@ -69,7 +69,7 @@
 						Command="{Binding Command_ClearData}"/>
 
 				<Button Content="Сканнер"
-						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						IsEnabled="{Binding ButtonModbusScanner_IsEnabled, Mode=OneWay}"
 						IsVisible="{Binding ButtonModbusScanner_IsVisible, Mode=OneWay}"
 						Width="80" Height="32"
 						HorizontalContentAlignment="Center"

@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+using Core.Clients;
 using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus.Message;
@@ -8,6 +8,7 @@ using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using ViewModels.ModbusClient.Manual;
 using ViewModels.ModbusClient.Monitoring;
 
@@ -56,6 +57,9 @@ public class ModbusClient_VM : ReactiveObject
         get => _selectedModbusType;
         set => this.RaiseAndSetIfChanged(ref _selectedModbusType, value);
     }
+
+    private readonly ObservableAsPropertyHelper<bool> _buttonModbusScanner_IsEnabled;
+    public bool ButtonModbusScanner_IsEnabled => _buttonModbusScanner_IsEnabled.Value;
 
     private bool _buttonModbusScanner_IsVisible = true;
 
@@ -165,6 +169,18 @@ public class ModbusClient_VM : ReactiveObject
                     _modbusManualMode_VM.SetCheckSumVisiblity();
                 }
             });
+
+        var isStartObservable = this
+            .WhenAnyValue(x => x.CurrentModeViewModel)
+            .Select(vm => vm as ModbusMonitoring_VM)
+            .Select(monitoringVM => monitoringVM?.WhenAnyValue(x => x.IsStart) ?? Observable.Return(false))
+            .Switch();
+
+        _buttonModbusScanner_IsEnabled = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.UI_IsEnable),
+                isStartObservable,
+                (uiEnabled, isStart) => uiEnabled && !isStart)
+            .ToProperty(this, x => x.ButtonModbusScanner_IsEnabled);
 
         // Действия после запуска приложения
 
