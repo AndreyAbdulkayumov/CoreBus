@@ -149,16 +149,16 @@
 
 	<SolidColorBrush x:Key="Logging_Color_Foreground" Color="#525252"/>
 
-	<SolidColorBrush x:Key="Logging_Color_Start_Background" Color="#67C27F"/>
-	<SolidColorBrush x:Key="Logging_Color_Start_PointerOver_Background" Color="#3FBC5F"/>
-	<SolidColorBrush x:Key="Logging_Color_Start_Pressed_Background" Color="#14B43E"/>
+	<SolidColorBrush x:Key="Logging_Color_Start_Background" Color="#7EB78D"/>
+	<SolidColorBrush x:Key="Logging_Color_Start_PointerOver_Background" Color="#7CC48F"/>
+	<SolidColorBrush x:Key="Logging_Color_Start_Pressed_Background" Color="#56B86F"/>
 
-	<SolidColorBrush x:Key="Logging_Color_Stop_Background" Color="#E68787"/>
-	<SolidColorBrush x:Key="Logging_Color_Stop_PointerOver_Background" Color="#E77979"/>
-	<SolidColorBrush x:Key="Logging_Color_Stop_Pressed_Background" Color="#E56969"/>
+	<SolidColorBrush x:Key="Logging_Color_Stop_Background" Color="#BB7E8C"/>
+	<SolidColorBrush x:Key="Logging_Color_Stop_PointerOver_Background" Color="#EB90A3"/>
+	<SolidColorBrush x:Key="Logging_Color_Stop_Pressed_Background" Color="#F27D93"/>
 
-	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Background" Color="#F5C05D"/>
-	<SolidColorBrush x:Key="Logging_Color_OpenFolder_PointerOver_Background" Color="#FDB634"/>
-	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Pressed_Background" Color="#FBAB16"/>
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Background" Color="#E6BE72"/>
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_PointerOver_Background" Color="#F4C368"/>
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Pressed_Background" Color="#FDBD48"/>
 
 </ResourceDictionary>
