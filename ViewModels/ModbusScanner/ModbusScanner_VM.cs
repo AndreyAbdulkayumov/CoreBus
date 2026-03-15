@@ -2,6 +2,7 @@ using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using DynamicData;
 using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
@@ -51,17 +52,27 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         get => _availableModbusTypes;
     }
 
-    private string _pdu_SearchRequest = string.Empty;
+    private string _searchRequest = string.Empty;
 
-    public string PDU_SearchRequest
+    public string SearchRequest
     {
-        get => _pdu_SearchRequest;
-        set => this.RaiseAndSetIfChanged(ref _pdu_SearchRequest, value);
+        get => _searchRequest;
+        set => this.RaiseAndSetIfChanged(ref _searchRequest, value);
     }
 
-    public string PDU_SearchRequest_Default
+    private string _selectedFunction = string.Empty;
+
+    public string SelectedFunction
     {
-        get => "03 00 01 00 02";
+        get => _selectedFunction;
+        set => this.RaiseAndSetIfChanged(ref _selectedFunction, value);
+    }
+
+    private ObservableCollection<string> _availableFunctions = new ObservableCollection<string>();
+
+    public ObservableCollection<string>? AvailableFunctions
+    {
+        get => _availableFunctions;
     }
 
     private string? _pauseBetweenRequests;
@@ -150,6 +161,57 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     private uint _pauseBetweenRequests_ForWork;
 
+    private record SearchFunctionType(string DisplayedName, string DisplayedBytes, ModbusReadFunction ReadFunction, ReadTypeMessage Message);
+
+    private static SearchFunctionType Func_01 = new SearchFunctionType(
+        DisplayedName: $"0x{Function.ReadCoilStatus.Number.ToString("X2")}",
+        DisplayedBytes: "01 00 01 00 02",
+        ReadFunction: Function.ReadCoilStatus,
+        Message: new ReadTypeMessage(
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                checkSum_IsEnable: true)
+        );
+
+    private static SearchFunctionType Func_02 = new SearchFunctionType(
+        DisplayedName: $"0x{Function.ReadDiscreteInputs.Number.ToString("X2")}",
+        DisplayedBytes: "02 00 01 00 02",
+        ReadFunction: Function.ReadDiscreteInputs,
+        Message: new ReadTypeMessage(
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                checkSum_IsEnable: true)
+        );
+
+    private static SearchFunctionType Func_03 = new SearchFunctionType(
+        DisplayedName: $"0x{Function.ReadHoldingRegisters.Number.ToString("X2")}",
+        DisplayedBytes: "03 00 01 00 02",
+        ReadFunction: Function.ReadHoldingRegisters,
+        Message: new ReadTypeMessage(
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                checkSum_IsEnable: true)
+        );
+
+    private static SearchFunctionType Func_04 = new SearchFunctionType(
+        DisplayedName: $"0x{Function.ReadInputRegisters.Number.ToString("X2")}",
+        DisplayedBytes: "04 00 01 00 02",
+        ReadFunction: Function.ReadInputRegisters,
+        Message: new ReadTypeMessage(
+                slaveID: 0,
+                address: 0,
+                numberOfRegisters: 2,
+                checkSum_IsEnable: true)
+        );
+
+    private readonly SearchFunctionType[] AllSearchFunctions = new SearchFunctionType[]
+    {
+        Func_01, Func_02, Func_03, Func_04
+    };
+
     public ModbusScanner_VM(IMessageBoxModbusScanner messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel)
     {
@@ -158,6 +220,10 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
 
         _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
+
+        _availableFunctions.AddRange(AllSearchFunctions.Select(e => e.DisplayedName));
+
+        SelectedFunction = Func_03.DisplayedName;
 
         SelectedModbusType = _messageType.ProtocolName;
 
@@ -175,6 +241,16 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             StartPolling();
         });
         Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
+
+        this.WhenAnyValue(x => x.SelectedFunction)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                var function = AllSearchFunctions.FirstOrDefault(e => e.DisplayedName == x);
+
+                if (function != null) 
+                    SearchRequest = function.DisplayedBytes;
+            });
 
         this.WhenAnyValue(x => x.SelectedModbusType)
             .WhereNotNull()
@@ -200,7 +276,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             });
 
         // Значения по умолчанию
-        PauseBetweenRequests = "100";
+        PauseBetweenRequests = "200";
     }
 
     public async Task WindowClosed()
@@ -296,15 +372,10 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         try
         {
-            // Данные для дефолтного PDU: 03 00 01 00 02
+            var searchFunction = AllSearchFunctions.FirstOrDefault(e => e.DisplayedName == SelectedFunction);
 
-            var readFunction = Function.ReadHoldingRegisters;
-
-            var data = new ReadTypeMessage(
-                slaveID: 0,
-                address: 0,
-                numberOfRegisters: 2,
-                checkSum_IsEnable: true);
+            if (searchFunction == null)
+                throw new Exception($"Не удалось найти подходящую функцию. Выбрана функция: {SelectedFunction}");
 
             // Для демонстрации неодходимо оставить только эти вызовы метода, остальные закомментировать.
             //ViewSlaveAddress(42);
@@ -315,11 +386,11 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             {
                 try
                 {
-                    data.SlaveID = (byte)i;
+                    searchFunction.Message.SlaveID = (byte)i;
 
                     CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    await _modbusModel.ReadRegister(readFunction, data, _messageType);
+                    await _modbusModel.ReadRegister(searchFunction.ReadFunction, searchFunction.Message, _messageType);
 
                     ViewSlaveAddress(i);
                 }
@@ -377,7 +448,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
                 return fieldName;
         }
     }
-
+    
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -385,6 +456,17 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             return null;
         }
 
+        switch (fieldName)
+        {
+            case nameof(PauseBetweenRequests):
+                return Check_Pause(value);
+        }
+
+        return null;
+    }
+
+    private ValidateMessage? Check_Pause(string value)
+    {
         if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _pauseBetweenRequests_ForWork))
         {
             return AllErrorMessages[DecError_uint];

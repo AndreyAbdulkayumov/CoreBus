@@ -1,9 +1,9 @@
-﻿using MessageBox.AvaloniaUI;
+using MessageBox.AvaloniaUI;
 using MessageBox.Core;
 using Services.Interfaces;
 using System;
 using System.Threading.Tasks;
-using CoreBus.Base.Views;
+using CoreBus.Base.Views.ModbusScanner;
 
 namespace CoreBus.Base.Services;
 

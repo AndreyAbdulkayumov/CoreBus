@@ -5,10 +5,10 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels.ModbusScanner;assembly=ViewModels"
         mc:Ignorable="d"
-        x:Class="CoreBus.Base.Views.ModbusScannerWindow"
+        x:Class="CoreBus.Base.Views.ModbusScanner.ModbusScannerWindow"
 		x:DataType="ViewModels:ModbusScanner_VM"
 		Title="Modbus сканер"
-		Width="430" Height="450"
+		Width="670" Height="380"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -24,7 +24,6 @@
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 		
@@ -66,22 +65,27 @@
 
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="1*"/>
-					<ColumnDefinition Width="1.5*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
 				<Grid.RowDefinitions>
-					<RowDefinition Height="6*"/>
-					<RowDefinition Height="3*"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="1*"/>
 				</Grid.RowDefinitions>
 
 				<Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
 						Classes="AppField">
 
-					<Grid>
+					<Grid Margin="0,10,0,0">
 
-						<TextBlock Text="Устройства"
-								   Margin="10"
-								   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+						<Grid Height="32"
+			                  VerticalAlignment="Top">
+							
+							<TextBlock Text="Устройства"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+						</Grid>						
 						
 						<TextBox Classes="TX_RX_Field"
 								 Text="{Binding SlavesAddresses, Mode=OneWay}"
@@ -100,24 +104,46 @@
 								Spacing="20"
 								Margin="10,10,10,10">					
 						
-						<TextBlock Text="PDU поискового запроса"/>
+						<Grid Height="32">
+							
+							<TextBlock Text="PDU поискового запроса"
+				                       VerticalAlignment="Center"/>
+
+						</Grid>						
 
 						<TextBox Classes="InputField"
-								 Text="{Binding PDU_SearchRequest_Default, Mode=OneTime}"
+								 Text="{Binding SearchRequest, Mode=OneWay}"
 								 IsReadOnly="True"
-								 Height="32" Width="215"
+								 Height="32" Width="205"
 								 Padding="10,0,10,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Top"
-								 HorizontalContentAlignment="Left">
+								 HorizontalContentAlignment="Left"/>
 
-							<TextBox.Styles>
-								<Style Selector="TextBlock">
-									<Setter Property="Foreground" Value="Black"/>
-								</Style>
-							</TextBox.Styles>
+						<StackPanel Orientation="Horizontal"
+									Spacing="10">
 
-						</TextBox>
-						
+							<TextBlock Text="Шаблон функции"
+									   Margin="0,8,0,0"
+									   VerticalAlignment="Top"/>
+
+							<ComboBox ItemsSource="{Binding AvailableFunctions}"
+									  SelectedItem="{Binding SelectedFunction, Mode=TwoWay}"
+									  IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
+									  FontSize="14"/>
+
+						</StackPanel>						
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="0" Grid.Column="2"
+						Classes="AppField">
+
+					<StackPanel Orientation="Vertical"
+								Spacing="20"
+								Margin="10,10,10,10">
+
 						<StackPanel Orientation="Horizontal"
 									Spacing="10">
 
@@ -129,7 +155,7 @@
 									  SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
 									  IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
 									  FontSize="14"
-									  Width="139"/>
+									  Width="135"/>
 
 						</StackPanel>
 
@@ -150,37 +176,45 @@
 									   Margin="0,8,0,0"
 									   VerticalAlignment="Top"/>
 
-						</StackPanel>
+						</StackPanel>						
 
-						<TextBlock Text="{Binding DeviceReadTimeout, Mode=OneWay}"
-								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   VerticalAlignment="Center"/>
+						<Grid Height="32">
+							
+							<TextBlock Text="{Binding DeviceReadTimeout, Mode=OneWay}"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   VerticalAlignment="Center"/>
+
+						</Grid>		
 						
 						<Button Width="150"
+								Height="32"
 								Content="{Binding ActionButtonContent, Mode=OneWay}"
 								Command="{Binding Command_Start_Stop_Search}"
-								HorizontalAlignment="Center"/>						
+								HorizontalAlignment="Center"/>	
 
 					</StackPanel>
 
 				</Border>
 
-				<Border Grid.Row="1" Grid.Column="1"
+				<Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
 						Classes="AppField">
 
 					<Grid>
 
 						<Grid IsVisible="{Binding !ErrorIsVisible, Mode=OneWay}">
 
-							<TextBlock Text="Текущий ID:"
-									   IsVisible="{Binding SearchInProcess, Mode=OneWay}"
-							           Margin="20,20,0,0"
-							           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<StackPanel Orientation="Horizontal"
+										Spacing="10"
+										Margin="20,15,0,0"
+										HorizontalAlignment="Left" VerticalAlignment="Top">
 
-							<TextBlock Text="{Binding CurrentSlaveID, Mode=OneWay}"
-									   IsVisible="{Binding SearchInProcess, Mode=OneWay}"
-									   Margin="110,20,0,0"
-									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								<TextBlock Text="Текущий ID:"
+										   IsVisible="{Binding SearchInProcess, Mode=OneWay}"/>
+
+								<TextBlock Text="{Binding CurrentSlaveID, Mode=OneWay}"
+										   IsVisible="{Binding SearchInProcess, Mode=OneWay}"/>
+
+							</StackPanel>
 
 							<ProgressBar Height="40"
 										 Value="{Binding ProgressBar_Value, Mode=OneWay}"
@@ -189,13 +223,12 @@
 										 Foreground="Green"
 										 Background="Silver"
 										 ShowProgressText="True"
-										 Margin="20,0,20,12"
+										 Margin="20,0,20,10"
 										 IsVisible="{Binding SearchInProcess, Mode=OneWay}"
 										 HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
 							
 						</Grid>
-						
-						
+												
 						<TextBlock Text="{Binding ErrorMessageInUI, Mode=OneTime}"
 								   Foreground="IndianRed"
 								   TextAlignment="Center"

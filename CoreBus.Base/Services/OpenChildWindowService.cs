@@ -12,6 +12,7 @@ using CoreBus.Base.Views.Macros;
 using CoreBus.Base.Views.Macros.EditMacros;
 using CoreBus.Base.Views.Settings;
 using CoreBus.Base.Views.ModbusClient.Monitoring;
+using CoreBus.Base.Views.ModbusScanner;
 using CoreBus.Base.Views.Chart;
 using ViewModels;
 using ViewModels.Macros;

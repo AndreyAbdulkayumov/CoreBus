@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace CoreBus.Base.Views;
+namespace CoreBus.Base.Views.ModbusScanner;
 
 public partial class ModbusScannerWindow : Window
 {
@@ -23,5 +23,9 @@ public partial class ModbusScannerWindow : Window
     private void Button_Close_Click(object? sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private void StackPanel_ActualThemeVariantChanged(object? sender, System.EventArgs e)
+    {
     }
 }
