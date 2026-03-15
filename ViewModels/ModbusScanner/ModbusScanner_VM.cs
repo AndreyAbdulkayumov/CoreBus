@@ -137,7 +137,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     public string ErrorMessageInUI
     {
-        get => "Ни одно устройство не ответило.\nВозможно стоит повысить значение паузы между запросами.";
+        get => "Ни одно устройство не ответило.\nВозможно стоит повысить значение паузы между запросами\nили поменять шаблон функции в PDU.";
     }
 
     private bool _errorIsVisible = false;

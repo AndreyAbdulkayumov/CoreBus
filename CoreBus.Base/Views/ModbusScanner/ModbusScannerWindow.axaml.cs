@@ -24,8 +24,4 @@ public partial class ModbusScannerWindow : Window
     {
         Close();
     }
-
-    private void StackPanel_ActualThemeVariantChanged(object? sender, System.EventArgs e)
-    {
-    }
 }
