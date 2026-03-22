@@ -142,6 +142,11 @@ namespace ViewModels.ModbusClient.Monitoring
             set => this.RaiseAndSetIfChanged(ref _convertedValue, value);
         }
 
+        /// <summary>
+        /// Полное преобразованное значение для записи в лог и отображения на графике.
+        /// </summary>
+        public double FullConvertedValue { get; private set; } 
+
         private bool _isNewConvertedValue;
 
         public bool IsNewConvertedValue
@@ -173,14 +178,14 @@ namespace ViewModels.ModbusClient.Monitoring
         public UInt16 SelectedAddress => _selectedAddress;
 
 
-        private const int _floatRoundedDigit = 6;
+        private const int _floatRoundedDigit = 2;
 
         private NumberStyles _numberViewStyle;
 
         public readonly Guid Id;
 
         private UInt16 _rawValue;
-        private float _convertedInnerValue;
+        private float _typedInnerValue;
 
         private readonly Model_Settings _settingsModel;
         private readonly IOpenChildWindowService _openChildWindowService;
@@ -250,11 +255,11 @@ namespace ViewModels.ModbusClient.Monitoring
             IsNewConvertedValue = false;
 
             _rawValue = 0;
-            _convertedInnerValue = 0;
+            _typedInnerValue = 0;
 
             Value = "0";
             TypedValue = "0";
-            ConvertedValue = "0.00";
+            ConvertedValue = "0";
         }
 
         public void SetExistingValues(ModbusMonitoringItemData initData)
@@ -274,12 +279,12 @@ namespace ViewModels.ModbusClient.Monitoring
 
             Value = GetDisplayedRawValue();
 
-            // _convertedInnerValue берется из типизированного значения.
-            // Затем именно _convertedInnerValue преобразовывается по формуле.
+            // _typedInnerValue это внутреннее типизированное значение, представленное как float.
+            // Затем именно _typedInnerValue преобразовывается по формуле.
 
             var oldTypedValue = TypedValue;
 
-            TypedValue = GetDisplayedTypedValue(registers, out _convertedInnerValue);
+            TypedValue = GetDisplayedTypedValue(registers, out _typedInnerValue);
 
             IsNewTypedValue = TypedValue != oldTypedValue;
 
@@ -288,14 +293,16 @@ namespace ViewModels.ModbusClient.Monitoring
 
             var oldConvertedValue = ConvertedValue;
 
-            ConvertedValue = Math.Round(MathFormula.Solve(Formula, _convertedInnerValue), _floatRoundedDigit).ToString();
+            ConvertedValue = GetDisplayedConvertedValue(Formula, _typedInnerValue, out double convertResult);
+
+            FullConvertedValue = convertResult;
 
             IsNewConvertedValue = ConvertedValue != oldConvertedValue;
 
             if (ShowOnChartAndLog && _openChildWindowService.ChartWindowIsOpen)
             {
                 MessageBus.Current.SendMessage(
-                    new AddingPointMessage(Id, double.Parse(ConvertedValue))
+                    new AddingPointMessage(Id, FullConvertedValue)
                     );
             }
         }
@@ -352,39 +359,47 @@ namespace ViewModels.ModbusClient.Monitoring
             return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
         }
 
-        private string GetDisplayedTypedValue(IReadOnlyList<(int address, UInt16 value)> registers, out float convertedValue)
+        private string GetDisplayedTypedValue(IReadOnlyList<(int address, UInt16 value)> registers, out float typedValue)
         {
-
             switch (SelectedValueType)
             {
                 case MonitoringItem_VM.TypeName_UInt16:
-                    convertedValue = _rawValue;
+                    typedValue = _rawValue;
                     return _rawValue.ToString();
 
                 case MonitoringItem_VM.TypeName_Int16:
                     Int32 resultInt16 = (Int16)_rawValue;
-                    convertedValue = resultInt16;
+                    typedValue = resultInt16;
                     return resultInt16.ToString();
 
                 case MonitoringItem_VM.TypeName_UInt32:                     
                     UInt32 resultUInt32 = BitConverter.ToUInt32(GetBytesFromRegisters(registers, 2));
-                    convertedValue = resultUInt32;
+                    typedValue = resultUInt32;
                     return resultUInt32.ToString();
 
                 case MonitoringItem_VM.TypeName_Int32:
                     Int32 resultInt32 = BitConverter.ToInt32(GetBytesFromRegisters(registers, 2));
-                    convertedValue = resultInt32;
+                    typedValue = resultInt32;
                     return resultInt32.ToString();
 
                 case MonitoringItem_VM.TypeName_Float:
                     float resultFloat = GetFloatNumber(registers);
-                    convertedValue = resultFloat;
+                    typedValue = resultFloat;
                     return resultFloat == 0f ? "0" : resultFloat.ToString();    // Исключаем конвертацию в -0 у чисел типа float
 
                 default:
-                    convertedValue = _rawValue;
+                    typedValue = _rawValue;
                     return _rawValue.ToString();
             }
+        }
+
+        private string GetDisplayedConvertedValue(string formula, float typedValue, out double convertResult)
+        {
+            convertResult = MathFormula.Solve(formula, typedValue);
+
+            var roundedValue = Math.Round(convertResult, _floatRoundedDigit);
+
+            return roundedValue == 0f ? "0" : roundedValue.ToString();    // Исключаем конвертацию в -0 у чисел типа double
         }
 
         private byte[] GetBytesFromRegisters(IReadOnlyList<(int address, UInt16 value)> registers, int numberOfRegisters)

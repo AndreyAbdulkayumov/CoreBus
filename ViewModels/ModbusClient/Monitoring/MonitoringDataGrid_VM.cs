@@ -302,7 +302,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
                 if (item.ItemShowOnChartAndLog)
                 {
-                    logString.Append($"{item.ConvertedValue}\t");
+                    logString.Append($"{item.FullConvertedValue}\t");
                 }
             }
         }

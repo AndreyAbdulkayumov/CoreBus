@@ -106,8 +106,6 @@ public partial class ChartWindow : Window
 
             logger.Add(xCoordinate, e.Value);
 
-            //_chart.Plot.Axes.AutoScaleY();
-
             _chart.Refresh();
         }
     }
