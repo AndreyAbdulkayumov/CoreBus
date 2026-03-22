@@ -107,10 +107,7 @@ internal class AppDirectoryManager
     /// <returns>Возвращает массив имен файлов в заданной директории.</returns>
     public string[] CheckFiles(string selectedDirectory, string defaultFileName, string extension, object defaultData)
     {
-        if (Directory.Exists(selectedDirectory) == false)
-        {
-            Directory.CreateDirectory(selectedDirectory);
-        }
+        Directory.CreateDirectory(selectedDirectory);
 
         string[] arrayOfFileNames = Directory.GetFiles(selectedDirectory, "*" + extension);
 
@@ -140,10 +137,7 @@ internal class AppDirectoryManager
     /// <returns>Возвращает полный путь к файлу.</returns>
     public string FindOrCreateFile(string selectedDirectory, string fileName, string extension, object defaultData)
     {
-        if (Directory.Exists(selectedDirectory) == false)
-        {
-            Directory.CreateDirectory(selectedDirectory);
-        }
+        Directory.CreateDirectory(selectedDirectory);
 
         string[] arrayOfFileNames = Directory.GetFiles(selectedDirectory, fileName + extension);
 
@@ -160,10 +154,7 @@ internal class AppDirectoryManager
 
     public IEnumerable<string> GetFilesFromDirectory(string selectedDirectory)
     {
-        if (!Directory.Exists(selectedDirectory))
-        {
-            Directory.CreateDirectory(selectedDirectory);
-        }
+        Directory.CreateDirectory(selectedDirectory);
 
         return Directory.GetFiles(selectedDirectory);
     }

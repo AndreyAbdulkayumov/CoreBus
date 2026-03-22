@@ -26,7 +26,7 @@ public class Model_AppUpdateSystem
     /// <exception cref="Exception"></exception>
     public async Task<LastestVersionInfo?> IsUpdateAvailable(Version currentVersion)
     {
-        HttpClient client = new HttpClient();
+        var client = new HttpClient();
 
         var response = await client.GetStringAsync(UrlLastestVersion);
 

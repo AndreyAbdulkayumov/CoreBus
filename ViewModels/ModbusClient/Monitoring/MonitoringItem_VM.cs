@@ -266,7 +266,7 @@ namespace ViewModels.ModbusClient.Monitoring
             ShowOnChartAndLog = initData.ShowOnChartAndLog;
         }
 
-        public void SetReadedValue(UInt16 newRawValue, IEnumerable<KeyValuePair<int, UInt16>> registers, uint chartIncrementX)
+        public void SetReadedValue(UInt16 newRawValue, IReadOnlyList<(int address, UInt16 value)> registers, uint chartIncrementX)
         {
             IsNewValue = _rawValue != newRawValue;
 
@@ -352,29 +352,29 @@ namespace ViewModels.ModbusClient.Monitoring
             return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
         }
 
-        private string GetDisplayedTypedValue(IEnumerable<KeyValuePair<int, UInt16>> registers, out float convertedValue)
+        private string GetDisplayedTypedValue(IReadOnlyList<(int address, UInt16 value)> registers, out float convertedValue)
         {
 
             switch (SelectedValueType)
             {
                 case MonitoringItem_VM.TypeName_UInt16:
                     convertedValue = _rawValue;
-                    return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
+                    return _rawValue.ToString();
 
                 case MonitoringItem_VM.TypeName_Int16:
                     Int32 resultInt16 = (Int16)_rawValue;
                     convertedValue = resultInt16;
-                    return _numberViewStyle == NumberStyles.HexNumber ? resultInt16.ToString("X") : resultInt16.ToString();
+                    return resultInt16.ToString();
 
                 case MonitoringItem_VM.TypeName_UInt32:                     
                     UInt32 resultUInt32 = BitConverter.ToUInt32(GetBytesFromRegisters(registers, 2));
                     convertedValue = resultUInt32;
-                    return _numberViewStyle == NumberStyles.HexNumber ? resultUInt32.ToString("X") : resultUInt32.ToString();
+                    return resultUInt32.ToString();
 
                 case MonitoringItem_VM.TypeName_Int32:
                     Int32 resultInt32 = BitConverter.ToInt32(GetBytesFromRegisters(registers, 2));
                     convertedValue = resultInt32;
-                    return _numberViewStyle == NumberStyles.HexNumber ? resultInt32.ToString("X") : resultInt32.ToString();
+                    return resultInt32.ToString();
 
                 case MonitoringItem_VM.TypeName_Float:
                     float resultFloat = GetFloatNumber(registers);
@@ -383,21 +383,21 @@ namespace ViewModels.ModbusClient.Monitoring
 
                 default:
                     convertedValue = _rawValue;
-                    return _numberViewStyle == NumberStyles.HexNumber ? _rawValue.ToString("X") : _rawValue.ToString();
+                    return _rawValue.ToString();
             }
         }
 
-        private byte[] GetBytesFromRegisters(IEnumerable<KeyValuePair<int, UInt16>> registers, int numberOfRegisters)
+        private byte[] GetBytesFromRegisters(IReadOnlyList<(int address, UInt16 value)> registers, int numberOfRegisters)
         {
             return registers
-                .SkipWhile(kvp => kvp.Key != _selectedAddress)
+                .SkipWhile(e => e.address != _selectedAddress)
                 .Take(numberOfRegisters)
-                .Select(e => e.Value)
+                .Select(e => e.value)
                 .SelectMany(BitConverter.GetBytes)
                 .ToArray();
         }
 
-        private float GetFloatNumber(IEnumerable<KeyValuePair<int, UInt16>> registers)
+        private float GetFloatNumber(IReadOnlyList<(int address, UInt16 value)> registers)
         {
             var bytes = GetBytesFromRegisters(registers, 2);    // т.к. для float числа используется 2 регистра
             var floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(_settingsModel.Settings?.FloatNumberFormat);

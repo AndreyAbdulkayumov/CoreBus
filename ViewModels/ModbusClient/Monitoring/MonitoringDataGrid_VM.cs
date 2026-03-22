@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reactive;
+using System.Text;
 using ViewModels.ModbusClient.Manual;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -288,24 +289,25 @@ public class MonitoringDataGrid_VM : ReactiveObject
         var registers = Items
             .Select(e => (int)e.SelectedAddress)
             .Where(readRegisters.ContainsKey)
-            .Select(key => new KeyValuePair<int, ushort>(key, readRegisters[key]));
+            .Select(key => (address: key, value: readRegisters[key]))
+            .ToList();
 
-        string logString = string.Empty;
+        var logString = new StringBuilder();
 
         foreach (var item in Items)
         {
             if (readRegisters.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
             {
                 item.SetReadedValue(registerValue, registers, chartIncrementX);
-                
+
                 if (item.ItemShowOnChartAndLog)
                 {
-                    logString += item.ConvertedValue + "\t";
+                    logString.Append($"{item.ConvertedValue}\t");
                 }
             }
         }
 
-        return logString;
+        return logString.ToString();
     }
 
     private static List<UInt16> ConvertToResultList(byte[] modbusData, int numberOfRegisters, ModbusReadFunction function)
