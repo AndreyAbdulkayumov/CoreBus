@@ -2,6 +2,15 @@ using System.Globalization;
 
 namespace Core.Models.Settings.FileTypes;
 
+public enum MonitoringValueType
+{
+    UInt16,
+    Int16,
+    UInt32,
+    Int32,
+    Float,
+}
+
 public class MonitoringChart : ICloneable
 {
     public uint NumberOfVisiblePoints { get; set; }
@@ -21,7 +30,7 @@ public class ModbusMonitoringItemData : ICloneable
 {
     public UInt16 Address { get; set; }
     public string? Alias { get; set; }
-    public string? ValueType { get; set; }
+    public MonitoringValueType ValueType { get; set; }
     public bool VisibleOnlyRawValue { get; set; }
     public string? Formula { get; set; }
     public bool ShowOnChartAndLog { get; set; }

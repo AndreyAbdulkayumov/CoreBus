@@ -44,6 +44,7 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 
 
     private TimestampFormatItem? _selectedTimestampFormat;
+
     public TimestampFormatItem? SelectedTimestampFormat
     {
         get => _selectedTimestampFormat;

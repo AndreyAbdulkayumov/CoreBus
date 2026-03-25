@@ -122,6 +122,8 @@
 						  MinHeight="5"
 			              ItemsSource="{Binding AllValueTypes}"
 						  SelectedItem="{Binding SelectedValueType, Mode=TwoWay}"
+						  DisplayMemberBinding="{Binding Display}"
+						  SelectedValueBinding="{Binding Value}"
 						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"/>

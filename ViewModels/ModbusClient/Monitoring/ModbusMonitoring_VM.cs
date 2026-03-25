@@ -357,7 +357,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                     {
                         Address = e.SelectedAddress,
                         Alias = e.Alias,
-                        ValueType = e.SelectedValueType,
+                        ValueType = e.SelectedValueType == null ? default : e.SelectedValueType.Value,
                         VisibleOnlyRawValue = e.VisibleOnlyRawValue,
                         Formula = e.Formula,
                         ShowOnChartAndLog = e.ShowOnChartAndLog,

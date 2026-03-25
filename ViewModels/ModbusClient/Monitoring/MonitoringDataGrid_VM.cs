@@ -173,16 +173,16 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
             item.VisibleOnlyRawValue = false;
 
-            switch (item.SelectedValueType)
+            switch (item.SelectedValueType?.Value)
             {
-                case MonitoringItem_VM.TypeName_UInt16:
-                case MonitoringItem_VM.TypeName_Int16:
+                case MonitoringValueType.UInt16:
+                case MonitoringValueType.Int16:
                     registerSkipCounter = 0;
                     break;
 
-                case MonitoringItem_VM.TypeName_UInt32:
-                case MonitoringItem_VM.TypeName_Int32:
-                case MonitoringItem_VM.TypeName_Float:
+                case MonitoringValueType.UInt32:
+                case MonitoringValueType.Int32:
+                case MonitoringValueType.Float:
                     registerSkipCounter = 1;
                     break;
 
