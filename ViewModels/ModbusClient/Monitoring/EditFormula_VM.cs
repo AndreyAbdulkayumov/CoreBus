@@ -93,13 +93,13 @@ public class EditFormula_VM : ValidatedDateInput
 
         if (string.IsNullOrEmpty(value))
         {
-            return new ValidateMessage("Введите формулу", "Поле не может быть пустым");
+            return new ValidateMessage("Введите формулу");
         }
 
 
         if (!MathFormula.IsValid(value, out string errorMessage))
         {
-            return new ValidateMessage(errorMessage, errorMessage);
+            return new ValidateMessage(errorMessage);
         }
 
         return null;

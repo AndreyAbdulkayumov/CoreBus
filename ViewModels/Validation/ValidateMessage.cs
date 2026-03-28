@@ -1,4 +1,4 @@
-﻿namespace ViewModels.Validation;
+namespace ViewModels.Validation;
 
 public class ValidateMessage
 {
@@ -9,5 +9,11 @@ public class ValidateMessage
     {
         Short = shortMessage;
         Full = fullMessage;
+    }
+
+    public ValidateMessage(string message)
+    {
+        Short = message;
+        Full = message;
     }
 }

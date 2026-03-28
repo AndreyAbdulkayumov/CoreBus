@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.2" ExcludeAssets="all" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
 	</ItemGroup>
