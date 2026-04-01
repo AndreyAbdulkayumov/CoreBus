@@ -17,6 +17,8 @@ public class Model_Modbus
 
     private Func<Task>? _monitoringAction;
 
+    private readonly SemaphoreSlim _monitoringSemaphore = new SemaphoreSlim(1, 1);
+
     public Model_Modbus()
     {
         _monitoringTimer = new System.Timers.Timer(IntervalDefault);
@@ -281,8 +283,6 @@ public class Model_Modbus
     {
         _monitoringTimer.Stop();
     }
-     
-    private readonly SemaphoreSlim _monitoringSemaphore = new SemaphoreSlim(1, 1);
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
