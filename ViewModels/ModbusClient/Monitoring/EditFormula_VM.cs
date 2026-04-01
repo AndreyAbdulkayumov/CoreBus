@@ -96,7 +96,6 @@ public class EditFormula_VM : ValidatedDateInput
             return new ValidateMessage("Введите формулу");
         }
 
-
         if (!MathFormula.IsValid(value, out string errorMessage))
         {
             return new ValidateMessage(errorMessage);

@@ -493,11 +493,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
             }
 
-            if (int.TryParse(Period_ms, NumberStyles.Number, CultureInfo.InvariantCulture, out int period) && period < 200)
+            if (_selectedPeriod == 0)
             {
-                _messageBox.Show("Не рекомендуется выставлять значение периода меньше 200 мс.", MessageType.Warning);
+                _messageBox.Show("Вы не ошиблись с периодом? :)", MessageType.Warning);
                 return;
-            }            
+            }
 
             Button_Content = Button_Content_Stop;
             IsStart = true;
@@ -547,41 +547,49 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private async Task MonitoringRequestAction()
     {
-        if (_connectedHostModel.HostIsConnect == false)
+        try
         {
-            throw new Exception("Клиент отключен.");
-        }
+            if (_connectedHostModel.DisconnectedByClient)
+                return;
 
-        if (ModbusClient_VM.ModbusMessageType == null)
+            if (_connectedHostModel.HostIsConnect == false)
+                throw new Exception("Клиент отключен.");
+
+            if (ModbusClient_VM.ModbusMessageType == null)
+                throw new Exception("Не задан тип протокола Modbus.");
+
+            var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
+
+            ushort startingAddress = allAddresses.Min();
+            int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
+
+            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+
+            MessageData data = new ReadTypeMessage(
+                _selectedSlaveID,
+                startingAddress,
+                numberOfRegisters,
+                ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
+
+            ModbusOperationResult result = await _modbusModel.ReadRegister(
+                            readFunction,
+                            data,
+                            ModbusClient_VM.ModbusMessageType);
+
+            if (result.ReadedData == null || !IsStart)
+                return;
+
+            var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
+
+            if (_logger.IsRunning)
+                _logger.WriteLine(logString);
+        }
+        
+        catch (Exception)
         {
-            throw new Exception("Не задан тип протокола Modbus.");
+            if (!_connectedHostModel.DisconnectedByClient)
+                throw;
         }
-
-        var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
-
-        ushort startingAddress = allAddresses.Min();
-        int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
-
-        ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
-
-        MessageData data = new ReadTypeMessage(
-            _selectedSlaveID,
-            startingAddress,
-            numberOfRegisters,
-            ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
-
-        ModbusOperationResult result = await _modbusModel.ReadRegister(
-                        readFunction,
-                        data,
-                        ModbusClient_VM.ModbusMessageType);
-
-        if (result.ReadedData == null || !IsStart)
-            return;
-
-        var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
-
-        if (_logger.IsRunning)
-            _logger.WriteLine(logString);
     }
 
     #endregion Опрос

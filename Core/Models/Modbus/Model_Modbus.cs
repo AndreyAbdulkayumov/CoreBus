@@ -1,4 +1,4 @@
-﻿using Core.Clients.DataTypes;
+using Core.Clients.DataTypes;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 
@@ -281,9 +281,17 @@ public class Model_Modbus
     {
         _monitoringTimer.Stop();
     }
+     
+    private readonly SemaphoreSlim _monitoringSemaphore = new SemaphoreSlim(1, 1);
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
+        bool isAlreadyRunning = !_monitoringSemaphore.Wait(0);
+
+        // Цикл опроса пропускается, если семафор уже был захвачен.
+        if (isAlreadyRunning)
+            return;
+
         try
         {
             if (_monitoringAction != null)
@@ -294,6 +302,11 @@ public class Model_Modbus
         {
             MonitoringStop();
             Model_MonitoringError?.Invoke(this, error);
+        }
+
+        finally
+        {
+            _monitoringSemaphore.Release();
         }
     }
 }
