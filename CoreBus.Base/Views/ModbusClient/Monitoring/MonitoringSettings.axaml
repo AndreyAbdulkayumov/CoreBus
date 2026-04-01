@@ -46,7 +46,7 @@
 						HorizontalAlignment="Center"/>
 
 				<Button Classes="RemoveRowsButton"
-			            IsEnabled="{Binding !IsStart, Mode=OneWay}"
+			            IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 						Command="{Binding Command_RemoveSelectedItems}"
 						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
 						ToolTip.Tip="Удалить выбранные регистры"
@@ -90,7 +90,7 @@
 							<TextBox Classes="InputField"
 									 Width="70"
 									 Text="{Binding SlaveID, Mode=TwoWay}"
-									 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+									 IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 									 Margin="110,1,0,0"
 									 TextChanged="UppercaseTextBox_TextChanged"/>
 
@@ -121,7 +121,7 @@
 
 						<ComboBox ItemsSource="{Binding ReadFunctions}"
 								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
-								  IsEnabled="{Binding !IsStart, Mode=OneWay}"
+								  IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 								  Width="275"/>				
 
 					</StackPanel>
@@ -142,7 +142,7 @@
 						<TextBox Classes="InputField"
 								 Width="70"
 								 Text="{Binding Period_ms, Mode=TwoWay}"
-								 IsEnabled="{Binding !IsStart, Mode=OneWay}"
+								 IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 								 Margin="0,1,0,0"/>
 
 						<TextBlock Text="мс."

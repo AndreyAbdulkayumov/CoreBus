@@ -21,8 +21,20 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
+public class MonitoringStateEventArgs : EventArgs
+{
+    public readonly bool IsRunning;
+
+    public MonitoringStateEventArgs(bool isRunning)
+    {
+        IsRunning = isRunning;
+    }
+}
+
 public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
 {
+    public event EventHandler<MonitoringStateEventArgs>? ModbusMonitoringStateChanged;
+
     private bool ui_IsEnable;
 
     public bool UI_IsEnable
@@ -59,12 +71,12 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
     }
 
-    private bool _isStart;
+    private bool _isMonitoringRunning;
 
-    public bool IsStart
+    public bool IsMonitoringRunning
     {
-        get => _isStart;
-        set => this.RaiseAndSetIfChanged(ref _isStart, value);
+        get => _isMonitoringRunning;
+        set => this.RaiseAndSetIfChanged(ref _isMonitoringRunning, value);
     }
 
     private string? _period_ms;
@@ -227,7 +239,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
         {
-            if (IsStart)
+            if (IsMonitoringRunning)
             {
                 StopPolling();
                 return;
@@ -391,7 +403,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private void Model_MonitoringError(object? sender, Exception e)
     {
-        if (!IsStart)
+        if (!IsMonitoringRunning)
             return;
 
         _messageBox.Show($"Ошибка мониторинга.\n\n{e.Message}", MessageType.Error, e);
@@ -431,7 +443,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         LogWillStart = true;
 
-        if (!IsStart)
+        if (!IsMonitoringRunning)
         {
             WaitStartLogMessageIsVisible = true;
             return;
@@ -479,6 +491,12 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     {
         try
         {
+            if (_openChildWindowService.MacrosWindowIsOpen)
+            {
+                _messageBox.Show("Для запуска опроса регистров необходимо закрыть окно макросов.", MessageType.Warning);
+                return;
+            }
+
             if (_monitoringDataGrid_VM.IsEmpty)
             {
                 _messageBox.Show("Не заданы регистры для опроса.", MessageType.Warning);
@@ -500,7 +518,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             }
 
             Button_Content = Button_Content_Stop;
-            IsStart = true;
+            IsMonitoringRunning = true;
 
             _monitoringDataGrid_VM.BlockUI(true);
 
@@ -512,7 +530,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             if (WaitStartLogMessageIsVisible)
                 StartLogging();
 
-            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);            
+            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);
+
+            ModbusMonitoringStateChanged?.Invoke(this, new MonitoringStateEventArgs(isRunning: true));
         }
         
         catch (Exception)
@@ -537,12 +557,15 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         _modbusModel.MonitoringStop();
 
         Button_Content = Button_Content_Start;
-        IsStart = false;
+        IsMonitoringRunning = false;
 
         _monitoringDataGrid_VM.BlockUI(false);
+
         MessageBus.Current.SendMessage(new ManageChartToolsMessage(true));
 
         Task.Run(StopLogging);
+
+        ModbusMonitoringStateChanged?.Invoke(this, new MonitoringStateEventArgs(isRunning: false));
     }
 
     private async Task MonitoringRequestAction()
@@ -576,7 +599,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                             data,
                             ModbusClient_VM.ModbusMessageType);
 
-            if (result.ReadedData == null || !IsStart)
+            if (result.ReadedData == null || !IsMonitoringRunning)
                 return;
 
             var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);

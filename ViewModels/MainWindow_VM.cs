@@ -77,17 +77,13 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
     }
 
-    public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenVideoPage { get; }
+    public bool _macrosButtonIsEnabled = true;
 
-    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
-    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenMacrosWindow { get; }
-
-    public ReactiveCommand<Unit, Unit> Command_Connect { get; }
-    public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
+    public bool MacrosButtonIsEnabled
+    {
+        get => _macrosButtonIsEnabled;
+        set => this.RaiseAndSetIfChanged(ref _macrosButtonIsEnabled, value);
+    }    
 
     private bool _updateMessageIsVisible = false;
 
@@ -104,9 +100,6 @@ public class MainWindow_VM : ReactiveObject
         get => _newAppVersion;
         set => this.RaiseAndSetIfChanged(ref _newAppVersion, value);
     }
-
-    public ReactiveCommand<Unit, Unit> Command_UpdateApp { get; }
-    public ReactiveCommand<Unit, Unit> Command_SkipNewAppVersion { get; }
 
     private string? _connectionString;
 
@@ -170,6 +163,22 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _led_RX_IsActive, value);
     }
 
+    public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenVideoPage { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
+    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenMacrosWindow { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_Connect { get; }
+    public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_UpdateApp { get; }
+    public ReactiveCommand<Unit, Unit> Command_SkipNewAppVersion { get; }
+
+
     private readonly IUIService _uiServices;
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IFileSystemService _fileSystemService;
@@ -211,6 +220,14 @@ public class MainWindow_VM : ReactiveObject
 
         _connectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
         _connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+
+        _modbusMonitoring_VM.ModbusMonitoringStateChanged += (sender, monitoringState) =>
+        {
+            if (sender is not ModbusMonitoring_VM)
+                return;
+
+            MacrosButtonIsEnabled = !monitoringState.IsRunning;
+        };
 
         MessageBus.Current.Listen<PresetUpdateTriggerMessage>()
             .Subscribe(_ =>
@@ -258,8 +275,18 @@ public class MainWindow_VM : ReactiveObject
         Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
         Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия страницы с видеороликами.\n\n{error.Message}", MessageType.Error, error));
 
-        Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
+        Command_ProtocolMode_NoProtocol = ReactiveCommand.CreateFromTask(async () =>
         {
+            if (_modbusMonitoring_VM.IsMonitoringRunning)
+            {
+                var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и переключиться в режим \"Без протокола\"?", MessageType.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                _modbusMonitoring_VM.StopPolling();
+            }
+
             CurrentViewModel = _noProtocol_VM;
             _connectedHostModel.SetProtocol_NoProtocol();
 

@@ -173,7 +173,7 @@ public class ModbusClient_VM : ReactiveObject
         var isStartObservable = this
             .WhenAnyValue(x => x.CurrentModeViewModel)
             .Select(vm => vm as ModbusMonitoring_VM)
-            .Select(monitoringVM => monitoringVM?.WhenAnyValue(x => x.IsStart) ?? Observable.Return(false))
+            .Select(monitoringVM => monitoringVM?.WhenAnyValue(x => x.IsMonitoringRunning) ?? Observable.Return(false))
             .Switch();
 
         _buttonModbusScanner_IsEnabled = Observable.CombineLatest(

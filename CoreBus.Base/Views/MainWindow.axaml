@@ -180,6 +180,7 @@
 
 							<Button Content="Макросы"
 									Classes="LeftMenuButton"
+									IsEnabled="{Binding MacrosButtonIsEnabled, Mode=OneWay}"
 									Command="{Binding Command_OpenMacrosWindow}"/>
 
 						</StackPanel>

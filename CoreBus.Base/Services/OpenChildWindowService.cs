@@ -28,6 +28,7 @@ namespace CoreBus.Base.Services;
 public class OpenChildWindowService : IOpenChildWindowService
 {
     public bool ChartWindowIsOpen { get; private set; } = false;
+    public bool MacrosWindowIsOpen { get; private set; } = false;
 
     private Settings_VM? _settingsVM;
     private AboutApp_VM? _aboutAppVM;
@@ -38,8 +39,6 @@ public class OpenChildWindowService : IOpenChildWindowService
     private Chart_VM? _chartVM;
 
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
-
-    private static bool _macrosWindowIsOpen = false;
     
     private readonly IServiceProvider _serviceProvider;
 
@@ -148,7 +147,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         try
         {
-            if (_macrosWindowIsOpen)
+            if (MacrosWindowIsOpen)
             {
                 return;
             }
@@ -158,7 +157,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception("Не задан владелец окна.");
             }
 
-            _macrosWindowIsOpen = true;
+            MacrosWindowIsOpen = true;
 
             _macrosVM = _serviceProvider.GetService<Macros_VM>();
 
@@ -180,7 +179,7 @@ public class OpenChildWindowService : IOpenChildWindowService
             window.Closed += (object? sender, EventArgs e) =>
             {
                 MainWindow.Instance.Closed -= MainWindowClosedHandler;
-                _macrosWindowIsOpen = false;
+                MacrosWindowIsOpen = false;
             };
 
             MainWindow.Instance.Closed += MainWindowClosedHandler;
@@ -190,7 +189,7 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         catch (Exception error)
         {
-            _macrosWindowIsOpen = false;
+            MacrosWindowIsOpen = false;
 
             throw new Exception(error.Message);
         }
@@ -329,7 +328,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 if (monitoringVM == null || chartVM == null || chartMessageBox == null)
                     return;
 
-                if (!monitoringVM.IsStart)
+                if (!monitoringVM.IsMonitoringRunning)
                     return;
 
                 // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
@@ -337,7 +336,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 // Без этого окно просто закроется, и все что ниже будет проигнорировано.
                 e.Cancel = true;
 
-                if (monitoringVM.IsStart)
+                if (monitoringVM.IsMonitoringRunning)
                 {
                     var closeWindow = await chartMessageBox.ShowYesNoDialog(
                         "Опрос Modbus регистров еще идет.\n\n" +
