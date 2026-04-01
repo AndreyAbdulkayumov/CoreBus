@@ -58,6 +58,14 @@ public class ModbusClient_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _selectedModbusType, value);
     }
 
+    private bool _changeModbusTypeIsEnabled = true;
+
+    public bool ChangeModbusTypeIsEnabled
+    {
+        get => _changeModbusTypeIsEnabled;
+        set => this.RaiseAndSetIfChanged(ref _changeModbusTypeIsEnabled, value);
+    }
+
     private readonly ObservableAsPropertyHelper<bool> _buttonModbusScanner_IsEnabled;
     public bool ButtonModbusScanner_IsEnabled => _buttonModbusScanner_IsEnabled.Value;
 
@@ -122,6 +130,14 @@ public class ModbusClient_VM : ReactiveObject
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+        _modbusMonitoring_VM.ModbusMonitoringStateChanged += (sender, monitoringState) =>
+        {
+            if (sender is not ModbusMonitoring_VM)
+                return;
+
+            ChangeModbusTypeIsEnabled = !monitoringState.IsRunning;
+        };
 
         Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(_openChildWindow.ModbusScanner);
 

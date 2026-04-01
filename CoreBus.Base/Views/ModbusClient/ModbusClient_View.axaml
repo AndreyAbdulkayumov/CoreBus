@@ -54,6 +54,7 @@
                       SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
                       FontSize="16"
 					  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
+					  IsEnabled="{Binding ChangeModbusTypeIsEnabled, Mode=OneWay}"
                       Width="225"
                       Margin="100,0,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Center"/>

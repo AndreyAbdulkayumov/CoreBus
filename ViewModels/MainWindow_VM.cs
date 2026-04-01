@@ -297,6 +297,9 @@ public class MainWindow_VM : ReactiveObject
 
         Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
         {
+            if (CurrentViewModel is ModbusClient_VM && _modbusMonitoring_VM.IsMonitoringRunning)
+                return;
+
             CurrentViewModel = _modbusClient_VM;
             _connectedHostModel.SetProtocol_Modbus();
 
