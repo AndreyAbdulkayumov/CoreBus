@@ -238,30 +238,7 @@ public class MainWindow_VM : ReactiveObject
         this.WhenAnyValue(x => x.SelectedPreset)
             .WhereNotNull()
             .Where(x => !string.IsNullOrEmpty(x))
-            .Subscribe(PresetName =>
-            {
-                try
-                {
-                    _settingsModel.ReadPreset(PresetName);
-
-                    if (_settingsModel.Settings != null)
-                    {
-                        string? encodingName = _settingsModel.Settings.GlobalEncoding;
-                        _connectedHostModel.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
-                        _noProtocol_VM.SelectedEncoding = encodingName;
-                    }
-
-                    ConnectionString = GetConnectionString();
-
-                    SettingsDocument = PresetName;
-                    _settingsModel.AppData.SelectedPresetFileName = PresetName;
-                }
-
-                catch (Exception error)
-                {
-                    _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
-                }
-            });
+            .Subscribe(SwitchToPreset);
 
         Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
         Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error, error));
@@ -275,47 +252,20 @@ public class MainWindow_VM : ReactiveObject
         Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
         Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия страницы с видеороликами.\n\n{error.Message}", MessageType.Error, error));
 
-        Command_ProtocolMode_NoProtocol = ReactiveCommand.CreateFromTask(async () =>
-        {
-            if (_modbusMonitoring_VM.IsMonitoringRunning)
-            {
-                var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и переключиться в режим \"Без протокола\"?", MessageType.Warning);
+        Command_Connect = ReactiveCommand.Create(ConnectHandler);
+        Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
-                if (result != MessageBoxResult.Yes)
-                    return;
+        Command_Disconnect = ReactiveCommand.CreateFromTask(DisconnectHandler);
+        Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
-                _modbusMonitoring_VM.StopPolling();
-            }
-
-            CurrentViewModel = _noProtocol_VM;
-            _connectedHostModel.SetProtocol_NoProtocol();
-
-            _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
-            CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
-        });
+        Command_ProtocolMode_NoProtocol = ReactiveCommand.CreateFromTask(SelectNoProtocolMode);
         Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
-        Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
-        {
-            if (CurrentViewModel is ModbusClient_VM && _modbusMonitoring_VM.IsMonitoringRunning)
-                return;
-
-            CurrentViewModel = _modbusClient_VM;
-            _connectedHostModel.SetProtocol_Modbus();
-
-            _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
-            CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
-        });
+        Command_ProtocolMode_Modbus = ReactiveCommand.Create(SelectModbusMode);
         Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
         Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна макросов.\n\n{error.Message}", MessageType.Error, error));
-
-        Command_Connect = ReactiveCommand.Create(Connect_Handler);
-        Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
-
-        Command_Disconnect = ReactiveCommand.CreateFromTask(_connectedHostModel.Disconnect);
-        Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
         Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error, error));
@@ -431,6 +381,31 @@ public class MainWindow_VM : ReactiveObject
         catch (Exception)
         {
             UpdateMessageIsVisible = false;
+        }
+    }
+
+    private void SwitchToPreset(string presetName)
+    {
+        try
+        {
+            _settingsModel.ReadPreset(presetName);
+
+            if (_settingsModel.Settings != null)
+            {
+                string? encodingName = _settingsModel.Settings.GlobalEncoding;
+                _connectedHostModel.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
+                _noProtocol_VM.SelectedEncoding = encodingName;
+            }
+
+            ConnectionString = GetConnectionString();
+
+            SettingsDocument = presetName;
+            _settingsModel.AppData.SelectedPresetFileName = presetName;
+        }
+
+        catch (Exception error)
+        {
+            _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
         }
     }
 
@@ -603,7 +578,7 @@ public class MainWindow_VM : ReactiveObject
         Led_RX_IsActive = false;
     }
 
-    private void Connect_Handler()
+    private void ConnectHandler()
     {
         if (_settingsModel.Settings == null)
         {
@@ -645,5 +620,51 @@ public class MainWindow_VM : ReactiveObject
         }
 
         _connectedHostModel.Connect(info);
+    }
+
+    private async Task DisconnectHandler()
+    {
+        if (_modbusMonitoring_VM.IsMonitoringRunning)
+        {
+            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и отключиться?", MessageType.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            _modbusMonitoring_VM.StopPolling();
+        }
+
+        await _connectedHostModel.Disconnect();
+    }
+
+    private async Task SelectNoProtocolMode()
+    {
+        if (_modbusMonitoring_VM.IsMonitoringRunning)
+        {
+            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и переключиться в режим \"Без протокола\"?", MessageType.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            _modbusMonitoring_VM.StopPolling();
+        }
+
+        CurrentViewModel = _noProtocol_VM;
+        _connectedHostModel.SetProtocol_NoProtocol();
+
+        _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
+        CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
+    }
+
+    private void SelectModbusMode()
+    {
+        if (CurrentViewModel is ModbusClient_VM && _modbusMonitoring_VM.IsMonitoringRunning)
+            return;
+
+        CurrentViewModel = _modbusClient_VM;
+        _connectedHostModel.SetProtocol_Modbus();
+
+        _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
+        CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
     }
 }
