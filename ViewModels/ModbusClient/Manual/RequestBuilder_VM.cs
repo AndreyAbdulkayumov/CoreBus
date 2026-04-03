@@ -144,10 +144,8 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         set => this.RaiseAndSetIfChanged(ref _currentWriteFieldViewModel, value);
     }
 
-
     public ReactiveCommand<Unit, Unit> Command_Read { get; }
     public ReactiveCommand<Unit, Unit> Command_Write { get; }
-
 
     private NumberStyles _numberViewStyle;
 
@@ -209,106 +207,18 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         //
         /****************************************************/
 
-        Command_Read = ReactiveCommand.Create(() =>
-        {
-            if (string.IsNullOrEmpty(SlaveID))
-            {
-                _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(Address))
-            {
-                _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(NumberOfRegisters))
-            {
-                _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
-                return;
-            }
-
-            string? validationMessage = CheckReadFields();
-
-            if (!string.IsNullOrEmpty(validationMessage))
-            {
-                _messageBox.Show(validationMessage, MessageType.Warning);
-                return;
-            }
-
-            ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
-
-            MessageBus.Current.SendMessage(
-                new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
-                );
-        });
+        Command_Read = ReactiveCommand.Create(ReadButtonHandler);
         Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке чтения: \n\n{error.Message}", MessageType.Error, error));
 
-        Command_Write = ReactiveCommand.Create(() =>
-        {
-            if (string.IsNullOrEmpty(SlaveID))
-            {
-                _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(Address))
-            {
-                _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
-                return;
-            }
-
-            if (CurrentWriteFieldViewModel == null)
-            {
-                _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
-                return;
-            }
-
-            string? validationMessage = CheckWriteFields();
-
-            if (!string.IsNullOrEmpty(validationMessage))
-            {
-                _messageBox.Show(validationMessage, MessageType.Warning);
-                return;
-            }
-
-            ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
-
-            WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
-
-            MessageBus.Current.SendMessage(
-                new ModbusWriteMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
-                );
-        });
+        Command_Write = ReactiveCommand.Create(WriteButtonHandler);
         Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке записи:\n\n{error.Message}", MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
             {
-                try
-                {
-                    var (hexSelected, decSelected) = values;
+                var (hexSelected, decSelected) = values;
 
-                    // Оба выбраны или оба сняты — ничего не делаем
-                    if (hexSelected == decSelected)
-                        return;
-
-                    NumberFormat = hexSelected ?
-                        ModbusManualMode_VM.ViewContent_NumberStyle_hex :
-                        ModbusManualMode_VM.ViewContent_NumberStyle_dec;
-
-                    _numberViewStyle = hexSelected ?
-                        NumberStyles.HexNumber :
-                        NumberStyles.Number;
-
-                    ChangeNumberFormat(_numberViewStyle);
-                }
-
-                catch (Exception error)
-                {
-                    messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
-                }
+                ChangeNumberFormat(hexSelected, decSelected);
             });
 
         this.WhenAnyValue(x => x.SelectedWriteFunction)
@@ -339,12 +249,117 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
     public void Subscribe(ModbusManualMode_VM parent)
     {
-        parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
+        parent.CheckSum_VisibilityChanged += (sender, e) =>
+        {
+            CheckSum_IsVisible = e;
+        };
     }
 
-    private void Parent_CheckSum_VisibilityChanged(object? sender, bool e)
+    private void Model_DeviceIsConnect(object? sender, IConnection? e)
     {
-        CheckSum_IsVisible = e;
+        UI_IsEnable = true;
+    }
+
+    private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
+    {
+        UI_IsEnable = false;
+    }
+
+    private void ReadButtonHandler()
+    {
+        if (string.IsNullOrEmpty(SlaveID))
+        {
+            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(Address))
+        {
+            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(NumberOfRegisters))
+        {
+            _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
+            return;
+        }
+
+        string? validationMessage = CheckReadFields();
+
+        if (!string.IsNullOrEmpty(validationMessage))
+        {
+            _messageBox.Show(validationMessage, MessageType.Warning);
+            return;
+        }
+
+        ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+
+        MessageBus.Current.SendMessage(
+            new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+            );
+    }
+
+    private string? CheckReadFields()
+    {
+        if (!HasErrors)
+        {
+            return null;
+        }
+
+        var message = new StringBuilder();
+
+        // Проверка полей в основном контроле
+
+        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        {
+            message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+        }
+
+        if (message.Length > 0)
+        {
+            message.Insert(0, "Ошибки валидации:\n\n");
+            return message.ToString().TrimEnd('\r', '\n');
+        }
+
+        return null;
+    }
+
+    private void WriteButtonHandler()
+    {
+        if (string.IsNullOrEmpty(SlaveID))
+        {
+            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(Address))
+        {
+            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            return;
+        }
+
+        if (CurrentWriteFieldViewModel == null)
+        {
+            _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
+            return;
+        }
+
+        string? validationMessage = CheckWriteFields();
+
+        if (!string.IsNullOrEmpty(validationMessage))
+        {
+            _messageBox.Show(validationMessage, MessageType.Warning);
+            return;
+        }
+
+        ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
+
+        WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
+
+        MessageBus.Current.SendMessage(
+            new ModbusWriteMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
+            );
     }
 
     private string? CheckWriteFields()
@@ -382,68 +397,53 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         return null;
     }
 
-    private string? CheckReadFields()
+    private void ChangeNumberFormat(bool hexSelected, bool decSelected)
     {
-        if (!HasErrors)
+        try
         {
-            return null;
+            // Оба выбраны или оба сняты — ничего не делаем
+            if (hexSelected == decSelected)
+                return;
+
+            NumberFormat = hexSelected ?
+                ModbusManualMode_VM.ViewContent_NumberStyle_hex :
+                ModbusManualMode_VM.ViewContent_NumberStyle_dec;
+
+            _numberViewStyle = hexSelected ?
+                NumberStyles.HexNumber :
+                NumberStyles.Number;
+
+            if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            {
+                SlaveID = _numberViewStyle == NumberStyles.HexNumber ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
+            }
+
+            else
+            {
+                _selectedSlaveID = 0;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            {
+                Address = _numberViewStyle == NumberStyles.HexNumber ? _selectedAddress.ToString("X") : _selectedAddress.ToString();
+            }
+
+            else
+            {
+                _selectedAddress = 0;
+            }
+
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
+            ChangeNumberStyleInErrors(nameof(SlaveID), _numberViewStyle);
+            ChangeNumberStyleInErrors(nameof(Address), _numberViewStyle);
         }
 
-        var message = new StringBuilder();
-
-        // Проверка полей в основном контроле
-
-        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        catch (Exception error)
         {
-            message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            _messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
         }
-
-        if (message.Length > 0)
-        {
-            message.Insert(0, "Ошибки валидации:\n\n");
-            return message.ToString().TrimEnd('\r', '\n');
-        }
-
-        return null;
-    }
-
-    private void ChangeNumberFormat(NumberStyles newStyle)
-    {
-        if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
-        {
-            SlaveID = newStyle == NumberStyles.HexNumber ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
-        }
-
-        else
-        {
-            _selectedSlaveID = 0;
-        }
-
-        if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
-        {
-            Address = newStyle == NumberStyles.HexNumber ? _selectedAddress.ToString("X") : _selectedAddress.ToString();
-        }
-
-        else
-        {
-            _selectedAddress = 0;
-        }
-
-        ValidateInput(nameof(SlaveID), SlaveID);
-        ValidateInput(nameof(Address), Address);
-
-        ChangeNumberStyleInErrors(nameof(SlaveID), newStyle);
-        ChangeNumberStyleInErrors(nameof(Address), newStyle);
-    }
-
-    private void Model_DeviceIsConnect(object? sender, IConnection? e)
-    {
-        UI_IsEnable = true;
-    }
-
-    private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
-    {
-        UI_IsEnable = false;
     }
 
     #region Валидация

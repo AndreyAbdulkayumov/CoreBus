@@ -81,20 +81,8 @@ public class ModbusClient_VM : ReactiveObject
 
     public bool IsMonitoringMode
     {
-        get => _settingsModel.AppData.IsModbusMonitoringMode;
-        set
-        {
-            _settingsModel.AppData.IsModbusMonitoringMode = value;
-
-            if (CurrentModeViewModel is ModbusMonitoring_VM modbusMonitoring)
-            {
-                modbusMonitoring.StopPolling();
-            }
-
-            CurrentModeViewModel = value ? _modbusMonitoring_VM : _modbusManualMode_VM;
-
-            this.RaiseAndSetIfChanged(ref _isMonitoringMode, value);
-        }
+        get => _isMonitoringMode;
+        set => this.RaiseAndSetIfChanged(ref _isMonitoringMode, value);
     }
 
     private object? _currentModeViewModel;
@@ -201,6 +189,35 @@ public class ModbusClient_VM : ReactiveObject
         // Действия после запуска приложения
 
         CurrentModeViewModel = _settingsModel.AppData.IsModbusMonitoringMode ? _modbusMonitoring_VM : _modbusManualMode_VM;
+
+        IsMonitoringMode = _settingsModel.AppData.IsModbusMonitoringMode;
+    }
+
+    public async Task SwitchToMonitoringMode(bool value)
+    {
+        try
+        {
+            // Проверяем, нужно ли подтверждение
+            if (CurrentModeViewModel is ModbusMonitoring_VM && _modbusMonitoring_VM.IsMonitoringRunning)
+            {
+                var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и выйти из режима мониторинга?", MessageType.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return; // Отмена: IsMonitoringMode не меняется, контрол остаётся в исходном состоянии
+
+                _modbusMonitoring_VM.StopPolling();
+            }
+
+            // Только здесь обновляем состояние — это запускает анимацию через OneWay биндинг
+            IsMonitoringMode = value;
+            _settingsModel.AppData.IsModbusMonitoringMode = value;
+            CurrentModeViewModel = value ? _modbusMonitoring_VM : _modbusManualMode_VM;
+        }
+
+        catch (Exception error)
+        {
+            _messageBox.Show($"Ошибка переключения в режим мониторинга.\n\n{error.Message}", MessageType.Error, error);
+        }
     }
 
     private void Model_DeviceIsConnect(object? sender, IConnection? e)

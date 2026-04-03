@@ -79,7 +79,8 @@
 
 				<ToggleSwitch OffContent="Мониторинг"
 							  OnContent="Мониторинг"
-							  IsChecked="{Binding IsMonitoringMode, Mode=TwoWay}"/>	
+							  IsChecked="{Binding IsMonitoringMode, Mode=OneWay}"
+							  Click="MonitoringSwitch_OnClick"/>	
 
 			</StackPanel>
 			

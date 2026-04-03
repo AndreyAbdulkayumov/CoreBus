@@ -185,6 +185,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
 
     public UInt16 SelectedAddress => _selectedAddress;
 
+    private const string DefaultFormula = "x";
 
     private const int _floatRoundedDigit = 2;
 
@@ -219,7 +220,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
         Address = GetDisplayedAddress();
 
         SelectedValueType = _allValueTypes_Last.First();
-        Formula = "x";
+        Formula = DefaultFormula;
 
         /****************************************************/
         //
@@ -275,7 +276,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
         Alias = initData.Alias;
         SelectedValueType = _allValueTypes_Regular.First(e => e.Value == initData.ValueType);
         VisibleOnlyRawValue = initData.VisibleOnlyRawValue;
-        Formula = string.IsNullOrWhiteSpace(initData.Formula) ? "x" : initData.Formula;
+        Formula = string.IsNullOrWhiteSpace(initData.Formula) ? DefaultFormula : initData.Formula;
         ShowOnChartAndLog = initData.ShowOnChartAndLog;
     }
 

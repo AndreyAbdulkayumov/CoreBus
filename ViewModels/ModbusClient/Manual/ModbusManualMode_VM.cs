@@ -103,18 +103,17 @@ public class ModbusManualMode_VM : ReactiveObject
 
     public ModbusManualMode_VM(IUIService uiServices, IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel,
-        RequestBuilder_VM ModbusRequestBuilder_VM)
+        RequestBuilder_VM modbusRequestBuilder_VM)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));        
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
-        _normalMode_VM = ModbusRequestBuilder_VM ?? throw new ArgumentNullException(nameof(ModbusRequestBuilder_VM));
+        _normalMode_VM = modbusRequestBuilder_VM ?? throw new ArgumentNullException(nameof(modbusRequestBuilder_VM));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-        _normalMode_VM = ModbusRequestBuilder_VM;
         _normalMode_VM.Subscribe(this);
 
         RequestBuilder_VM = _normalMode_VM;
@@ -151,33 +150,33 @@ public class ModbusManualMode_VM : ReactiveObject
 
         Command_Copy_Request = ReactiveCommand.CreateFromTask(async () =>
         {
-            string Data = string.Empty;
+            var data = string.Empty;
 
             foreach (var element in RequestResponseItems)
             {
                 if (element.RequestData != null)
                 {
-                    Data += element.RequestData + " ";
+                    data += element.RequestData + " ";
                 }
             }
 
-            await _uiServices.CopyToClipboard(Data);
+            await _uiServices.CopyToClipboard(data);
         });
         Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования запроса в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
 
         Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
         {
-            string Data = string.Empty;
+            var data = string.Empty;
 
             foreach (var element in RequestResponseItems)
             {
                 if (element.ResponseData != null)
                 {
-                    Data += element.ResponseData + " ";
+                    data += element.ResponseData + " ";
                 }
             }
 
-            await _uiServices.CopyToClipboard(Data);
+            await _uiServices.CopyToClipboard(data);
         });
         Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования ответа в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
     }
@@ -232,9 +231,6 @@ public class ModbusManualMode_VM : ReactiveObject
 
         catch (Exception error)
         {
-            //if (_cycleMode_VM.IsStart)
-            //    _cycleMode_VM.StopPolling();
-
             if (message.Sender == MainWindow_VM.SenderName)
             {
                 _messageBox.Show(error.Message, MessageType.Error, error);
@@ -388,11 +384,11 @@ public class ModbusManualMode_VM : ReactiveObject
 
         catch (Exception error)
         {
-            var Info = error.InnerException as ModbusExceptionInfo;
+            var info = error.InnerException as ModbusExceptionInfo;
 
-            if (Info != null)
+            if (info != null)
             {
-                await AddDataOnView(null, Info.Details);
+                await AddDataOnView(null, info.Details);
             }
 
             throw new Exception(error.Message);
@@ -634,7 +630,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
     private static string GetViewData_FromWords(byte[] modbusData)
     {
-        string displayedString = string.Empty;
+        var displayedString = string.Empty;
 
         UInt16 temp;
 
@@ -660,7 +656,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
     private static string GetViewData_FromBytes(byte[] modbusData, int numberOfRegisters)
     {
-        string displayedString = string.Empty;
+        var displayedString = string.Empty;
 
         int registerCounter = 0;
 
