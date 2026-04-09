@@ -14,7 +14,7 @@ Package can be verified like this:
 
    certutil -hashfile CoreBus_3.4.0_win_x64_installer.exe sha256
 
-   checksum: 9235379f3f254c7667ec1d3c1c53632bc1542fb6d7ca3ed2536eae4b643feaf7
+   checksum: c9886cab4e64a70aad52c04b11b3f190ca2b9e660cab03822dacf8fff6d70495
 
 
 File 'LICENSE.md' is obtained from 
