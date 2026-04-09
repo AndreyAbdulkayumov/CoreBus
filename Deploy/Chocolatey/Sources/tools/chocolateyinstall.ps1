@@ -4,9 +4,9 @@ $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $packageName = $env:ChocolateyPackageName
 $softwareName = 'CoreBus*'
 
-$fileLocation = Join-Path $toolsDir 'CoreBus_3.3.3_win_x64_installer.exe'
+$fileLocation = Join-Path $toolsDir 'CoreBus_3.4.0_win_x64_installer.exe'
 
-$checksum = '2161d3122233142d4f8c8424ad2e2c1efc615b083d2fcdb20759280de4927475'
+$checksum = '9235379f3f254c7667ec1d3c1c53632bc1542fb6d7ca3ed2536eae4b643feaf7'
 
 $packageArgs = @{
   packageName    = $packageName
