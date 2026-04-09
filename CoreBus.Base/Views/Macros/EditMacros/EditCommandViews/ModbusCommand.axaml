@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
-			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
-			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.WriteFields;assembly=CoreBus.Base"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
+			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.ModbusCommand"
 			 x:DataType="ViewModelsLocal:ModbusCommand_VM">
 

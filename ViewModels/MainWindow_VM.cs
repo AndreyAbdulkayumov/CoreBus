@@ -1,19 +1,21 @@
-﻿using ReactiveUI;
+using Core.Clients.DataTypes;
+using Core.Models;
+using Core.Models.AppUpdateSystem;
+using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Models.Logging;
+using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
+using MessageBusTypes.Settings;
+using ReactiveUI;
+using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using ViewModels.NoProtocol;
-using ViewModels.ModbusClient;
 using ViewModels.Helpers;
-using Core.Models;
-using Core.Models.Settings;
-using Core.Models.AppUpdateSystem;
-using Core.Models.Settings.FileTypes;
-using Core.Models.AppUpdateSystem.DataTypes;
-using Core.Clients.DataTypes;
-using Services.Interfaces;
-using MessageBusTypes.Settings;
+using ViewModels.ModbusClient;
+using ViewModels.ModbusClient.Monitoring;
+using ViewModels.NoProtocol;
 
 namespace ViewModels;
 
@@ -75,16 +77,13 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
     }
 
-    public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
+    public bool _macrosButtonIsEnabled = true;
 
-    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
-    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
-    public ReactiveCommand<Unit, Unit> Command_OpenMacrosWindow { get; }
-
-    public ReactiveCommand<Unit, Unit> Command_Connect { get; }
-    public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
+    public bool MacrosButtonIsEnabled
+    {
+        get => _macrosButtonIsEnabled;
+        set => this.RaiseAndSetIfChanged(ref _macrosButtonIsEnabled, value);
+    }    
 
     private bool _updateMessageIsVisible = false;
 
@@ -101,9 +100,6 @@ public class MainWindow_VM : ReactiveObject
         get => _newAppVersion;
         set => this.RaiseAndSetIfChanged(ref _newAppVersion, value);
     }
-
-    public ReactiveCommand<Unit, Unit> Command_UpdateApp { get; }
-    public ReactiveCommand<Unit, Unit> Command_SkipNewAppVersion { get; }
 
     private string? _connectionString;
 
@@ -167,6 +163,22 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _led_RX_IsActive, value);
     }
 
+    public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenVideoPage { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
+    public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
+    public ReactiveCommand<Unit, Unit> Command_OpenMacrosWindow { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_Connect { get; }
+    public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
+
+    public ReactiveCommand<Unit, Unit> Command_UpdateApp { get; }
+    public ReactiveCommand<Unit, Unit> Command_SkipNewAppVersion { get; }
+
+
     private readonly IUIService _uiServices;
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IFileSystemService _fileSystemService;
@@ -176,6 +188,8 @@ public class MainWindow_VM : ReactiveObject
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Settings _settingsModel;
     private readonly Model_AppUpdateSystem _appUpdateSystemModel;
+    private readonly ModbusMonitoring_VM _modbusMonitoring_VM;
+    private readonly FileLogger _logger;
 
     private readonly object TX_View_Locker = new object();
     private readonly object RX_View_Locker = new object();
@@ -184,7 +198,8 @@ public class MainWindow_VM : ReactiveObject
 
     public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM,
-        ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel)
+        ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel,
+        ModbusMonitoring_VM modbusMonitoring_VM, FileLogger logger)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
@@ -195,6 +210,8 @@ public class MainWindow_VM : ReactiveObject
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
+        _modbusMonitoring_VM = modbusMonitoring_VM ?? throw new ArgumentNullException(nameof(modbusMonitoring_VM));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         SettingsDocument = _settingsModel.AppData.SelectedPresetFileName;
 
@@ -203,6 +220,14 @@ public class MainWindow_VM : ReactiveObject
 
         _connectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
         _connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+
+        _modbusMonitoring_VM.ModbusMonitoringStateChanged += (sender, monitoringState) =>
+        {
+            if (sender is not ModbusMonitoring_VM)
+                return;
+
+            MacrosButtonIsEnabled = !monitoringState.IsRunning;
+        };
 
         MessageBus.Current.Listen<PresetUpdateTriggerMessage>()
             .Subscribe(_ =>
@@ -213,30 +238,7 @@ public class MainWindow_VM : ReactiveObject
         this.WhenAnyValue(x => x.SelectedPreset)
             .WhereNotNull()
             .Where(x => !string.IsNullOrEmpty(x))
-            .Subscribe(PresetName =>
-            {
-                try
-                {
-                    _settingsModel.ReadPreset(PresetName);
-
-                    if (_settingsModel.Settings != null)
-                    {
-                        string? encodingName = _settingsModel.Settings.GlobalEncoding;
-                        _connectedHostModel.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
-                        _noProtocol_VM.SelectedEncoding = encodingName;
-                    }
-
-                    ConnectionString = GetConnectionString();
-
-                    SettingsDocument = PresetName;
-                    _settingsModel.AppData.SelectedPresetFileName = PresetName;
-                }
-
-                catch (Exception error)
-                {
-                    _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
-                }
-            });
+            .Subscribe(SwitchToPreset);
 
         Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
         Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error, error));
@@ -247,34 +249,23 @@ public class MainWindow_VM : ReactiveObject
         Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
         Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error, error));
 
-        Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
-        {
-            CurrentViewModel = _noProtocol_VM;
-            _connectedHostModel.SetProtocol_NoProtocol();
+        Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
+        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия страницы с видеороликами.\n\n{error.Message}", MessageType.Error, error));
 
-            _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
-            CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
-        });
+        Command_Connect = ReactiveCommand.Create(ConnectHandler);
+        Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
+
+        Command_Disconnect = ReactiveCommand.CreateFromTask(DisconnectHandler);
+        Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
+
+        Command_ProtocolMode_NoProtocol = ReactiveCommand.CreateFromTask(SelectNoProtocolMode);
         Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
-        Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
-        {
-            CurrentViewModel = _modbusClient_VM;
-            _connectedHostModel.SetProtocol_Modbus();
-
-            _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
-            CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
-        });
+        Command_ProtocolMode_Modbus = ReactiveCommand.Create(SelectModbusMode);
         Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
         Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна макросов.\n\n{error.Message}", MessageType.Error, error));
-
-        Command_Connect = ReactiveCommand.Create(Connect_Handler);
-        Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
-
-        Command_Disconnect = ReactiveCommand.CreateFromTask(_connectedHostModel.Disconnect);
-        Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
         Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error, error));
@@ -347,9 +338,15 @@ public class MainWindow_VM : ReactiveObject
         }
     }
 
-    public void WindowClosing()
+    public async Task WindowClosing()
     {
+        await _logger.StopAsync();
+
         _settingsModel.SaveAppInfo(_settingsModel.AppData);
+
+        var monitoringItemsData = _modbusMonitoring_VM.GetParametersForSave();
+
+        _settingsModel.SaveModbusMonitoringItems(monitoringItemsData);        
     }
 
     private async Task CheckAppUpdate()
@@ -384,6 +381,31 @@ public class MainWindow_VM : ReactiveObject
         catch (Exception)
         {
             UpdateMessageIsVisible = false;
+        }
+    }
+
+    private void SwitchToPreset(string presetName)
+    {
+        try
+        {
+            _settingsModel.ReadPreset(presetName);
+
+            if (_settingsModel.Settings != null)
+            {
+                string? encodingName = _settingsModel.Settings.GlobalEncoding;
+                _connectedHostModel.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
+                _noProtocol_VM.SelectedEncoding = encodingName;
+            }
+
+            ConnectionString = GetConnectionString();
+
+            SettingsDocument = presetName;
+            _settingsModel.AppData.SelectedPresetFileName = presetName;
+        }
+
+        catch (Exception error)
+        {
+            _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
         }
     }
 
@@ -556,7 +578,7 @@ public class MainWindow_VM : ReactiveObject
         Led_RX_IsActive = false;
     }
 
-    private void Connect_Handler()
+    private void ConnectHandler()
     {
         if (_settingsModel.Settings == null)
         {
@@ -598,5 +620,51 @@ public class MainWindow_VM : ReactiveObject
         }
 
         _connectedHostModel.Connect(info);
+    }
+
+    private async Task DisconnectHandler()
+    {
+        if (_modbusMonitoring_VM.IsMonitoringRunning)
+        {
+            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и отключиться?", MessageType.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            _modbusMonitoring_VM.StopPolling();
+        }
+
+        await _connectedHostModel.Disconnect();
+    }
+
+    private async Task SelectNoProtocolMode()
+    {
+        if (_modbusMonitoring_VM.IsMonitoringRunning)
+        {
+            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и переключиться в режим \"Без протокола\"?", MessageType.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            _modbusMonitoring_VM.StopPolling();
+        }
+
+        CurrentViewModel = _noProtocol_VM;
+        _connectedHostModel.SetProtocol_NoProtocol();
+
+        _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
+        CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
+    }
+
+    private void SelectModbusMode()
+    {
+        if (CurrentViewModel is ModbusClient_VM && _modbusMonitoring_VM.IsMonitoringRunning)
+            return;
+
+        CurrentViewModel = _modbusClient_VM;
+        _connectedHostModel.SetProtocol_Modbus();
+
+        _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
+        CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
     }
 }

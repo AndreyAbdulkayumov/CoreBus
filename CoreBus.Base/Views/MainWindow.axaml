@@ -23,7 +23,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToolBarButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
@@ -49,7 +49,7 @@
 	</Window.DataTemplates>
 	
 
-	<Border Background="{DynamicResource App_Back_Color_Background}">
+	<Border Background="{DynamicResource App_Back_Color_Background}" Focusable="True">
 
 		<Grid>
 
@@ -114,34 +114,43 @@
 						Classes="AppField">
 
 					<StackPanel Orientation="Horizontal"
-								Spacing="10"
+								Spacing="7"
 								Margin="10,0,0,0">
 
-						<Button Classes="MenuToolButton" 
-								ToolTip.Tip="Настройки"				
+						<Button Classes="ToolBarButton" 
+								ToolTip.Tip="Настройки"
+								Foreground="{DynamicResource ToolBar_Icon_Settings}"
 								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 								Command="{Binding Command_OpenSettingsWindow}">
 							
-							<Icons:MaterialIcon Kind="Cog"
-												Foreground="{DynamicResource ToolBar_Icon_Settings}"/>
+							<Icons:MaterialIcon Kind="Cog"/>
 						
 						</Button>
 
-						<Button Classes="MenuToolButton" 
+						<Button Classes="ToolBarButton" 
 								ToolTip.Tip="О приложении"
+								Foreground="{DynamicResource ToolBar_Icon_About}"
 								Command="{Binding Command_OpenAboutWindow}">
 							
-							<Icons:MaterialIcon Kind="Info"
-												Foreground="{DynamicResource ToolBar_Icon_About}"/>
+							<Icons:MaterialIcon Kind="Info"/>
 							
 						</Button>
 
-						<Button Classes="MenuToolButton"
+						<Button Classes="ToolBarButton"
 								ToolTip.Tip="Руководство пользователя"
+								Foreground="{DynamicResource ToolBar_Icon_UserManual}"
 								Command="{Binding Command_OpenUserManual}">
 
-							<Icons:MaterialIcon Kind="HelpCircle"
-												Foreground="{DynamicResource ToolBar_Icon_UserManual}"/>
+							<Icons:MaterialIcon Kind="HelpCircle"/>
+
+						</Button>
+
+						<Button Classes="ToolBarButton"
+								ToolTip.Tip="Видеоролики"
+								Foreground="{DynamicResource ToolBar_Icon_Video}"
+								Command="{Binding Command_OpenVideoPage}">
+
+							<Icons:MaterialIcon Kind="Youtube"/>
 
 						</Button>
 
@@ -171,6 +180,7 @@
 
 							<Button Content="Макросы"
 									Classes="LeftMenuButton"
+									IsEnabled="{Binding MacrosButtonIsEnabled, Mode=OneWay}"
 									Command="{Binding Command_OpenMacrosWindow}"/>
 
 						</StackPanel>
@@ -338,6 +348,7 @@
 				</Border>
 
 				<Border Grid.Row="2" Grid.Column="1"
+						x:Name="Border_ResizeIcon"
 						Background="Transparent"
 						Width="20" Height="20"
 						HorizontalAlignment="Right" VerticalAlignment="Bottom"

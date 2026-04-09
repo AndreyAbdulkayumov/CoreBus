@@ -1,0 +1,236 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 mc:Ignorable="d" 
+			 d:DesignWidth="1100" d:DesignHeight="120"
+             xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
+             x:DataType="ViewModels:ModbusMonitoring_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RemoveRowsButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Logging_Start.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Logging_Stop.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Logging_OpenFolder.axaml"/>
+
+		<Style Selector="Button">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Height" Value="32"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+		
+	</UserControl.Styles>
+
+	
+	<Grid ColumnDefinitions="120, 1*, 1*">
+
+		<!-- Кнопки управления -->
+		
+		<Border Grid.Column="0"
+			    BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="10,10,5,10"
+				Padding="11">
+
+			<StackPanel Orientation="Vertical" Spacing="10"
+			            HorizontalAlignment="Center">
+
+				<Button Content="График"
+						Command="{Binding Command_OpenChart}"
+						HorizontalAlignment="Center"/>
+
+				<Button Classes="RemoveRowsButton"
+			            IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
+						Command="{Binding Command_RemoveSelectedItems}"
+						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
+						ToolTip.Tip="Удалить выбранные регистры"
+						HorizontalAlignment="Center">
+
+					<Icons:MaterialIcon Kind="CloseBoxMultiple"/>
+
+				</Button>
+
+			</StackPanel>
+
+		</Border>
+
+		<!-- Настройка опроса -->
+		
+		<Border Grid.Column="1"
+				BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="5,10,5,10"
+				Padding="10"
+				ClipToBounds="True">
+
+			<Grid ColumnDefinitions="Auto,Auto"
+				  ColumnSpacing="35"
+				  HorizontalAlignment="Center">
+				
+				<StackPanel Grid.Column="0" Orientation="Vertical" Spacing="10">
+
+					<StackPanel Orientation="Horizontal" Spacing="20">
+						 
+						<Grid>
+
+							<TextBlock Text="Slave ID"
+				                       Margin="0,8,0,0" />
+
+							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="65,8,0,0"/>
+
+							<TextBox Classes="InputField"
+									 Width="70"
+									 Text="{Binding SlaveID, Mode=TwoWay}"
+									 IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
+									 Margin="110,1,0,0"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
+
+						</Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="15"
+				                    VerticalAlignment="Top">
+
+							<TextBlock Text="Формат числа"
+									   VerticalAlignment="Center"/>
+
+							<RadioButton Content="hex"
+										 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+										 Foreground="{DynamicResource App_Color_Text}"/>
+
+							<RadioButton Content="dec"
+										 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+										 Foreground="{DynamicResource App_Color_Text}"/>
+
+						</StackPanel>					
+
+					</StackPanel>
+
+					<StackPanel Orientation="Horizontal" Spacing="15">
+
+						<TextBlock Text="Функция опроса"
+								   VerticalAlignment="Center"/>
+
+						<ComboBox ItemsSource="{Binding ReadFunctions}"
+								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
+								  IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
+								  Width="275"/>				
+
+					</StackPanel>
+
+				</StackPanel>
+			
+				<!-- Для того, чтобы кнопка опроса полностью растянулась под периодом. -->
+				
+				<StackPanel Grid.Column="1" Orientation="Vertical" Spacing="10">
+
+					<StackPanel Grid.Row="0" 
+								Orientation="Horizontal" Spacing="10"
+								VerticalAlignment="Top">
+
+						<TextBlock Text="Период"
+							       Margin="0,8,0,0"/>
+
+						<TextBox Classes="InputField"
+								 Width="70"
+								 Text="{Binding Period_ms, Mode=TwoWay}"
+								 IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
+								 Margin="0,1,0,0"/>
+
+						<TextBlock Text="мс."
+				                   Margin="0,8,0,0"/>
+
+					</StackPanel>
+					
+					<Button Grid.Row="1"
+							Content="{Binding Button_Content, Mode=OneWay}"
+							IsEnabled="{Binding UI_IsEnable}"
+							Command="{Binding Command_Start_Stop_Polling}"
+							HorizontalAlignment="Stretch"/>
+					
+				</StackPanel>
+
+			</Grid>
+
+		</Border>
+
+		<!-- Логирование -->
+		
+		<Border Grid.Column="2"
+				BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			    BorderThickness="2"
+			    CornerRadius="4"
+			    Margin="5,10,10,10"
+				Padding="10,10,0,10">
+
+			<StackPanel Orientation="Vertical" Spacing="18"
+			            Width="260"
+			            HorizontalAlignment="Center">
+
+				<StackPanel Orientation="Horizontal" Spacing="15">
+
+					<TextBlock Text="Логирование"
+							   FontSize="14"
+							   VerticalAlignment="Center"/>
+
+					<Button Classes="Logging_Start"
+			                IsVisible="{Binding !LogWillStart, Mode=OneWay}"
+							ToolTip.Tip="Запуск"
+							Command="{Binding Command_StartLogging}">
+
+						<Icons:MaterialIcon Kind="PlayArrow"/>
+
+					</Button>
+
+
+					<Button Classes="Logging_Stop"
+			                IsVisible="{Binding LogWillStart, Mode=OneWay}"
+							ToolTip.Tip="Остановка"
+							Command="{Binding Command_StopLogging}">
+
+						<Icons:MaterialIcon Kind="Stop"/>
+
+					</Button>
+
+					<Button Classes="Logging_OpenFolder"
+							ToolTip.Tip="Открыть папку с логами"
+							Command="{Binding Command_OpenLogFolder}">
+
+						<Icons:MaterialIcon Kind="FolderCheck"/>
+
+					</Button>
+
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" Spacing="5"
+				            IsVisible="{Binding StartLogDateIsVisible, Mode=OneWay}">
+
+					<TextBlock Text="Начало записи:"
+							   FontSize="14"/>
+
+					<TextBlock Text="{Binding StartLogDate, Mode=OneWay}"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"
+							   FontSize="14"/>
+
+				</StackPanel>
+
+				<TextBlock Text="Запись начнется с запуском опроса"
+						   FontSize="14"
+						   IsVisible="{Binding WaitStartLogMessageIsVisible, Mode=OneWay}"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+			</StackPanel>
+
+		</Border>
+
+	</Grid>	
+
+</UserControl>

@@ -1,9 +1,12 @@
-﻿using ReactiveUI;
+using Core.Models.Settings.FileTypes;
+using ReactiveUI;
 using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
 
 namespace ViewModels.Settings.Tabs;
+
+public record TimestampFormatItem(TimestampFormat Value, string Display);
 
 public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 {
@@ -31,6 +34,23 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
         }
     }
 
+    public IEnumerable<TimestampFormatItem> TimestampFormats =>
+        [
+            new TimestampFormatItem(TimestampFormat.None, "Нет"),
+            new TimestampFormatItem(TimestampFormat.Time, "Только время"),
+            new TimestampFormatItem(TimestampFormat.DateTime, "Дата и время"),
+            new TimestampFormatItem(TimestampFormat.ISO8601, "ISO 8601")
+        ];
+
+
+    private TimestampFormatItem? _selectedTimestampFormat;
+
+    public TimestampFormatItem? SelectedTimestampFormat
+    {
+        get => _selectedTimestampFormat;
+        set => this.RaiseAndSetIfChanged(ref _selectedTimestampFormat, value);
+    }
+
     private FloatNumberFormat _floatFormat;
 
     public FloatNumberFormat FloatFormat
@@ -43,6 +63,18 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
     {
 
     }
+
+    public void PresetLogTimestampFormat(TimestampFormat format)
+    {
+        SelectedTimestampFormat = TimestampFormats.First(e => e.Value == format);
+    }
+
+    public TimestampFormat GetLogTimestampFormat()
+    {
+        return SelectedTimestampFormat?.Value ?? DeviceData.LogTimestampFormat_Default;
+    }
+
+    #region Валидация
 
     public string GetFieldViewName(string fieldName)
     {
@@ -73,4 +105,6 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 
         return null;
     }
+
+    #endregion Валидация
 }

@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+			 xmlns:DataTypes="clr-namespace:ViewModels.ModbusClient.Manual.DataTypes;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="200"
+             x:Class="CoreBus.Base.Views.ModbusClient.Manual.Representations.Binary"
+			 x:DataType="ViewModels:ModbusManualMode_VM">
+
+	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			BorderThickness="1"
+			CornerRadius="10"
+			HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Auto"
+					  Margin="3">
+
+			<ItemsControl Margin="0,0,0,5" ItemsSource="{Binding BinaryRepresentationItems, Mode=OneWay}">
+
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Vertical" Spacing="4"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.ItemTemplate>
+
+					<DataTemplate x:DataType="DataTypes:BinaryRepresentation_ItemData">
+
+						<Grid RowDefinitions="34,34"
+			                  ColumnDefinitions="90,580,50">
+
+							<TextBlock Grid.Row="0" Grid.Column="0"
+									   Text="Адрес"
+									   FontSize="16"
+									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+							<TextBlock Grid.Row="0" Grid.Column="1"
+									   Text="{Binding Address, Mode=OneWay}"
+									   FontSize="16"
+									   Margin="10,0,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<TextBlock Grid.Row="1" Grid.Column="0"
+									   Text="Значение"
+									   FontSize="16"
+									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+							<ItemsControl Grid.Row="1" Grid.Column="1"
+										  Margin="10,0,0,0"
+										  ItemsSource="{Binding BinaryData, Mode=OneWay}">
+
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+
+								<ItemsControl.ItemTemplate>
+									
+									<DataTemplate x:DataType="DataTypes:BinaryDataItemGroup">
+										
+										<ItemsControl ItemsSource="{Binding GroupData, Mode=OneWay}"
+													  Margin="0,0,10,0">
+
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Horizontal"/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+
+											<ItemsControl.ItemTemplate>
+												
+												<DataTemplate x:DataType="DataTypes:BinaryDataItem">
+													
+													<Grid>
+														
+														<Border Background="{DynamicResource BinaryRepresentationd_Color_BitBackground_Zero}"
+																IsVisible="{Binding IsZeroBit, Mode=OneWay}"
+																BorderBrush="Black"
+																BorderThickness="1"
+																CornerRadius="4"
+																Width="32"/>
+
+														<Border Background="{DynamicResource BinaryRepresentationd_Color_BitBackground_One}"
+																IsVisible="{Binding !IsZeroBit, Mode=OneWay}"
+																BorderBrush="Black"
+																BorderThickness="1"
+																CornerRadius="4"
+																Width="32"/>
+
+														<TextBlock Text="{Binding Bit, Mode=OneWay}"
+																   Foreground="Black"
+																   FontSize="16"
+																   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+													</Grid>
+
+												</DataTemplate>
+												
+											</ItemsControl.ItemTemplate>
+											
+										</ItemsControl>
+										
+									</DataTemplate>
+
+								</ItemsControl.ItemTemplate>
+								
+							</ItemsControl>
+
+							<Button Grid.Row="2" Grid.Column="2"
+									ToolTip.Tip="Копировать слово в буфер обмена"
+									CornerRadius="5"
+									Width="32" Height="32"
+									HorizontalAlignment="Left" VerticalAlignment="Center"
+									Command="{Binding Command_Copy_BinaryWord}">
+
+								<Icons:MaterialIcon Kind="ContentCopy"
+													Height="22" Width="22">
+
+									<Icons:MaterialIcon.RenderTransform>
+										<TransformGroup>
+											<ScaleTransform ScaleX="-1" />
+										</TransformGroup>
+									</Icons:MaterialIcon.RenderTransform>
+
+								</Icons:MaterialIcon>
+
+							</Button>
+							
+						</Grid>
+
+					</DataTemplate>
+
+				</ItemsControl.ItemTemplate>
+
+			</ItemsControl>
+
+		</ScrollViewer>
+		
+	</Border>
+	
+</UserControl>

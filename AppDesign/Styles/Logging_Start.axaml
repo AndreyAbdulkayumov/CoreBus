@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+  
+    <Style Selector="Button.Logging_Start">
+
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Padding" Value="1"/>
+
+        <Setter Property="Background" Value="{DynamicResource Logging_Color_Start_Background}"/>		
+				
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource Logging_Color_Start_PointerOver_Background}"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource Logging_Color_Start_Pressed_Background}"/>
+		</Style>
+  
+		<Style Selector="^ Icons|MaterialIcon">
+			<Setter Property="Foreground" Value="{DynamicResource Logging_Color_Foreground}"/>
+			<Setter Property="Height" Value="22"/>
+			<Setter Property="Width" Value="30"/>
+		</Style>
+
+    </Style>
+
+</Styles>

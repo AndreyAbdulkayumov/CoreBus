@@ -17,6 +17,7 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 		
@@ -51,7 +52,16 @@
 			<Setter Property="HorizontalAlignment" Value="Center"/>
 			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
-				
+		
+		<Style Selector="ComboBox">
+			<Setter Property="Width" Value="140"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
 	</UserControl.Styles>
 	
 	
@@ -84,42 +94,65 @@
 
 		</Grid>
 
+		<Grid>
+
+			<TextBlock Text="Метка времени в логах" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding TimestampFormats}"
+					  SelectedItem="{Binding SelectedTimestampFormat, Mode=TwoWay}"
+					  DisplayMemberBinding="{Binding Display}"
+					  SelectedValueBinding="{Binding Value}"/>
+
+		</Grid>
+
 		<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 				BorderThickness="1"
-				Width="260"
+				Width="400"
 				CornerRadius="10">
 
-			<StackPanel Orientation="Vertical" Spacing="10"
+			<StackPanel Orientation="Vertical" Spacing="20"
 						Margin="20">
 
 				<TextBlock Text="Формат записи числа типа float"
-						   Margin="0,0,0,10"
 						   HorizontalAlignment="Center"/>
 
-				<RadioButton Content="AB CD (12 34 56 78)" Classes="RadioButton NumberFormat"
-							 IsChecked="{Binding FloatFormat, 
-							 Converter={StaticResource FloatFormatConverter}, 
-							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.AB_CD}}"/>
+				<Grid ColumnDefinitions="Auto,Auto" 
+		              RowDefinitions="Auto,Auto"
+		              HorizontalAlignment="Center">
+					
+					<RadioButton Grid.Row="0" Grid.Column="0" 
+								 Content="AB CD (12 34 56 78)" Classes="RadioButton NumberFormat"
+								 IsChecked="{Binding FloatFormat, 
+								 Converter={StaticResource FloatFormatConverter}, 
+								 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.AB_CD}}"
+								 Margin="8"/>
 				
-				<RadioButton Content="BA DC (34 12 78 56)" Classes="RadioButton NumberFormat"
-							 IsChecked="{Binding FloatFormat, 
-							 Converter={StaticResource FloatFormatConverter}, 
-							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.BA_DC}}"/>
+					<RadioButton Grid.Row="0" Grid.Column="1"  
+				                 Content="BA DC (34 12 78 56)" Classes="RadioButton NumberFormat"
+								 IsChecked="{Binding FloatFormat, 
+								 Converter={StaticResource FloatFormatConverter}, 
+								 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.BA_DC}}"
+								 Margin="8"/>
 				
-				<RadioButton Content="CD AB (56 78 12 34)" Classes="RadioButton NumberFormat"
-							 IsChecked="{Binding FloatFormat, 
-							 Converter={StaticResource FloatFormatConverter}, 
-							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.CD_AB}}"/>
+					<RadioButton Grid.Row="1" Grid.Column="0" 
+								 Content="CD AB (56 78 12 34)" Classes="RadioButton NumberFormat"
+								 IsChecked="{Binding FloatFormat, 
+								 Converter={StaticResource FloatFormatConverter}, 
+								 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.CD_AB}}"
+								 Margin="8"/>
 				
-				<RadioButton Content="DC BA (78 56 34 12)" Classes="RadioButton NumberFormat"
-							 IsChecked="{Binding FloatFormat, 
-							 Converter={StaticResource FloatFormatConverter}, 
-							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.DC_BA}}"/>
+					<RadioButton Grid.Row="1" Grid.Column="1" 
+								 Content="DC BA (78 56 34 12)" Classes="RadioButton NumberFormat"
+								 IsChecked="{Binding FloatFormat, 
+								 Converter={StaticResource FloatFormatConverter}, 
+								 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.DC_BA}}"
+								 Margin="8"/>
+
+				</Grid>
 
 			</StackPanel>
 			
 		</Border>
-		
 		
 	</StackPanel>
 	

@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="300" d:DesignHeight="150"
+             x:Class="CoreBus.Base.Views.ModbusClient.Manual.WriteFields.MultipleCoils"
+			 x:DataType="ViewModels:MultipleCoils_VM">
+
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				HorizontalAlignment="Center" VerticalAlignment="Stretch">
+
+		<ItemsControl ItemsSource="{Binding Items, Mode=OneWay}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" Spacing="5"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.ItemTemplate>
+
+				<DataTemplate>
+
+					<Grid Width="415">
+
+						<Border Width="60" Height="32"
+								CornerRadius="4"
+								Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+								BorderThickness="0"
+								HorizontalAlignment="Left" VerticalAlignment="Center">
+
+							<TextBlock Text="{Binding StartAddressAddition, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="Black"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+						</Border>
+
+						<RadioButton Content="&quot;0&quot;"
+									 IsChecked="{Binding Logic_Zero, Mode=TwoWay}"
+									 FontSize="16"
+									 Foreground="{DynamicResource App_Color_Text}"
+									 Margin="0,0,125,0"
+									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						
+						<RadioButton Content="&quot;1&quot;"
+									 IsChecked="{Binding Logic_One, Mode=TwoWay}"
+								     FontSize="16"
+									 Foreground="{DynamicResource App_Color_Text}"
+									 Margin="125,0,0,0"
+									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+						<Button Content="X"
+								ToolTip.Tip="Удалить элемент"
+								FontSize="14"
+								Command="{Binding Command_RemoveItem}"
+								HorizontalAlignment="Right" VerticalAlignment="Center">
+
+						</Button>
+
+					</Grid>
+
+				</DataTemplate>
+
+			</ItemsControl.ItemTemplate>
+
+		</ItemsControl>
+
+		<Button Content="Добавить регистр"
+				FontSize="14"
+				HorizontalAlignment="Center" VerticalAlignment="Center"
+				Command="{Binding Command_AddRegister}"/>
+
+	</StackPanel>
+	
+</UserControl>

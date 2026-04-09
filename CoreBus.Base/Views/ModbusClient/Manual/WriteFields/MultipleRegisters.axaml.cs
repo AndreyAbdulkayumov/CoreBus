@@ -1,0 +1,21 @@
+using Avalonia.Controls;
+
+namespace CoreBus.Base.Views.ModbusClient.Manual.WriteFields;
+
+public partial class MultipleRegisters : UserControl
+{
+    public MultipleRegisters()
+    {
+        InitializeComponent();
+    }
+
+    private void UppercaseTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        TextBox? textBox = sender as TextBox;
+
+        if (textBox != null)
+        {
+            textBox.Text = textBox.Text?.ToUpper();
+        }
+    }
+}

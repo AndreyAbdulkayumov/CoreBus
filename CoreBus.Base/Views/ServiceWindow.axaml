@@ -15,11 +15,11 @@
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None">
 
-	<Window.Styles>
-
-		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+	 <Window.Styles>
+				
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 
 	</Window.Styles>
@@ -62,7 +62,6 @@
 					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
 							   Margin="0,25,0,0"
 							   FontSize="14"
-		   					   Foreground="{DynamicResource App_Color_Text}"
 							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
 					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"

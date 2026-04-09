@@ -1,4 +1,4 @@
-﻿using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Models.Settings.FileTypes;
 using System.Text.Json.Serialization;
 
@@ -9,6 +9,7 @@ namespace Core.Models.Settings;
 [JsonSerializable(typeof(DeviceData))]
 [JsonSerializable(typeof(MacrosModbus))]
 [JsonSerializable(typeof(MacrosNoProtocol))]
+[JsonSerializable(typeof(ModbusMonitoringParameters))]
 [JsonSerializable(typeof(LastestVersionInfo))]
 internal partial class SerializerContext : JsonSerializerContext
 {

@@ -1,0 +1,192 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringItem"
+             x:DataType="ViewModels:MonitoringItem_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+
+	</UserControl.Styles>
+
+
+	<!-- У всех элементов строки должна быть высота 22 (можно установить через минимальную) -->
+	<Grid RowDefinitions="1*,1">
+		
+
+		<!-- Подсветка строки -->
+
+		<Border Grid.Row="0" Grid.RowSpan="2"
+		        Background="{DynamicResource Modbus_Monitoring_Row_Selected}"
+				IsVisible="{Binding IsSelected, Mode=OneWay}"/>
+
+
+		<Grid Grid.Row="0"
+		      ColumnDefinitions="25,2*,4*,2*,4*,4*,2*"
+			  Margin="10,5,10,5">
+
+
+			<!-- Галочка выделения строки -->
+
+			<CheckBox Grid.Column="0"
+					  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+					  HorizontalAlignment="Center"/>
+
+
+			<!-- Адрес -->
+
+			<TextBox Grid.Column="1"
+					 Classes="InputField"
+				     Text="{Binding Address, Mode=TwoWay}"
+					 IsReadOnly="{Binding !UI_IsEnable}"
+					 Width="80"
+					 MinHeight="22"
+					 FontSize="14"
+					 HorizontalAlignment="Center" 
+					 VerticalAlignment="Center"
+					 TextChanged="UppercaseTextBox_TextChanged"/>	
+
+
+			<!-- Псевдоним -->
+
+			<TextBox Grid.Column="2"
+			         Classes="InputField"
+					 Text="{Binding Alias, Mode=TwoWay}"
+					 IsReadOnly="{Binding !UI_IsEnable}"
+					 Opacity="{Binding AliasOpacity, Mode=OneWay}"
+					 MinHeight="22"
+					 Height="22"
+					 FontSize="14"
+					 Margin="10,0,10,0"
+					 HorizontalAlignment="Stretch"
+					 VerticalAlignment="Stretch"/>
+
+
+			<!-- Сырое значение -->
+
+			<Grid Grid.Column="3"
+		          Height="22"
+		          Margin="15,0,15,0">
+
+				<Border Background="{DynamicResource Modbus_Monitoring_Item_Updated}"
+			            CornerRadius="4"
+						IsVisible="{Binding IsNewValue, Mode=OneWay}"/>
+
+				<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+			            CornerRadius="4"
+						IsVisible="{Binding !IsNewValue, Mode=OneWay}"/>
+
+				<SelectableTextBlock Text="{Binding Value, Mode=TwoWay}"
+						             FontSize="14"
+									 Foreground="Black"
+						             HorizontalAlignment="Center"
+									 VerticalAlignment="Center"/>
+
+			</Grid>
+			
+
+			<!-- Тип -->
+
+			<Grid Grid.Column="4"
+		          Height="22"
+		          ColumnDefinitions="3*,2*"
+				  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}">
+
+				<Grid Grid.Column="0"
+		              Margin="15,0,15,0">
+
+					<Border Background="{DynamicResource Modbus_Monitoring_Item_Updated}"
+							CornerRadius="4"
+							IsVisible="{Binding IsNewTypedValue, Mode=OneWay}"/>
+
+					<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+							CornerRadius="4"
+							IsVisible="{Binding !IsNewTypedValue, Mode=OneWay}"/>
+
+					<SelectableTextBlock Text="{Binding TypedValue, Mode=TwoWay}"
+										 FontSize="14"
+										 Foreground="Black"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"/>
+
+				</Grid>
+
+				<ComboBox Grid.Column="1"
+			              FontSize="14"
+						  MinHeight="5"
+			              ItemsSource="{Binding AllValueTypes}"
+						  SelectedItem="{Binding SelectedValueType, Mode=TwoWay}"
+						  DisplayMemberBinding="{Binding Display}"
+						  SelectedValueBinding="{Binding Value}"
+						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch"/>
+
+			</Grid>
+			
+
+			<!-- Преобразованное значение + кнопка формулы -->
+
+			<Grid Grid.Column="5" 
+		          Height="22"
+		          ColumnDefinitions="3*,1*"
+				  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}">
+
+				<Grid Grid.Column="0"
+					  Margin="15,0,15,0">
+
+					<Border Background="{DynamicResource Modbus_Monitoring_Item_Updated}"
+							CornerRadius="4"
+							IsVisible="{Binding IsNewConvertedValue, Mode=OneWay}"/>
+
+					<Border Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+							CornerRadius="4"
+							IsVisible="{Binding !IsNewConvertedValue, Mode=OneWay}"/>
+
+					<SelectableTextBlock Text="{Binding ConvertedValue, Mode=TwoWay}"
+										 FontSize="14"
+										 Foreground="Black"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"/>
+
+				</Grid>
+
+				<Button Grid.Column="1"
+						Content="f(x)"
+						MinHeight="5"
+						Height="22"
+						Padding="8,0,8,0"
+						Command="{Binding Command_FormulaChange}"
+						ToolTip.Tip="{Binding Formula, Mode=OneWay}"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Stretch"/>
+
+			</Grid>
+
+
+			<!-- Отображение на графике и запись в лог -->
+
+			<CheckBox Grid.Column="6"
+					  IsChecked="{Binding ShowOnChartAndLog, Mode=TwoWay}"
+					  IsVisible="{Binding !VisibleOnlyRawValue, Mode=OneWay}"
+					  IsEnabled="{Binding UI_IsEnable}"
+					  HorizontalAlignment="Center"
+					  VerticalAlignment="Center"/>
+
+		</Grid>
+
+
+		<!-- Разделитель строк -->
+
+		<Rectangle Grid.Row="1"
+			       Fill="{DynamicResource Group_Color_BorderBrush}"/>
+
+	</Grid>	
+
+</UserControl>

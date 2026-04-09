@@ -42,6 +42,9 @@
 	<SolidColorBrush x:Key="ToolBar_Icon_Settings" Color="#949494"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_About" Color="#4372A8"/>
 	<SolidColorBrush x:Key="ToolBar_Icon_UserManual" Color="#4090C4"/>
+	<SolidColorBrush x:Key="ToolBar_Icon_Video" Color="#BB7E8C"/>
+
+	<SolidColorBrush x:Key="ToolBar_Icon_PointerOver_Foreground" Color="WhiteSmoke"/>
 	
 	<!-- Connection String -->
 
@@ -136,4 +139,26 @@
 
 	<SolidColorBrush x:Key="Macros_Edit_CommandItem_Selected" Color="#9DB0D9"/>
 	
+	<!-- Modbus Monitoring -->
+
+	<SolidColorBrush x:Key="Modbus_Monitoring_Row_Selected" Color="#ACCBDD"/>
+
+	<SolidColorBrush x:Key="Modbus_Monitoring_Item_Updated" Color="#F7EEAA"/>
+
+	<!-- Logging -->
+
+	<SolidColorBrush x:Key="Logging_Color_Foreground" Color="#525252"/>
+
+	<SolidColorBrush x:Key="Logging_Color_Start_Background" Color="#7EB78D"/>
+	<SolidColorBrush x:Key="Logging_Color_Start_PointerOver_Background" Color="#7CC48F"/>
+	<SolidColorBrush x:Key="Logging_Color_Start_Pressed_Background" Color="#56B86F"/>
+
+	<SolidColorBrush x:Key="Logging_Color_Stop_Background" Color="#BB7E8C"/>
+	<SolidColorBrush x:Key="Logging_Color_Stop_PointerOver_Background" Color="#EB90A3"/>
+	<SolidColorBrush x:Key="Logging_Color_Stop_Pressed_Background" Color="#F27D93"/>
+
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Background" Color="#E6BE72"/>
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_PointerOver_Background" Color="#F4C368"/>
+	<SolidColorBrush x:Key="Logging_Color_OpenFolder_Pressed_Background" Color="#FDBD48"/>
+
 </ResourceDictionary>

@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
+             xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             mc:Ignorable="d" 
+             d:DesignWidth="1100" d:DesignHeight="550"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.ModbusMonitoring_View"
+             x:DataType="ViewModels:ModbusMonitoring_VM">
+
+    <UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+        <StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+
+	</UserControl.Styles>
+
+
+    <Grid RowDefinitions="120,3,1*">
+
+		<ScrollViewer Grid.Row="0"
+					  HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Auto">
+
+			<local:MonitoringSettings/>
+
+		</ScrollViewer>
+
+        <GridSplitter Grid.Row="1"
+                      ResizeDirection="Rows"/>
+
+        <local:MonitoringDataGrid Grid.Row="2"
+                                  DataContext="{Binding DataGrid_VM}"/>
+
+    </Grid>	
+
+</UserControl>

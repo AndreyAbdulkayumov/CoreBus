@@ -1,37 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
-    One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-	<AssemblyName>CoreBus</AssemblyName>
-	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
-    <Company>Абдулкаюмов Андрей</Company>
-	<Authors>Abdulkayumov Andrey</Authors>
-	<!-- NativeAOT properties -->
-	<!-- Проект не публикуется как Native AOT. Раскомментировать, когда всё будет хорошо. -->
-	<!--<PublishAot>true</PublishAot>	
-	<TrimMode>partial</TrimMode>-->
-	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
+        One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AssemblyName>CoreBus</AssemblyName>
+		<ApplicationIcon>MainLogo.ico</ApplicationIcon>
+		<Company>Абдулкаюмов Андрей</Company>
+		<Authors>Abdulkayumov Andrey</Authors>
+		<!-- NativeAOT properties -->
+		<!-- Проект не публикуется как Native AOT. Раскомментировать, когда всё будет хорошо. -->
+		<!--<PublishAot>true</PublishAot>
+		<TrimMode>partial</TrimMode>-->
+		<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+		<!-- Для публикации используем уже определенную версию SkiaSharp, чтобы исключить случайное подтягивание встроенной версии библиотеки на Linux -->
+		<SkiaSharpNativeAssets>UseBundled|NoDependencies</SkiaSharpNativeAssets>
+	</PropertyGroup>
 
-  <ItemGroup>
-	<!-- Preserve Avalonia types for reflection -->
-	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <Content Include="MainLogo.ico" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Preserve Avalonia types for reflection -->
+		<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CoreBus.Base\CoreBus.Base.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="MainLogo.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.2" ExcludeAssets="all" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CoreBus.Base\CoreBus.Base.csproj" />
+	</ItemGroup>
 </Project>

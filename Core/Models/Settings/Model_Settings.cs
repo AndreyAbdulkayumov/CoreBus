@@ -1,4 +1,4 @@
-﻿using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 
 namespace Core.Models.Settings;
@@ -8,6 +8,8 @@ public class Model_Settings
     public DeviceData? Settings { get; private set; }
 
     public AppInfo AppData { get; private set; }
+
+    public ModbusMonitoringParameters ModbusMonitoringItems { get; private set; }
 
     /// <summary>
     /// Путь к папке с файлами настроек
@@ -27,9 +29,13 @@ public class Model_Settings
         get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_Modbus + FileExtension);
     }
 
+    public string LogFolderPath => DirectoryManager.LogFiles_Directory;
+
     private const string FileName_DefaultPreset = "Unknown";
 
     private const string FileName_AppData = "AppData";
+
+    private const string FileName_ModbusMonitoringItems = "ModbusMonitoringItems";
 
     private const string FileName_Macros_NoProtocol = "Macros_NoProtocol";
     private const string FileName_Macros_Modbus = "Macros_Modbus";
@@ -41,6 +47,8 @@ public class Model_Settings
     public Model_Settings()
     {
         AppData = ReadAppInfo();
+
+        ModbusMonitoringItems = ReadModbusMonitoringItems();
     }
 
     /// <summary>
@@ -209,6 +217,44 @@ public class Model_Settings
             );
 
         return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
+    }
+
+    /// <summary>
+    /// Сохранение Modbus регистров мониторинга
+    /// </summary>
+    /// <param name="data"></param>
+    /// <exception cref="Exception"></exception>
+    public void SaveModbusMonitoringItems(ModbusMonitoringParameters data)
+    {
+        try
+        {
+            string filePath = Path.Combine(DirectoryManager.CommonFiles_Directory, FileName_ModbusMonitoringItems + FileExtension);
+
+            FileIO.Save(filePath, data);
+
+            ModbusMonitoringItems = data;
+        }
+
+        catch (Exception error)
+        {
+            throw new Exception("Ошибка сохранения Modbus регистров мониторинга.\n\n" + error.Message);
+        }
+    }
+
+    /// <summary>
+    /// Чтение сохраненых Modbus регистров мониторинга
+    /// </summary>
+    /// <returns></returns>
+    private ModbusMonitoringParameters ReadModbusMonitoringItems()
+    {
+        string filePath = DirectoryManager.FindOrCreateFile(
+            DirectoryManager.CommonFiles_Directory,
+            FileName_ModbusMonitoringItems,
+            FileExtension,
+            ModbusMonitoringParameters.GetDefault()
+            );
+
+        return FileIO.ReadOrCreateDefault(filePath, ModbusMonitoringParameters.GetDefault());
     }
 
     /// <summary>

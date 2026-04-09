@@ -1,4 +1,4 @@
-﻿using Core.Models.Settings.FileTypes;
+using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using ReactiveUI;
 using System.Globalization;
@@ -172,6 +172,20 @@ namespace ViewModels.Macros.MacrosEdit
             ChangeNumberStyleInErrors(nameof(CommonSlaveId), NumberStyles.Number);
         }
 
+        # region Валидация
+
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(CommonSlaveId):
+                    return "Slave ID";
+
+                default:
+                    return fieldName;
+            }
+        }
+
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
             if (string.IsNullOrEmpty(value))
@@ -205,16 +219,6 @@ namespace ViewModels.Macros.MacrosEdit
             return null;
         }
 
-        public string GetFieldViewName(string fieldName)
-        {
-            switch (fieldName)
-            {
-                case nameof(CommonSlaveId):
-                    return "Slave ID";
-
-                default:
-                    return fieldName;
-            }
-        }
+        #endregion Валидация
     }
 }

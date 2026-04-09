@@ -15,14 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.9" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.9" />
+    <PackageReference Include="Avalonia" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.13" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.9" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.13" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.1.58" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,23 +61,29 @@
     <Compile Update="Views\Macros\EditMacros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\Representations\LastRequest.axaml.cs">
       <DependentUpon>LastRequest.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\Manual\ResponseDataGrid.axaml.cs">
+      <DependentUpon>ResponseDataGrid.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ModbusClient\ModbusClient_View.axaml.cs">
       <DependentUpon>ModbusClient_View.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\TransmitMode\Normal.axaml.cs">
-      <DependentUpon>Normal.axaml</DependentUpon>
+    <Compile Update="Views\ModbusClient\Manual\RequestBuilder.axaml.cs">
+      <DependentUpon>RequestBuilder.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\TransmitMode\Cycle.axaml.cs">
-      <DependentUpon>Cycle.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\ModbusClient\WriteFields\MultipleRegisters.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\WriteFields\MultipleRegisters.axaml.cs">
       <DependentUpon>MultipleRegisters.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ModbusClient\WriteFields\SingleRegister.axaml.cs">
+    <Compile Update="Views\ModbusClient\Manual\WriteFields\SingleRegister.axaml.cs">
       <DependentUpon>SingleRegister.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\Monitoring\EditFormulaWindow.axaml.cs">
+      <DependentUpon>EditFormulaWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\Monitoring\ModbusMonitoring_View.axaml.cs">
+      <DependentUpon>ModbusMonitoring_View.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\NoProtocol\TransmitMode\Cycle.axaml.cs">
       <DependentUpon>Cycle.axaml</DependentUpon>

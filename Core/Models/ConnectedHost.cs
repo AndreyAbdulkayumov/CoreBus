@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+using Core.Clients;
 using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
@@ -13,6 +13,8 @@ public class ConnectedHost
     {
         get => Client == null ? false : Client.IsConnected;
     }
+
+    public bool DisconnectedByClient { get; private set; }
 
     public int Host_ReadTimeout
     {
@@ -90,6 +92,8 @@ public class ConnectedHost
 
         Client.Connect(information);
 
+        DisconnectedByClient = false;
+
         SetGlobalEncoding(GlobalEncoding);
 
         var modbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
@@ -108,7 +112,17 @@ public class ConnectedHost
             return;
         }
 
-        await Client.Disconnect();
+        try
+        {
+            DisconnectedByClient = true;
+            await Client.Disconnect();
+        }
+        
+        catch (Exception)
+        {
+            DisconnectedByClient = false;
+            throw;
+        }        
 
         DeviceIsDisconnected?.Invoke(this, Client);
     }

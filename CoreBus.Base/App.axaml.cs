@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -21,6 +21,10 @@ using Core.Models.NoProtocol;
 using Core.Models.Modbus;
 using Core.Models.AppUpdateSystem;
 using ViewModels.ModbusScanner;
+using ViewModels.ModbusClient.Manual;
+using ViewModels.ModbusClient.Monitoring;
+using ViewModels.Chart;
+using Core.Models.Logging;
 
 namespace CoreBus.Base;
 
@@ -33,16 +37,28 @@ public partial class App : Application
     /// Правила создания сервисов
     /// 
     /// 1. Все модели создаются как Singleton.
+    /// 
     /// 2. Главное окно и все его ViewModel создаются как Singleton.
+    /// 
     /// 3. Дочерние окна и все их элементы создаются как Transient. 
+    /// 
     /// 4. Дочерние окна, которые используют MessageBus, должны создаваться как Scoped и реализовывать интерфейс IDisposable.
-    /// Это нужно для корректной отписки от события и вызова метода Dispose. В Transient метод Dispose не вызывается.
+    ///    Это нужно для корректной отписки от события и вызова метода Dispose. В Transient метод Dispose не вызывается.
+    ///    
+    ///    Также рекомендуется создавать Scope и экземпляр ViewModel получать из него.
+    ///    
+    ///         await using var scope = _serviceProvider.CreateAsyncScope();
+    ///         _viewModel = scope.ServiceProvider.GetService<ViewModel>();
+    ///         
     /// 5. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService через _serviceProvider.GetService<T>().
     /// 
     /// 3, 4, 5 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
     /// При каждом открытии нового окна создаются новые экземпляры ViewModel.
     /// 
     /// 6. Вспомогательные сервисы и сервисы MessageBox создаются как Singleton, чтобы не создавалось куча ненужных экземпляров.
+    /// 
+    /// Правила 3, 4 и 5 не работают для окна графика. ViewModel окна графика по сути используется как ретранслятор, пересылая сообщения в behind code.
+    /// Поэтому она должна создаваться как Singleton после запуска.
     /// 
     /// </summary>
     public App()
@@ -54,6 +70,8 @@ public partial class App : Application
             .AddSingleton<Model_Modbus>()
             .AddSingleton<Model_Settings>()
             .AddSingleton<Model_AppUpdateSystem>()
+            // Логгер
+            .AddSingleton<FileLogger>()
             // Главное окно
             .AddSingleton<MainWindow_VM>()
             // Компоненты главного окна
@@ -62,8 +80,10 @@ public partial class App : Application
             .AddSingleton<NoProtocol_Mode_Cycle_VM>()
             .AddSingleton<NoProtocol_Mode_Files_VM>()
             .AddSingleton<ModbusClient_VM>()
-            .AddSingleton<ModbusClient_Mode_Normal_VM>()
-            .AddSingleton<ModbusClient_Mode_Cycle_VM>()
+            .AddSingleton<ModbusManualMode_VM>()
+            .AddSingleton<RequestBuilder_VM>()
+            .AddSingleton<ModbusMonitoring_VM>()
+            .AddSingleton<MonitoringDataGrid_VM>()
             // Окно настроек
             .AddTransient<Settings_VM>()
             // Компоненты окна настроек
@@ -81,6 +101,10 @@ public partial class App : Application
             .AddScoped<Macros_VM>()
             // Окно редактирования макроса
             .AddScoped<EditMacros_VM>()
+            // Окно редактирования формулы (режим мониторинга Modbus)
+            .AddScoped<EditFormula_VM>()
+            // Окно графика
+            .AddSingleton<Chart_VM>()
             // MessageBox с разными владельцами
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()
@@ -88,6 +112,7 @@ public partial class App : Application
             .AddSingleton<IMessageBoxEditMacros, MessageBoxEditMacros>()
             .AddSingleton<IMessageBoxModbusScanner, MessageBoxModbusScanner>()
             .AddSingleton<IMessageBoxAboutApp, MessageBoxAboutApp>()
+            .AddSingleton<IMessageBoxChart, MessageBoxChart>()
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()
@@ -115,12 +140,19 @@ public partial class App : Application
                 (desktop.MainWindow.DataContext as MainWindow_VM)?.MainWindowLoaded();
             };
 
-            desktop.MainWindow.Closing += (object? sender, WindowClosingEventArgs e) =>
-            {
-                (desktop.MainWindow.DataContext as MainWindow_VM)?.WindowClosing();
-            };
+            desktop.MainWindow.Closing += MainWindow_Closing;
+
+            _ = _serviceProvider.GetService<Chart_VM>();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private async void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        if (MainWindow.Instance?.DataContext is MainWindow_VM mainViewModel)
+        {
+            await mainViewModel.WindowClosing();
+        }
     }
 }

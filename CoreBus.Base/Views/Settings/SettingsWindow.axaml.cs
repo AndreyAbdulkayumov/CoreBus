@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using System;
 
 namespace CoreBus.Base.Views.Settings;
 
@@ -14,7 +15,7 @@ public partial class SettingsWindow : Window
         InitializeComponent();
 
         Instance = this;
-        Workspace = this.FindControl<Border>("Border_Workspace");
+        Workspace = this.FindControl<Border>("Border_Workspace") ?? throw new ArgumentNullException(nameof(Workspace));
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

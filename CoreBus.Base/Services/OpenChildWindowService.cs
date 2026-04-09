@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -11,26 +11,35 @@ using CoreBus.Base.Views;
 using CoreBus.Base.Views.Macros;
 using CoreBus.Base.Views.Macros.EditMacros;
 using CoreBus.Base.Views.Settings;
+using CoreBus.Base.Views.ModbusClient.Monitoring;
+using CoreBus.Base.Views.ModbusScanner;
+using CoreBus.Base.Views.Chart;
 using ViewModels;
 using ViewModels.Macros;
 using ViewModels.Macros.MacrosEdit;
 using ViewModels.ModbusScanner;
 using ViewModels.Settings;
+using ViewModels.ModbusClient.Monitoring;
+using ViewModels.Chart;
+using MessageBox.Core;
 
 namespace CoreBus.Base.Services;
 
 public class OpenChildWindowService : IOpenChildWindowService
 {
+    public bool ChartWindowIsOpen { get; private set; } = false;
+    public bool MacrosWindowIsOpen { get; private set; } = false;
+
     private Settings_VM? _settingsVM;
     private AboutApp_VM? _aboutAppVM;
     private Macros_VM? _macrosVM;
     private EditMacros_VM? _editMacrosVM;
     private ModbusScanner_VM? _modbusScannerVM;
+    private EditFormula_VM? _editFormulaVM;
+    private Chart_VM? _chartVM;
 
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
-
-    private static bool _macrosWindowIsOpen = false;
-
+    
     private readonly IServiceProvider _serviceProvider;
 
     public OpenChildWindowService(IServiceProvider serviceProvider)
@@ -138,7 +147,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         try
         {
-            if (_macrosWindowIsOpen)
+            if (MacrosWindowIsOpen)
             {
                 return;
             }
@@ -148,7 +157,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception("Не задан владелец окна.");
             }
 
-            _macrosWindowIsOpen = true;
+            MacrosWindowIsOpen = true;
 
             _macrosVM = _serviceProvider.GetService<Macros_VM>();
 
@@ -170,7 +179,7 @@ public class OpenChildWindowService : IOpenChildWindowService
             window.Closed += (object? sender, EventArgs e) =>
             {
                 MainWindow.Instance.Closed -= MainWindowClosedHandler;
-                _macrosWindowIsOpen = false;
+                MacrosWindowIsOpen = false;
             };
 
             MainWindow.Instance.Closed += MainWindowClosedHandler;
@@ -180,7 +189,7 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         catch (Exception error)
         {
-            _macrosWindowIsOpen = false;
+            MacrosWindowIsOpen = false;
 
             throw new Exception(error.Message);
         }
@@ -232,6 +241,140 @@ public class OpenChildWindowService : IOpenChildWindowService
         });
         
         return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
+    }
+
+    public async Task<string?> EditFormula(string description, string? formula, bool isEnable)
+    {
+        if (MainWindow.Instance == null)
+        {
+            throw new Exception("Не задан владелец окна.");
+        }
+
+        await using var scope = _serviceProvider.CreateAsyncScope();
+
+        _editFormulaVM = scope.ServiceProvider.GetRequiredService<EditFormula_VM>();
+
+        if (_editFormulaVM == null)
+        {
+            return null;
+        }
+
+        _editFormulaVM.InitWindow(description, formula, isEnable);
+
+        var window = new EditFormulaWindow()
+        {
+            DataContext = _editFormulaVM
+        };
+
+        void MainWindowClosedHandler(object? sender, EventArgs e)
+        {
+            window?.Close();
+        }
+
+        window.Closed += (object? sender, EventArgs e) =>
+        {
+            MainWindow.Instance.Closed -= MainWindowClosedHandler;
+        };
+
+        MainWindow.Instance.Closed += MainWindowClosedHandler;
+
+        await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+
+        return _editFormulaVM.GetResult();
+    }
+
+    public void Chart()
+    {
+        try
+        {
+            if (ChartWindowIsOpen)
+            {
+                return;
+            }
+
+            if (MainWindow.Instance == null)
+            {
+                throw new Exception("Не задан владелец окна.");
+            }
+
+            ChartWindowIsOpen = true;
+
+            _chartVM = _serviceProvider.GetService<Chart_VM>();
+
+            if (_chartVM == null)
+            {
+                return;
+            }
+
+            var window = new ChartWindow()
+            {
+                DataContext = _chartVM
+            };
+
+            void MainWindowClosedHandler(object? sender, EventArgs e)
+            {
+                window?.Close();
+            }
+
+            window.Closing += async (object? sender, WindowClosingEventArgs e) =>
+            {
+                if (!ChartWindowIsOpen)
+                    return;
+
+                var monitoringVM = _serviceProvider.GetService<ModbusMonitoring_VM>();
+                var chartVM = _serviceProvider.GetService<Chart_VM>();
+                var chartMessageBox = _serviceProvider.GetService<IMessageBoxChart>();
+
+                if (monitoringVM == null || chartVM == null || chartMessageBox == null)
+                    return;
+
+                if (!monitoringVM.IsMonitoringRunning)
+                    return;
+
+                // Событие ожидает синхронного выполнения обработчика, а у нас есть асинхронная операция ниже.
+                // Отменять закрытие окна нужно, чтобы успеть показать MessageBox.
+                // Без этого окно просто закроется, и все что ниже будет проигнорировано.
+                e.Cancel = true;
+
+                if (monitoringVM.IsMonitoringRunning)
+                {
+                    var closeWindow = await chartMessageBox.ShowYesNoDialog(
+                        "Опрос Modbus регистров еще идет.\n\n" +
+                        "Вы действительно желайте закрыть окно графика и потерять все отображаемые данные?",
+                        MessageType.Warning);
+
+                    if (closeWindow != MessageBoxResult.No)
+                    {
+                        ChartWindowIsOpen = false;
+                        window.Close();
+                    }
+                }
+            };
+
+            window.Closed += (object? sender, EventArgs e) =>
+            {
+                MainWindow.Instance.Closed -= MainWindowClosedHandler;
+                ChartWindowIsOpen = false;
+
+                window.UnsubscribeFromEvents();
+            };
+
+            MainWindow.Instance.Closed += MainWindowClosedHandler;
+
+            window.Show();
+        }
+
+        catch (Exception error)
+        {
+            ChartWindowIsOpen = false;
+
+            throw new Exception(error.Message);
+        }
+    }
+
+    public void RaiseChartWindow()
+    {
+        ChartWindow.Instance?.Activate();
     }
 
     private Task WaitForCloseAsync(Window window)

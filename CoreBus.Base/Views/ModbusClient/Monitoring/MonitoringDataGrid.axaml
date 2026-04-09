@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="1100" d:DesignHeight="450"
+             x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringDataGrid"
+			 x:DataType="ViewModels:MonitoringDataGrid_VM">
+
+    <Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			BorderThickness="1"
+			Margin="10"
+			CornerRadius="6"
+			ClipToBounds="True">
+
+		<Grid RowDefinitions="35,1*">
+
+			<Border Grid.Row="0" 
+					Background="{DynamicResource DataGrid_Color_HeaderBackground}"
+					CornerRadius="4,4,0,0">
+
+				<Grid ColumnDefinitions="25,2*,4*,2*,4*,4*,2*"
+		              Margin="10,0,10,0">
+
+					<CheckBox Grid.Column="0"
+					          IsChecked="{Binding AllRowSelected, Mode=TwoWay}"
+							  IsVisible="{Binding !!Items.Count}"
+					          HorizontalAlignment="Center"
+							  Command="{Binding Command_SelectAllRows}">
+
+						<CheckBox.Styles>
+							<Style Selector=":unchecked /template/ Border#NormalRectangle">
+								<Setter Property="BorderBrush" Value="Black"/>
+							</Style>
+						</CheckBox.Styles>
+
+					</CheckBox>
+										
+					<StackPanel Grid.Column="1" Orientation="Horizontal"
+				                HorizontalAlignment="Center">
+
+						<Label Content="Адрес"/>
+
+						<Label Content="{Binding NumberFormat, Mode=OneWay}"
+			                   Width="40"/>
+
+					</StackPanel>
+
+					<Label Grid.Column="2" Content="Псевдоним"/>
+
+					<StackPanel Grid.Column="3" Orientation="Horizontal" 
+				                HorizontalAlignment="Center">
+
+						<Label Content="Значение"/>
+
+						<Label Content="{Binding NumberFormat, Mode=OneWay}"
+			                   Width="40"/>
+
+					</StackPanel>				
+
+					<Label Grid.Column="4" Content="Типизированное значение"/>
+
+					<Label Grid.Column="5" Content="Преобразованное значение"/>
+
+					<Label Grid.Column="6" Content="График / Лог"/>
+
+				</Grid>
+
+			</Border>
+
+			<ScrollViewer Grid.Row="1">
+
+				<StackPanel Orientation="Vertical" Spacing="20">
+
+					<ItemsControl ItemsSource="{Binding Items, Mode=TwoWay}"
+								  HorizontalAlignment="Stretch" 
+								  VerticalAlignment="Top">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Vertical"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+
+							<DataTemplate>
+								<Grid>
+									<local:MonitoringItem/>
+								</Grid>
+								
+							</DataTemplate>
+
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
+
+					<Button Content="Добавить регистр"
+							IsEnabled="{Binding !BlockAddRegisterButton, Mode=OneWay}"
+							FontSize="14"
+							HorizontalAlignment="Center"
+							Command="{Binding Command_AddRegister}"/>
+
+				</StackPanel>
+
+			</ScrollViewer>
+
+		</Grid>
+
+		<Border.Styles>
+
+			<Style Selector="Label">
+				<Setter Property="Foreground" Value="Black"/>
+				<Setter Property="FontSize" Value="14"/>
+				<Setter Property="HorizontalAlignment" Value="Center"/>
+				<Setter Property="VerticalAlignment" Value="Center"/>
+				<Setter Property="HorizontalContentAlignment" Value="Center"/>
+				<Setter Property="VerticalContentAlignment" Value="Center"/>
+			</Style>
+						
+		</Border.Styles>
+
+	</Border>     
+
+</UserControl>
