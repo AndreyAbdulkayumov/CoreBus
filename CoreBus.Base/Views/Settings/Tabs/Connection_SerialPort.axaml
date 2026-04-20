@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.Settings.Tabs.Connection_SerialPort"
@@ -79,7 +80,7 @@
 			<!--Re-scan Serial Ports-->
 
 			<Button FontSize="14"
-					ToolTip.Tip="Искать порты заново"
+					ToolTip.Tip="{l:Loc Settings.RescanPorts}"
 					Width="32" Height="32"
 					Margin="390,0,0,0"
 					HorizontalAlignment="Left" VerticalAlignment="Center"

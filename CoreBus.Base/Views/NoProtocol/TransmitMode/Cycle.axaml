@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="180"
              x:Class="CoreBus.Base.Views.NoProtocol.TransmitMode.Cycle"
@@ -29,12 +30,12 @@
 				<StackPanel Orientation="Horizontal" Spacing="20"
 							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
-					<TextBlock Text="Запрос"
+					<TextBlock Text="{l:Loc Common.Request}"
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
-					<ToggleSwitch OffContent="Строка"
-							      OnContent="Байты"
+					<ToggleSwitch OffContent="{l:Loc Common.String}"
+							      OnContent="{l:Loc Common.Bytes}"
 								  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"/>
 
 					<TextBox x:Name="TextBox_TX"
@@ -59,19 +60,19 @@
 				<StackPanel Orientation="Horizontal" Spacing="20"
 							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
-					<TextBlock Text="Ответ"
+					<TextBlock Text="{l:Loc Common.Response}"
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
 					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="Дата"
+							  Content="{l:Loc Common.Date}"
 							  VerticalAlignment="Center"
 							  IsChecked="{Binding Response_Date, Mode=TwoWay}"/>
 
 					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="Время"
+							  Content="{l:Loc Common.Time}"
 							  VerticalAlignment="Center"
 							  IsChecked="{Binding Response_Time, Mode=TwoWay}"/>
 
@@ -91,7 +92,7 @@
 						
 					</Grid>
 
-					<TextBlock Text="&#171;Ответ хоста&#187;"
+					<TextBlock Text="{l:Loc NoProtocol.HostReply}"
 							   VerticalAlignment="Center"/>
 
 					<Grid>
@@ -120,7 +121,7 @@
 
 				<StackPanel Orientation="Horizontal" Spacing="20">
 
-					<TextBlock Text="Период"
+					<TextBlock Text="{l:Loc Common.Period}"
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
@@ -130,7 +131,7 @@
 							 IsEnabled="{Binding !IsStart, Mode=OneWay}"
 							 VerticalAlignment="Center"/>
 
-					<TextBlock Text="мс."
+					<TextBlock Text="{l:Loc Common.Ms}"
 							   VerticalAlignment="Center"/>
 
 					<Button Width="150"

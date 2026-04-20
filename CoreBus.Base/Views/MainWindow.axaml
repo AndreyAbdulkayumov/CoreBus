@@ -6,6 +6,7 @@
 		xmlns:ModbusClientView="clr-namespace:CoreBus.Base.Views.ModbusClient;assembly=CoreBus.Base"
 		xmlns:NoProtocolView="clr-namespace:CoreBus.Base.Views.NoProtocol;assembly=CoreBus.Base"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
 		mc:Ignorable="d"
 		Width="1300" Height="830"
         x:Class="CoreBus.Base.Views.MainWindow"
@@ -69,7 +70,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Свернуть"
+				<Button ToolTip.Tip="{l:Loc Common.Minimize}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,50,0"
 						Click="Button_Minimize_Click">
@@ -78,7 +79,7 @@
 
 				</Button>
 
-				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+				<Button ToolTip.Tip="{l:Loc Common.MaximizeRestore}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,25,0"
 						Click="Button_Maximize_Click">
@@ -87,7 +88,7 @@
 
 				</Button>
 				
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
@@ -118,7 +119,7 @@
 								Margin="10,0,0,0">
 
 						<Button Classes="ToolBarButton" 
-								ToolTip.Tip="Настройки"
+								ToolTip.Tip="{l:Loc Common.Settings}"
 								Foreground="{DynamicResource ToolBar_Icon_Settings}"
 								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 								Command="{Binding Command_OpenSettingsWindow}">
@@ -128,7 +129,7 @@
 						</Button>
 
 						<Button Classes="ToolBarButton" 
-								ToolTip.Tip="О приложении"
+								ToolTip.Tip="{l:Loc Common.About}"
 								Foreground="{DynamicResource ToolBar_Icon_About}"
 								Command="{Binding Command_OpenAboutWindow}">
 							
@@ -137,7 +138,7 @@
 						</Button>
 
 						<Button Classes="ToolBarButton"
-								ToolTip.Tip="Руководство пользователя"
+								ToolTip.Tip="{l:Loc Main.UserManual}"
 								Foreground="{DynamicResource ToolBar_Icon_UserManual}"
 								Command="{Binding Command_OpenUserManual}">
 
@@ -146,7 +147,7 @@
 						</Button>
 
 						<Button Classes="ToolBarButton"
-								ToolTip.Tip="Видеоролики"
+								ToolTip.Tip="{l:Loc Main.Videos}"
 								Foreground="{DynamicResource ToolBar_Icon_Video}"
 								Command="{Binding Command_OpenVideoPage}">
 
@@ -167,7 +168,7 @@
 									Margin="10"
 									VerticalAlignment="Top">
 
-							<Button Content="Без протокола"
+							<Button Content="{l:Loc Common.NoProtocol}"
 									Classes="LeftMenuButton"
 									Command="{Binding Command_ProtocolMode_NoProtocol}"/>
 
@@ -178,7 +179,7 @@
 							<Separator Background="{DynamicResource Group_Color_BorderBrush}"
 									   Margin="0,10,0,10"/>
 
-							<Button Content="Макросы"
+							<Button Content="{l:Loc Common.Macros}"
 									Classes="LeftMenuButton"
 									IsEnabled="{Binding MacrosButtonIsEnabled, Mode=OneWay}"
 									Command="{Binding Command_OpenMacrosWindow}"/>
@@ -195,7 +196,7 @@
 
 							<Grid>
 
-								<Button ToolTip.Tip="Пропустить эту версию"
+								<Button ToolTip.Tip="{l:Loc About.SkipVersion}"
 										Classes="WindowChromeButton_CloseApp"
 										BorderThickness="0"
 										Height="20" Width="20"
@@ -209,7 +210,7 @@
 								
 								<StackPanel Spacing="15" Margin="10">
 
-									<TextBlock Text="Доступна новая версия приложения!"
+									<TextBlock Text="{l:Loc About.NewVersionBanner}"
 											   TextWrapping="Wrap"
 											   TextAlignment="Center"
 											   Width="145"
@@ -219,7 +220,7 @@
 											   TextWrapping="Wrap"
 											   TextAlignment="Center"/>
 
-									<Button Content="Обновить"
+									<Button Content="{l:Loc About.UpdateBtn}"
 											HorizontalAlignment="Center"
 											Command="{Binding Command_UpdateApp}"/>
 
@@ -239,7 +240,7 @@
 
 					<Grid>
 
-						<TextBlock Text="Выбранный пресет:"
+						<TextBlock Text="{l:Loc Main.SelectedPreset}"
 								   Margin="10,0,0,0"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -252,13 +253,13 @@
 								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<Button Margin="380,0,0,0"
-								Content="Подключить"
+								Content="{l:Loc Common.Connect}"
 								Width="105" Height="32"
 								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 								Command="{Binding Command_Connect}"/>
 
 						<Button Margin="500,0,0,0"
-								Content="Отключить"
+								Content="{l:Loc Common.Disconnect}"
 								Width="105" Height="32"
 								IsEnabled="{Binding UI_IsConnectedState, Mode=OneWay}"
 								Command="{Binding Command_Disconnect}"/>
@@ -319,7 +320,7 @@
 								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 						<TextBlock Grid.Row="0" Grid.RowSpan="2"
-								   Text="Прием"
+								   Text="{l:Loc Main.Rx}"
 								   FontSize="16"
 								   Margin="0,0,130,0"
 								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -338,7 +339,7 @@
 								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 						<TextBlock Grid.Row="0" Grid.RowSpan="2"
-								   Text="Передача"
+								   Text="{l:Loc Main.Tx}"
 								   FontSize="16"
 								   Margin="0,0,10,0"
 								   HorizontalAlignment="Right" VerticalAlignment="Center"/>

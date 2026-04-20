@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" Height="160"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.Representations.LastRequest"
@@ -28,14 +29,14 @@
 				</Grid.RowDefinitions>
 				
 				<TextBlock Grid.Row="1"
-						   Text="Запрос"
+						   Text="{l:Loc Common.Request}"
                            FontSize="16"
                            Foreground="{DynamicResource App_Color_Text}"
                            Margin="0,0,10,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Row="2"
-						   Text="Ответ"
+						   Text="{l:Loc Common.Response}"
 						   FontSize="16"
 						   Foreground="{DynamicResource App_Color_Text}"
 						   Margin="0,0,10,2"
@@ -127,7 +128,7 @@
 				  Margin="0,8,0,8">
 				
 				<Button Grid.Row="1"
-						ToolTip.Tip="Копировать запрос в буфер обмена"
+						ToolTip.Tip="{l:Loc Modbus.CopyRequest}"
 						CornerRadius="5"
 						Width="35" Height="35"
 						Margin="0,0,30,0"
@@ -148,7 +149,7 @@
 				</Button>
 
 				<Button Grid.Row="2"
-						ToolTip.Tip="Копировать ответ в буфер обмена"
+						ToolTip.Tip="{l:Loc Modbus.CopyResponse}"
 						CornerRadius="5"
 						Width="35" Height="35"
 						Margin="0,0,30,0"

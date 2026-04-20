@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.NoProtocolCommand"
 			 x:DataType="ViewModelsLocal:NoProtocolCommand_VM"
 			 DataContextChanged="UserControl_DataContextChanged">
@@ -26,7 +27,7 @@
 
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="Имя команды"
+			<TextBlock Text="{l:Loc Macros.CommandName}"
 					   FontSize="16"
 					   Margin="20,0,0,0"
 					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -57,7 +58,7 @@
 							Margin="20,0,0,0"
 							HorizontalAlignment="Left">
 
-					<TextBlock Text="Кодировка строки:"
+					<TextBlock Text="{l:Loc Macros.StringEncoding}"
 							   VerticalAlignment="Center"/>
 
 					<ComboBox Width="100"
@@ -68,8 +69,8 @@
 				</StackPanel>
 
 				<ToggleSwitch Grid.Row="0"
-							  OffContent="Строка"
-							  OnContent="Байты"
+							  OffContent="{l:Loc Common.String}"
+							  OnContent="{l:Loc Common.Bytes}"
 							  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"
 							  Margin="0,0,20,0"
 							  HorizontalAlignment="Right"/>
@@ -86,7 +87,7 @@
 								Margin="20,0,0,0"
 								HorizontalAlignment="Left">
 
-						<TextBlock Text="Добавить в конце сообщения:"
+						<TextBlock Text="{l:Loc Macros.AppendAtEnd}"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="14"
 								   VerticalAlignment="Center"/>

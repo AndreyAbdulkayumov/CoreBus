@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="1100" d:DesignHeight="450"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringDataGrid"
@@ -41,30 +42,30 @@
 					<StackPanel Grid.Column="1" Orientation="Horizontal"
 				                HorizontalAlignment="Center">
 
-						<Label Content="Адрес"/>
+						<Label Content="{l:Loc Common.Address}"/>
 
 						<Label Content="{Binding NumberFormat, Mode=OneWay}"
 			                   Width="40"/>
 
 					</StackPanel>
 
-					<Label Grid.Column="2" Content="Псевдоним"/>
+					<Label Grid.Column="2" Content="{l:Loc Modbus.Alias}"/>
 
 					<StackPanel Grid.Column="3" Orientation="Horizontal" 
 				                HorizontalAlignment="Center">
 
-						<Label Content="Значение"/>
+						<Label Content="{l:Loc Common.Value}"/>
 
 						<Label Content="{Binding NumberFormat, Mode=OneWay}"
 			                   Width="40"/>
 
 					</StackPanel>				
 
-					<Label Grid.Column="4" Content="Типизированное значение"/>
+					<Label Grid.Column="4" Content="{l:Loc Modbus.TypedValue}"/>
 
-					<Label Grid.Column="5" Content="Преобразованное значение"/>
+					<Label Grid.Column="5" Content="{l:Loc Modbus.ConvertedValue}"/>
 
-					<Label Grid.Column="6" Content="График / Лог"/>
+					<Label Grid.Column="6" Content="{l:Loc Modbus.ChartLog}"/>
 
 				</Grid>
 
@@ -97,7 +98,7 @@
 
 					</ItemsControl>
 
-					<Button Content="Добавить регистр"
+					<Button Content="{l:Loc Modbus.AddRegister}"
 							IsEnabled="{Binding !BlockAddRegisterButton, Mode=OneWay}"
 							FontSize="14"
 							HorizontalAlignment="Center"

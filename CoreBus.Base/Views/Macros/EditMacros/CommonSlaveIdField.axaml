@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="150"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.CommonSlaveIdField"
@@ -24,7 +25,7 @@
 					Margin="20,10,0,0">
 
 			<CheckBox IsChecked="{Binding UseCommonSlaveId, Mode=TwoWay}"
-					  Content="Использовать единый Slave ID во всем макросе"
+					  Content="{l:Loc Macros.UseCommonSlaveId}"
 					  FontSize="14"
 					  Foreground="{DynamicResource App_Color_Text}"
 					  VerticalAlignment="Center"/>

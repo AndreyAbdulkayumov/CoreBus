@@ -5,6 +5,7 @@
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:Representations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.Representations;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
              d:DesignWidth="1000" d:DesignHeight="550"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.ModbusManualMode_View"
@@ -41,21 +42,21 @@
 
 			<TabControl>
 
-				<TabItem Header="Последний запрос">
+				<TabItem Header="{l:Loc Modbus.LastRequest}">
 					<ScrollViewer>
 						<Representations:LastRequest Margin="0,5,0,5"/>
 					</ScrollViewer>
 				</TabItem>
 
-				<TabItem Header="История обмена">
+				<TabItem Header="{l:Loc Modbus.ExchangeHistory}">
 					<Representations:Log Margin="0,5,0,5"/>
 				</TabItem>
 				
-				<TabItem Header="Бинарное представление">
+				<TabItem Header="{l:Loc Modbus.BinaryView}">
 					<Representations:Binary Margin="0,5,0,5"/>
 				</TabItem>
 
-				<TabItem Header="Число типа float">
+				<TabItem Header="{l:Loc Modbus.FloatValue}">
 					<Representations:Float Margin="0,5,0,5"/>
 				</TabItem>				
 				

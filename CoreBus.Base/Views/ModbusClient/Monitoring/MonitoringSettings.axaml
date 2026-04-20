@@ -6,6 +6,7 @@
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1100" d:DesignHeight="120"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
              x:DataType="ViewModels:ModbusMonitoring_VM">
 
@@ -41,7 +42,7 @@
 			<StackPanel Orientation="Vertical" Spacing="10"
 			            HorizontalAlignment="Center">
 
-				<Button Content="График"
+				<Button Content="{l:Loc Common.Chart}"
 						Command="{Binding Command_OpenChart}"
 						HorizontalAlignment="Center"/>
 
@@ -49,7 +50,7 @@
 			            IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 						Command="{Binding Command_RemoveSelectedItems}"
 						IsVisible="{Binding HasSelectedItems, Mode=OneWay}"
-						ToolTip.Tip="Удалить выбранные регистры"
+						ToolTip.Tip="{l:Loc Modbus.DeleteSelected}"
 						HorizontalAlignment="Center">
 
 					<Icons:MaterialIcon Kind="CloseBoxMultiple"/>
@@ -99,7 +100,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="15"
 				                    VerticalAlignment="Top">
 
-							<TextBlock Text="Формат числа"
+							<TextBlock Text="{l:Loc Macros.NumberFormat}"
 									   VerticalAlignment="Center"/>
 
 							<RadioButton Content="hex"
@@ -116,7 +117,7 @@
 
 					<StackPanel Orientation="Horizontal" Spacing="15">
 
-						<TextBlock Text="Функция опроса"
+						<TextBlock Text="{l:Loc Modbus.PollFunction}"
 								   VerticalAlignment="Center"/>
 
 						<ComboBox ItemsSource="{Binding ReadFunctions}"
@@ -136,7 +137,7 @@
 								Orientation="Horizontal" Spacing="10"
 								VerticalAlignment="Top">
 
-						<TextBlock Text="Период"
+						<TextBlock Text="{l:Loc Common.Period}"
 							       Margin="0,8,0,0"/>
 
 						<TextBox Classes="InputField"
@@ -145,7 +146,7 @@
 								 IsEnabled="{Binding !IsMonitoringRunning, Mode=OneWay}"
 								 Margin="0,1,0,0"/>
 
-						<TextBlock Text="мс."
+						<TextBlock Text="{l:Loc Common.Ms}"
 				                   Margin="0,8,0,0"/>
 
 					</StackPanel>
@@ -177,13 +178,13 @@
 
 				<StackPanel Orientation="Horizontal" Spacing="15">
 
-					<TextBlock Text="Логирование"
+					<TextBlock Text="{l:Loc Modbus.Logging}"
 							   FontSize="14"
 							   VerticalAlignment="Center"/>
 
 					<Button Classes="Logging_Start"
 			                IsVisible="{Binding !LogWillStart, Mode=OneWay}"
-							ToolTip.Tip="Запуск"
+							ToolTip.Tip="{l:Loc Common.Start}"
 							Command="{Binding Command_StartLogging}">
 
 						<Icons:MaterialIcon Kind="PlayArrow"/>
@@ -193,7 +194,7 @@
 
 					<Button Classes="Logging_Stop"
 			                IsVisible="{Binding LogWillStart, Mode=OneWay}"
-							ToolTip.Tip="Остановка"
+							ToolTip.Tip="{l:Loc Common.Stop}"
 							Command="{Binding Command_StopLogging}">
 
 						<Icons:MaterialIcon Kind="Stop"/>
@@ -201,7 +202,7 @@
 					</Button>
 
 					<Button Classes="Logging_OpenFolder"
-							ToolTip.Tip="Открыть папку с логами"
+							ToolTip.Tip="{l:Loc Modbus.OpenLogFolder}"
 							Command="{Binding Command_OpenLogFolder}">
 
 						<Icons:MaterialIcon Kind="FolderCheck"/>
@@ -213,7 +214,7 @@
 				<StackPanel Orientation="Horizontal" Spacing="5"
 				            IsVisible="{Binding StartLogDateIsVisible, Mode=OneWay}">
 
-					<TextBlock Text="Начало записи:"
+					<TextBlock Text="{l:Loc Modbus.RecordingStart}"
 							   FontSize="14"/>
 
 					<TextBlock Text="{Binding StartLogDate, Mode=OneWay}"
@@ -222,7 +223,7 @@
 
 				</StackPanel>
 
-				<TextBlock Text="Запись начнется с запуском опроса"
+				<TextBlock Text="{l:Loc Modbus.RecordingStartsWithPoll}"
 						   FontSize="14"
 						   IsVisible="{Binding WaitStartLogMessageIsVisible, Mode=OneWay}"
 						   Foreground="{DynamicResource App_Color_Text_Bright}"/>

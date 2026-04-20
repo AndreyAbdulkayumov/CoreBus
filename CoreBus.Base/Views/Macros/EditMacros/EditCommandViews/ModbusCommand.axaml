@@ -5,6 +5,7 @@
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.ModbusCommand"
 			 x:DataType="ViewModelsLocal:ModbusCommand_VM">
 
@@ -53,7 +54,7 @@
 		
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="Имя команды"
+			<TextBlock Text="{l:Loc Macros.CommandName}"
 					   FontSize="16"
 					   Margin="20,0,0,0"
 					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -81,7 +82,7 @@
 
 					<Grid>
 
-						<TextBlock Text="Формат числа"
+						<TextBlock Text="{l:Loc Macros.NumberFormat}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,0,180,0"
@@ -130,14 +131,14 @@
 							
 						</Grid>
 						
-						<TextBlock Text="Используется единый Slave ID"
+						<TextBlock Text="{l:Loc Macros.CommonSlaveIdInUse}"
 								   IsVisible="{Binding UseCommonSlaveId, Mode=OneWay}"
 								   FontSize="14"
 								   Margin="10,9,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
-								  Content="Контрольная сумма"
+								  Content="{l:Loc Macros.Checksum}"
 								  FontSize="14"
 								  Foreground="{DynamicResource App_Color_Text}"
 								  Width="170"
@@ -149,7 +150,7 @@
 
 					<Grid>
 
-						<TextBlock Text="Начальный адрес"
+						<TextBlock Text="{l:Loc Macros.StartAddress}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,6,0,0"
@@ -174,12 +175,12 @@
 								Margin="10"
 								HorizontalAlignment="Center">
 
-						<RadioButton Content="Чтение"
+						<RadioButton Content="{l:Loc Common.Read}"
 									 IsChecked="{Binding SelectedFunctionType_Read, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource App_Color_Text}"/>
 
-						<RadioButton Content="Запись"
+						<RadioButton Content="{l:Loc Common.Write}"
 									 IsChecked="{Binding SelectedFunctionType_Write, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource App_Color_Text}"/>
@@ -195,7 +196,7 @@
 					<StackPanel Orientation="Horizontal" Spacing="15"
 								IsVisible="{Binding SelectedFunctionType_Read, Mode=OneWay}">
 
-						<TextBlock Text="Кол-во регистров"
+						<TextBlock Text="{l:Loc Macros.RegisterCount}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,6,0,0"

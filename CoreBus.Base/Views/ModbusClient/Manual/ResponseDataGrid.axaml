@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
              d:DesignWidth="500" d:DesignHeight="300"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.ResponseDataGrid"
@@ -30,13 +31,13 @@
 						   Content="ID"/>
 
 					<Label Grid.Column="1"
-						   Content="Функция"/>
+						   Content="{l:Loc Common.Function}"/>
 
 					<Label Grid.Column="2"
-						   Content="Адрес"/>
+						   Content="{l:Loc Common.Address}"/>
 
 					<Label Grid.Column="3"
-						   Content="Данные"/>
+						   Content="{l:Loc Common.Data}"/>
 
 				</Grid>
 

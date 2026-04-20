@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModels="using:ViewModels.ModbusClient.Monitoring"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
         x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.EditFormulaWindow"
 		x:DataType="ViewModels:EditFormula_VM"
 		Width="300"
@@ -47,7 +48,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 					
@@ -73,7 +74,7 @@
 							 Width="250"
 							 HorizontalAlignment="Center"/>
 					
-					<Button x:Name="Button_Save" Content="Сохранить"
+					<Button x:Name="Button_Save" Content="{l:Loc Common.Save}"
 							IsEnabled="{Binding SaveIsEnabled, Mode=OneWay}"
 							IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
 							FontSize="14"

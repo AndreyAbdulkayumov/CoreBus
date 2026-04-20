@@ -6,6 +6,7 @@
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="200"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.NoProtocol.TransmitMode.Files"
 			 x:DataType="ViewModels:NoProtocol_Mode_Files_VM">
 
@@ -55,7 +56,7 @@
 
 									<Button Grid.Column="0"
 											Classes="ToolBarButton"
-											ToolTip.Tip="Отправить файл"
+											ToolTip.Tip="{l:Loc NoProtocol.SendFile}"
 											IsEnabled="{Binding SendIsEnable, Mode=OneWay}"
 											Command="{Binding Command_SendFile}"
 											HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -95,7 +96,7 @@
 
 									<Button Grid.Column="4"
 											Classes="ToolBarButton"
-											ToolTip.Tip="Удалить файл"
+											ToolTip.Tip="{l:Loc NoProtocol.DeleteFile}"
 											Command="{Binding Command_RemoveFile}"
 											HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -134,17 +135,17 @@
 
 				<StackPanel Orientation="Horizontal" Spacing="50">
 
-					<Button Content="Добавить файл"
+					<Button Content="{l:Loc NoProtocol.AddFile}"
 							FontSize="14"
 							Command="{Binding Command_AddFile}"/>
 
-					<Button Content="Удалить все"
+					<Button Content="{l:Loc NoProtocol.DeleteAll}"
 							FontSize="14"
 							Command="{Binding Command_RemoveAllFiles}"/>
 					
 				</StackPanel>
 				
-				<TextBlock Text="Идет отправка файла..."
+				<TextBlock Text="{l:Loc NoProtocol.SendingFile}"
 						   IsVisible="{Binding IsSending, Mode=OneWay}"
 						   FontSize="16"
 						   HorizontalAlignment="Left" VerticalAlignment="Center"/>

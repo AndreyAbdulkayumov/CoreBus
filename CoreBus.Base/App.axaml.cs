@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using CoreBus.Base.Views;
 using CoreBus.Base.Services;
+using CoreBus.Base.Localization;
 using ViewModels;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
@@ -116,9 +117,27 @@ public partial class App : Application
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()
-            .AddSingleton<IOpenChildWindowService, OpenChildWindowService>();
+            .AddSingleton<IOpenChildWindowService, OpenChildWindowService>()
+            // Локализация
+            .AddSingleton<ILocalizationService, LocalizationService>();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        // Прокидываем экземпляр в глобальную точку, чтобы XAML-расширение {l:Loc …}
+        // могло к нему обращаться без DI (MarkupExtension работает вне ServiceProvider).
+        var localization = _serviceProvider.GetRequiredService<ILocalizationService>();
+        Localizer.Instance = localization;
+
+        // Применяем сохранённый язык (если файл настроек уже прочитан моделью).
+        // Fallback — русский, если его нет — первый доступный язык из папки Localization/.
+        var settingsModel = _serviceProvider.GetRequiredService<Model_Settings>();
+        var preferredCode = settingsModel.AppData?.LanguageCode ?? "ru";
+        localization.SetLanguage(preferredCode);
+        if (!string.Equals(localization.CurrentLanguage.Code, preferredCode, StringComparison.OrdinalIgnoreCase)
+            && localization.AvailableLanguages.Count > 0)
+        {
+            localization.SetLanguage(localization.AvailableLanguages[0].Code);
+        }
     }
 
     public override void Initialize()

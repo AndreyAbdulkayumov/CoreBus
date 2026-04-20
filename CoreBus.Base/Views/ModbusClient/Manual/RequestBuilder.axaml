@@ -5,6 +5,7 @@
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:ViewModelsFields="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.RequestBuilder"
@@ -75,7 +76,7 @@
 
 					<Grid>
 
-						<TextBlock Text="Формат числа"
+						<TextBlock Text="{l:Loc Macros.NumberFormat}"
 								   FontSize="16"
 							       Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,0,180,0"
@@ -121,7 +122,7 @@
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 						<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
-								  Content="Контрольная сумма"
+								  Content="{l:Loc Macros.Checksum}"
 								  FontSize="14"
 								  Foreground="{DynamicResource App_Color_Text}"
 								  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
@@ -134,7 +135,7 @@
 					
 					<Grid>
 
-						<TextBlock Text="Адрес"
+						<TextBlock Text="{l:Loc Common.Address}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,6,0,0"
@@ -153,7 +154,7 @@
 								 HorizontalAlignment="Left" VerticalAlignment="Top"
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
-						<TextBlock Text="Кол-во регистров"
+						<TextBlock Text="{l:Loc Macros.RegisterCount}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="200,6,0,0"
@@ -175,7 +176,7 @@
 
 						<Button Classes="ModbusAction"
 								IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-								Content="Прочитать"
+								Content="{l:Loc Common.ReadVerb}"
 								Command="{Binding Command_Read}"/>
 
 					</Grid>
@@ -190,7 +191,7 @@
 
 						<Button Classes="ModbusAction"
 								IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-								Content="Записать"
+								Content="{l:Loc Common.WriteVerb}"
 								Command="{Binding Command_Write}"/>
 
 					</Grid>

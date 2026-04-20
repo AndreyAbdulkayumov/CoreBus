@@ -115,4 +115,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!--
+    Файлы локализации. Для добавления нового языка достаточно положить файл <code>.json</code>
+    в папку Localization/ — он будет найден автоматически, и код при этом не меняется.
+  -->
+  <ItemGroup>
+    <None Update="Localization\*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
