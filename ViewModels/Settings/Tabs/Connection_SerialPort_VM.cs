@@ -172,24 +172,45 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
     private readonly IMessageBox _messageBox;
     private readonly Model_Settings _settingsModel;
+    private readonly ILocalizationService _localization;
 
+    // Состояние сообщения порта для реактивной локализации
+    private enum PortMessageMode { None, NotSet, NotFound }
+    private PortMessageMode _portMessageMode = PortMessageMode.None;
+    private string _portMessageArg = string.Empty;
 
-    public Connection_SerialPort_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel)
+    public Connection_SerialPort_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        _localization.LanguageChanged += (_, _) => UpdatePortNotFoundMessage();
 
         Command_ReScan_SerialPorts = ReactiveCommand.Create(() =>
         {
             if (_settingsModel.Settings == null)
             {
-                throw new Exception("Не инициализирован файл настроек.");
+                throw new Exception(_localization.Get("Exception.SettingsFileNotInitialized"));
             }
 
             ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
         });
 
         Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
+    }
+
+    private void UpdatePortNotFoundMessage()
+    {
+        switch (_portMessageMode)
+        {
+            case PortMessageMode.NotSet:
+                Message_PortNotFound = _localization.Get("ConnectionInfo.PortNotSet");
+                break;
+            case PortMessageMode.NotFound:
+                Message_PortNotFound = _localization.Get("SerialPort.PortNotFound", _portMessageArg);
+                break;
+        }
     }    
 
     public void SettingsFileChanged()
@@ -198,7 +219,7 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
         {
             if (_settingsModel.Settings == null)
             {
-                throw new Exception("Не инициализирован файл настроек.");
+                throw new Exception(_localization.Get("Exception.SettingsFileNotInitialized"));
             }
 
             ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
@@ -206,7 +227,8 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
             if (_settingsModel.Settings.Connection_SerialPort == null)
             {
                 Selected_SerialPort = null;
-                Message_PortNotFound = "Порт не задан";
+                _portMessageMode = PortMessageMode.NotSet;
+                Message_PortNotFound = _localization.Get("ConnectionInfo.PortNotSet");
                 Message_PortNotFound_IsVisible = true;
 
                 Selected_SerialPort = null;
@@ -237,7 +259,7 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка обновления значений на странице SerialPort.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.SerialPortPageUpdate") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -255,7 +277,8 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
         if (info == null || string.IsNullOrEmpty(info.Port))
         {
             Selected_SerialPort = null;
-            Message_PortNotFound = "Порт не задан";
+            _portMessageMode = PortMessageMode.NotSet;
+            Message_PortNotFound = _localization.Get("ConnectionInfo.PortNotSet");
             Message_PortNotFound_IsVisible = true;
 
             return;
@@ -277,7 +300,9 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (string.IsNullOrEmpty(Selected_SerialPort))
         {
-            Message_PortNotFound = selectedPort + " не найден";
+            _portMessageMode = PortMessageMode.NotFound;
+            _portMessageArg = selectedPort;
+            Message_PortNotFound = _localization.Get("SerialPort.PortNotFound", selectedPort);
             Message_PortNotFound_IsVisible = true;
         }
 

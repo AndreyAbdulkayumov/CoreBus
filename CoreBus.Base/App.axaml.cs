@@ -127,6 +127,9 @@ public partial class App : Application
         // могло к нему обращаться без DI (MarkupExtension работает вне ServiceProvider).
         var localization = _serviceProvider.GetRequiredService<ILocalizationService>();
         Localizer.Instance = localization;
+        // Глобальный провайдер для кода, куда нельзя прокинуть сервис через DI
+        // (static-хелперы, исключения, абстрактные базовые классы).
+        global::Services.Interfaces.LocalizationProvider.Instance = localization;
 
         // Применяем сохранённый язык (если файл настроек уже прочитан моделью).
         // Fallback — русский, если его нет — первый доступный язык из папки Localization/.

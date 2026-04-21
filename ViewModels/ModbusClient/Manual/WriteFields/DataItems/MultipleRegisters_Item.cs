@@ -2,6 +2,7 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using Services.Interfaces;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.Validation;
 
@@ -132,7 +133,7 @@ public class MultipleRegisters_Item : ModbusDataFormatter
                 break;
 
             default:
-                throw new Exception("Неподдерживаемый формат числа: " + newFormat);
+                throw new Exception(LocalizationProvider.Get("Exception.UnsupportedNumberFormat", newFormat));
         }
 
         bool needUpdate = newFormat == DataFormatName_float || _selectedDataFormat == DataFormatName_float;

@@ -2,6 +2,7 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Core.Models.Settings.DataTypes;
+using Services.Interfaces;
 using ViewModels.Validation;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
@@ -47,7 +48,7 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
     public bool HasValidationErrors => HasErrors;
     public string? ValidationMessage
     {
-        get => string.Join("\n", ActualErrors.Select(element => $"[Поле записи данных]\n{GetFullErrorMessage(element.Key)}\n"));
+        get => string.Join("\n", ActualErrors.Select(element => $"[{LocalizationProvider.Get("Validation.WriteFieldLabel")}]\n{GetFullErrorMessage(element.Key)}\n"));
     }
 
     public SingleRegister_VM()
@@ -105,7 +106,7 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
                 break;
 
             default:
-                throw new Exception("Неподдерживаемый формат числа: " + format);
+                throw new Exception(LocalizationProvider.Get("Exception.UnsupportedNumberFormat", format ?? string.Empty));
         }
 
         _selectedDataFormat = format;

@@ -87,7 +87,14 @@
 				
 				<ComboBox Height="32" Width="125"
 						  ItemsSource="{Binding AllSendModes, Mode=OneWay}"
-					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}"/>
+					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="x:String">
+							<!-- Конвертер преобразует ключ локализации в текущее локализованное значение. -->
+							<TextBlock Text="{Binding ., Converter={x:Static l:LocalizeKeyConverter.Instance}}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 				
 			</StackPanel>
 

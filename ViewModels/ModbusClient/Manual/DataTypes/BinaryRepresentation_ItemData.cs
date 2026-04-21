@@ -1,5 +1,6 @@
 ﻿using MessageBox.Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Reactive;
 
 namespace ViewModels.ModbusClient.Manual.DataTypes;
@@ -28,7 +29,7 @@ public class BinaryRepresentation_ItemData : ReactiveObject
 
             await copyToClipboard(Data);
         });
-        Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
+        Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.CopyRegisterBinary", Address) + "\n\n" + error.Message, MessageType.Error, error));
     }
 }
 

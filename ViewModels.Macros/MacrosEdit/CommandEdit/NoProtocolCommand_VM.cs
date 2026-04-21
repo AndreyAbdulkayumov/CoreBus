@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 
@@ -136,7 +137,7 @@ public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, ICommandVal
     {
         if (string.IsNullOrEmpty(MessageString))
         {
-            return "Введите данные для отправки.";
+            return LocalizationProvider.Get("Validation.EnterSendData");
         }
 
         return null;

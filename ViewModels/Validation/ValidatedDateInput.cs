@@ -1,3 +1,4 @@
+using Services.Interfaces;
 using System.Globalization;
 
 namespace ViewModels.Validation;
@@ -20,56 +21,56 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
     {
         { NotEmptyField,
             new ValidateMessage(
-                shortMessage: "Введите значение",
-                fullMessage: "Поле не может быть пустым."
+                shortMessage: LocalizationProvider.Get("Validation.EnterValueShort"),
+                fullMessage: LocalizationProvider.Get("Validation.FieldCannotBeEmpty")
                 )},
 
         { HexError_Byte,
             new ValidateMessage(
                 shortMessage: "0x00 - 0xFF",
-                fullMessage: "Допустим ввод чисел только в шестнадцатеричной системе счисления. Диапазон чисел от 0x00 до 0xFF."
+                fullMessage: LocalizationProvider.Get("Validation.HexRangeByte")
                 )},
 
         { HexError_UInt16,
             new ValidateMessage(
                 shortMessage: "0x0000 - 0xFFFF",
-                fullMessage: "Допустим ввод чисел только в шестнадцатеричной системе счисления. Диапазон чисел от 0x0000 до 0xFFFF."
+                fullMessage: LocalizationProvider.Get("Validation.HexRangeWord")
                 )},
 
         { DecError_Byte,
             new ValidateMessage(
                 shortMessage: "0 - 255",
-                fullMessage: "Допустим ввод чисел только в десятичной системе счисления. Диапазон чисел от 0 до 255."
+                fullMessage: LocalizationProvider.Get("Validation.DecRangeByte")
                 )},
 
         { DecError_UInt16,
             new ValidateMessage(
                 shortMessage: "0 - 65535",
-                fullMessage: "Допустим ввод чисел только в десятичной системе счисления. Диапазон чисел от 0 до 65535."
+                fullMessage: LocalizationProvider.Get("Validation.DecRangeWord")
                 )},
 
         { DecError_uint,
             new ValidateMessage(
                 shortMessage: "0 - 2^32",
-                fullMessage: "Допустим ввод чисел только в десятичной системе счисления. Диапазон чисел от 0 до 2^32."
+                fullMessage: LocalizationProvider.Get("Validation.DecRangeDWord")
                 )},
 
         { DecError_float,
             new ValidateMessage(
                 shortMessage: "±1.5×10^(−45) - ±3.4×10^38",
-                fullMessage: "Допустим ввод чисел только в десятичной системе счисления. Диапазон чисел от ±1.5 × 10^−45 до ±3.4 × 10^38."
+                fullMessage: LocalizationProvider.Get("Validation.DecRangeFloat")
                 )},
 
         { BinError_UInt16,
             new ValidateMessage(
                 shortMessage: "0000 0000 0000 0000 - 1111 1111 1111 1111",
-                fullMessage: "Допустим ввод чисел только в двоичной системе счисления. Диапазон чисел от 0000 0000 0000 0000 до 1111 1111 1111 1111."
+                fullMessage: LocalizationProvider.Get("Validation.BinRangeWord")
                 )},
 
         { IP_Address_Invalid,
             new ValidateMessage(
-                shortMessage: "Некорректный IP-адрес",
-                fullMessage: "Некорректный IP-адрес"
+                shortMessage: LocalizationProvider.Get("Validation.InvalidIpShort"),
+                fullMessage: LocalizationProvider.Get("Validation.InvalidIpFull")
                 )},
     };
 

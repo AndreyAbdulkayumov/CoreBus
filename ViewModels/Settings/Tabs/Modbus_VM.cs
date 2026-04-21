@@ -1,5 +1,6 @@
 using Core.Models.Settings.FileTypes;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
@@ -36,9 +37,9 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 
     public IEnumerable<TimestampFormatItem> TimestampFormats =>
         [
-            new TimestampFormatItem(TimestampFormat.None, "Нет"),
-            new TimestampFormatItem(TimestampFormat.Time, "Только время"),
-            new TimestampFormatItem(TimestampFormat.DateTime, "Дата и время"),
+            new TimestampFormatItem(TimestampFormat.None, _localization.Get("Modbus.TimestampNone")),
+            new TimestampFormatItem(TimestampFormat.Time, _localization.Get("Modbus.TimestampTimeOnly")),
+            new TimestampFormatItem(TimestampFormat.DateTime, _localization.Get("Modbus.TimestampDateTime")),
             new TimestampFormatItem(TimestampFormat.ISO8601, "ISO 8601")
         ];
 
@@ -59,9 +60,22 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
         set => this.RaiseAndSetIfChanged(ref _floatFormat, value);
     }
 
-    public Modbus_VM()
-    {
+    private readonly ILocalizationService _localization;
 
+    public Modbus_VM(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        _localization.LanguageChanged += (_, _) =>
+        {
+            // Перерисовать список при смене языка и сохранить текущий выбор
+            var current = SelectedTimestampFormat?.Value;
+            this.RaisePropertyChanged(nameof(TimestampFormats));
+            if (current.HasValue)
+            {
+                SelectedTimestampFormat = TimestampFormats.FirstOrDefault(e => e.Value == current.Value);
+            }
+        };
     }
 
     public void PresetLogTimestampFormat(TimestampFormat format)
@@ -81,10 +95,10 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
         switch (fieldName)
         {
             case nameof(WriteTimeout):
-                return "Таймаут записи";
+                return _localization.Get("Common.WriteTimeoutField");
 
             case nameof(ReadTimeout):
-                return "Таймаут чтения";
+                return _localization.Get("Common.ReadTimeoutField");
 
             default:
                 return fieldName;

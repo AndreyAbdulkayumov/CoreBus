@@ -230,7 +230,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
 
         Command_FormulaChange = ReactiveCommand.CreateFromTask(async () =>
         {
-            var description = string.IsNullOrWhiteSpace(Alias) ? $"Для адреса \'{GetDisplayedAddress()}\"" : Alias;
+            var description = string.IsNullOrWhiteSpace(Alias) ? LocalizationProvider.Get("Monitoring.ForAddress", GetDisplayedAddress()) : Alias;
 
             var newFormula = await _openChildWindowService.EditFormula(description, Formula, UI_IsEnable);
 
@@ -239,7 +239,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
                 Formula = newFormula;
             }
         });
-        Command_FormulaChange.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка изменения формулы.\n\n{error.Message}", MessageType.Error, error));
+        Command_FormulaChange.ThrownExceptions.Subscribe(error => _messageBox.Show(LocalizationProvider.Get("Error.FormulaChange") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(e => e.Alias)
             .Subscribe(alias =>
@@ -254,7 +254,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
 
     public string GetDisplayedItemName()
     {
-        return Alias ?? $"Адрес \"{Address}\"";
+        return Alias ?? LocalizationProvider.Get("Monitoring.AddressFallback", Address);
     }
 
     private void SetDefaultValues()
@@ -436,7 +436,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
         switch (fieldName)
         {
             case nameof(Address):
-                return "Адрес";
+                return LocalizationProvider.Get("Common.Address");
 
             default:
                 return fieldName;

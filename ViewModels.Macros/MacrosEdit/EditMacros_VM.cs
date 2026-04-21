@@ -62,7 +62,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         set => this.RaiseAndSetIfChanged(ref _editCommandViewModel, value);
     }
 
-    public string EmptyCommandMessage => "Выберите команду для редактирования";
+    public string EmptyCommandMessage => _localization.Get("Macros.EmptyCommandMessage");
 
     public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
     public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
@@ -78,12 +78,15 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
     private readonly IMessageBox _messageBox;
     private readonly Model_Settings _settingsModel;
+    private readonly ILocalizationService _localization;
 
 
-    public EditMacros_VM(IMessageBoxEditMacros messageBox, Model_Settings settingsModel)
+    public EditMacros_VM(IMessageBoxEditMacros messageBox, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(EmptyCommandMessage));
 
         /****************************************************/
         //
@@ -111,7 +114,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         {
             if (string.IsNullOrWhiteSpace(MacrosName))
             {
-                _messageBox.Show("Задайте имя макроса.", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.SpecifyMacroName"), MessageType.Warning);
                 return;
             }
 
@@ -119,18 +122,18 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
             if (!string.IsNullOrEmpty(validationMessages))
             {
-                _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Error);
+                _messageBox.Show(_localization.Get("Error.FixMacroErrors", _validationMessageSeparator, validationMessages), MessageType.Error);
                 return;
             }
 
             Saved = true;
 
-            _messageBox.Show("Настройки макроса сохранены!", MessageType.Information);
+            _messageBox.Show(_localization.Get("Info.MacroSettingsSaved"), MessageType.Information);
         });
-        Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error, error));
+        Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosSave") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_RunMacros = ReactiveCommand.Create(RunMacros);
-        Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error, error));
+        Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosRun") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_AddCommand = ReactiveCommand.Create(() =>
         {
@@ -143,7 +146,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
             CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
             _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
         });
-        Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error, error));
+        Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddCommand") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.EditCommandViewModel)
             .Subscribe(x =>
@@ -442,7 +445,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
             {
                 new MacrosCommandModbus()
                 {
-                    Name = "Одиночная команда",
+                    Name = _localization.Get("Macros.SingleCommandName"),
                     Content = commandContent
                 }
             }
@@ -488,7 +491,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
             return;
         }
 
-        throw new Exception($"Задан неизвестный тип функции Modbus.\nКод: {content.FunctionNumber}");
+        throw new Exception(_localization.Get("Exception.UnknownModbusFunctionWithCode", content.FunctionNumber));
     }
 
     private string? GetMacrosValidationMessage()
@@ -533,7 +536,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
             if (!string.IsNullOrEmpty(message))
             {
-                return $"Ошибка в команде \"{command.Name}\".\n\n{message}";
+                return _localization.Get("Macros.CommandErrorInMacro", command.Name ?? string.Empty) + "\n\n" + message;
             }
         }
 

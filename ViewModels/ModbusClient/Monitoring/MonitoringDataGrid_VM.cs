@@ -67,14 +67,17 @@ public class MonitoringDataGrid_VM : ReactiveObject
     private readonly Model_Settings _settingsModel;
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxMainWindow _messageBox;
+    private readonly ILocalizationService _localization;
 
     private bool _ignorePropertyChanged;
 
-    public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox)
+    public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
+        ILocalizationService localization)
     {
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         Command_SelectAllRows = ReactiveCommand.Create(() =>
         {
@@ -89,7 +92,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
             HasSelectedItems = AllRowSelected;
         });
-        Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка выбора всех регистров.\n\n{error.Message}", MessageType.Error, error));
+        Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show(_localization.Get("Error.SelectAllRegisters") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
@@ -102,7 +105,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
             AllRowSelected = false;
         });
-        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления регистра.\n\n{error.Message}", MessageType.Error, error));
+        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
 
         // Действия после запуска приложения
 

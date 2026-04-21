@@ -36,12 +36,14 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
 
     private readonly IMessageBox _messageBox;
     private readonly Model_Settings _settingsModel;
+    private readonly ILocalizationService _localization;
 
 
-    public Connection_Ethernet_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel)
+    public Connection_Ethernet_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
     }
 
     public void SettingsFileChanged()
@@ -50,7 +52,7 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
         {
             if (_settingsModel.Settings == null)
             {
-                throw new Exception("Не инициализирован файл настроек.");
+                throw new Exception(_localization.Get("Exception.SettingsFileNotInitialized"));
             }
 
             if (_settingsModel.Settings.Connection_IP == null)
@@ -67,7 +69,7 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка обновления значений на странице Ethernet.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.EthernetPageUpdate") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -79,10 +81,10 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
         switch (fieldName)
         {
             case nameof(IP_Address):
-                return "IP-адрес";
+                return _localization.Get("Common.IpAddress");
 
             case nameof(Port):
-                return "Порт";
+                return _localization.Get("Common.Port");
 
             default:
                 return fieldName;

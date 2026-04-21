@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 
 namespace ViewModels.Helpers.FloatNumber;
 
@@ -56,7 +57,7 @@ public static class FloatHelper
                 return [bytes[2], bytes[3], bytes[0], bytes[1]];
 
             default:
-                throw new Exception("Неизвестный тип формата записи числа типа float.");
+                throw new Exception(LocalizationProvider.Get("Exception.UnknownFloatFormat"));
         }
     }
 }

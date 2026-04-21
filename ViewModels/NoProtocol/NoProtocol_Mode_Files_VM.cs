@@ -37,23 +37,27 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_NoProtocol _noProtocolModel;
 
+    private readonly ILocalizationService _localization;
+
     public NoProtocol_Mode_Files_VM(IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
-        Model_Settings settingsModel, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel)
+        Model_Settings settingsModel, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel,
+        ILocalizationService localization)
     {
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
         Command_AddFile = ReactiveCommand.CreateFromTask(AddFileHandler);
-        Command_AddFile.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления файла.\n\n{error.Message}", MessageType.Error, error));
+        Command_AddFile.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddFile") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_RemoveAllFiles = ReactiveCommand.CreateFromTask(RemoveAllFiles);
-        Command_RemoveAllFiles.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка удаления всех файлов.\n\n{error.Message}", MessageType.Error, error));
+        Command_RemoveAllFiles.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.RemoveAllFiles") + "\n\n" + error.Message, MessageType.Error, error));
 
         UpdateFileList();
     }
@@ -76,7 +80,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
 
     private async Task AddFileHandler()
     {
-        string? filePath = await _fileSystemService.GetFilePath($"Выбор файла для отправки.", "Файл отправки", null);
+        string? filePath = await _fileSystemService.GetFilePath(_localization.Get("NoProtocol.AddFileDialogTitle"), _localization.Get("NoProtocol.FileTypeLabel"), null);
 
         if (string.IsNullOrEmpty(filePath))
             return;
@@ -96,7 +100,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
         if (Files.Count() == 0)
             return;
 
-        if (await _messageBox.ShowYesNoDialog("Вы действительно хотите удалить все файлы?", MessageType.Warning) == MessageBoxResult.Yes)
+        if (await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.DeleteAllFiles"), MessageType.Warning) == MessageBoxResult.Yes)
         {
             foreach (var file in Files)
             {
