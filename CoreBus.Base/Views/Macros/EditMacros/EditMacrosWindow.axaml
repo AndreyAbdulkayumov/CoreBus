@@ -102,20 +102,22 @@
 
 					</Border>
 
-					<Border Grid.Row="0" Grid.Column="1"
+					<Border Grid.Row="0" Grid.Column="1" 
 							Classes="AppField">
 
-						<Grid>
+						<Grid ColumnDefinitions="Auto,*"
+							  Margin="10,0,10,0"
+							  VerticalAlignment="Center">
 
-							<TextBlock Text="{l:Loc Common.Name}"
+							<TextBlock Grid.Column="0"
+									   Text="{l:Loc Common.Name}"
 									   FontSize="16"
-									   Margin="10,0,0,0"
-									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+									   Margin="0,0,10,0"
+									   VerticalAlignment="Center"/>
 
-							<TextBox Classes="InputField"
-									 Text="{Binding MacrosName, Mode=TwoWay}"
-									 Margin="55,0,10,0"
-									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+							<TextBox Grid.Column="1"
+									 Classes="InputField"
+									 Text="{Binding MacrosName, Mode=TwoWay}"/>
 						</Grid>
 
 					</Border>

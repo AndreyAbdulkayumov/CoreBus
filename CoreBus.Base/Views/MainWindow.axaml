@@ -305,44 +305,50 @@
 									   FontSize="16"/>
 														
 						</StackPanel>
-											
-						<Ellipse Grid.Row="0" Grid.RowSpan="2"
-								 Width="20" Height="20"
-								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
-								 Margin="0,0,190,0"
-								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-						<Ellipse Grid.Row="0" Grid.RowSpan="2"
-								 Width="20" Height="20"
-								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-								 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"
-								 Margin="0,0,190,0"
-								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+						<StackPanel Grid.Row="0" Grid.RowSpan="2"
+									Orientation="Horizontal" Spacing="15"
+								    Margin="0,0,10,0"
+								    HorizontalAlignment="Right" VerticalAlignment="Center">
+							
+							<StackPanel Orientation="Horizontal" Spacing="10">
+							
+								<Grid>
+								
+									<Ellipse Width="20" Height="20"
+											 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}" />
 
-						<TextBlock Grid.Row="0" Grid.RowSpan="2"
-								   Text="{l:Loc Main.Rx}"
-								   FontSize="16"
-								   Margin="0,0,130,0"
-								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+									<Ellipse Width="20" Height="20"
+											 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+											 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"/>
 
-						<Ellipse Grid.Row="0" Grid.RowSpan="2"
-								 Width="20" Height="20"
-								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
-								 Margin="0,0,95,0"
-								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+								</Grid>
 
-						<Ellipse Grid.Row="0" Grid.RowSpan="2"
-								 Width="20" Height="20"
-								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-								 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"
-								 Margin="0,0,95,0"
-								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+								<TextBlock Text="{l:Loc Main.Rx}"
+										   FontSize="16"/>
 
-						<TextBlock Grid.Row="0" Grid.RowSpan="2"
-								   Text="{l:Loc Main.Tx}"
-								   FontSize="16"
-								   Margin="0,0,10,0"
-								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+							</StackPanel>
+						
+
+							<StackPanel Orientation="Horizontal" Spacing="10">
+
+								<Grid>
+								
+									<Ellipse Width="20" Height="20"
+											 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"/>
+
+									<Ellipse Width="20" Height="20"
+											 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+											 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"/>
+
+								</Grid>
+
+								<TextBlock Text="{l:Loc Main.Tx}"
+										   FontSize="16"/>
+
+							</StackPanel>
+
+						</StackPanel>
 
 					</Grid>
 

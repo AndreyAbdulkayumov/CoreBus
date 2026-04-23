@@ -11,7 +11,7 @@ internal class MessageBoxChart : IMessageBoxChart
 {
     private readonly IUIService _uiService;
 
-    private string? _appVersion;
+    private readonly string? _appVersion;
 
     public MessageBoxChart(IUIService uiService)
     {

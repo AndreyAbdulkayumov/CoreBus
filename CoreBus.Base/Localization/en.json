@@ -5,7 +5,7 @@
     "englishName": "English"
   },
   "About": {
-    "AuthorName": "Andrey Abdulkayumov",
+    "AuthorName": "Abdulkayumov Andrey Renatovich",
     "AvaloniaVersion": "Avalonia UI version:",
     "CheckUpdates": "Check for updates",
     "ContactAuthor": "Contact author:",
@@ -54,7 +54,7 @@
     "Read": "Read",
     "ReadVerb": "Read",
     "Request": "Request",
-    "Response": "Response",
+    "Response": "Resp.",
     "Save": "Save",
     "SelectBtn": "Select",
     "Send": "Send",

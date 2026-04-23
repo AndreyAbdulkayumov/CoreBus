@@ -89,7 +89,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     private int _deviceReadTimeoutValue;
 
-    public string DeviceReadTimeout => _localization.Get("Settings.ReadTimeoutPrefix") + _deviceReadTimeoutValue + " " + _localization.Get("Common.Ms");
+    public string DeviceReadTimeout => _localization.Get("Scanner.ReadTimeoutPrefix") + _deviceReadTimeoutValue + " " + _localization.Get("Common.Ms");
 
     private const string ButtonContent_Start_Key = "Status.StartSearch";
     private const string ButtonContent_Stop_Key = "Status.StopSearch";
