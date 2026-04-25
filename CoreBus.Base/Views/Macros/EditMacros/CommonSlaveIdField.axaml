@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="150"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.CommonSlaveIdField"

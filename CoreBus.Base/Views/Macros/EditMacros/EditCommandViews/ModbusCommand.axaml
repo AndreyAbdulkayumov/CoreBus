@@ -5,7 +5,7 @@
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.ModbusCommand"
 			 x:DataType="ViewModelsLocal:ModbusCommand_VM">
 
@@ -111,25 +111,27 @@
 
 					<Grid>
 
-						<Grid IsVisible="{Binding !UseCommonSlaveId, Mode=OneWay}">
+						<Grid ColumnDefinitions="Auto,60,*"
+							  IsVisible="{Binding !UseCommonSlaveId, Mode=OneWay}"
+							  Margin="40,0,0,0"
+							  HorizontalAlignment="Left">
 							
-							<TextBlock Text="Slave ID"
+							<TextBlock Grid.Column="0"
+									   Text="Slave ID"
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text}"
-									   Margin="40,6,0,0"
-									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+									   VerticalAlignment="Center"/>
 
-							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							<TextBlock Grid.Column="1"
+									   Text="{Binding NumberFormat, Mode=OneWay}"
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text_Bright}"
-									   Margin="110,6,0,0"
-									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-							<TextBox Classes="InputField"
+							<TextBox Grid.Column="2"
+									 Classes="InputField"
 									 Width="60"
 									 Text="{Binding SlaveID, Mode=TwoWay}"
-									 Margin="160,0,0,0"
-									 HorizontalAlignment="Left" VerticalAlignment="Top"
 									 TextChanged="UppercaseTextBox_TextChanged"/>
 							
 						</Grid>
@@ -151,25 +153,25 @@
 
 					<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
 
-					<Grid>
+					<Grid ColumnDefinitions="Auto,60,*"
+						  HorizontalAlignment="Left">
 
-						<TextBlock Text="{l:Loc Macros.StartAddress}"
+						<TextBlock Grid.Column="0"
+								   Text="{l:Loc Macros.StartAddress}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
-								   Margin="0,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								   VerticalAlignment="Center"/>
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+						<TextBlock Grid.Column="1"
+								   Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="150,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-						<TextBox Classes="InputField"
+						<TextBox Grid.Column="2"
+								 Classes="InputField"
 								 Width="70"
 								 Text="{Binding Address, Mode=TwoWay}"
-								 Margin="200,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 					</Grid>

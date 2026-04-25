@@ -5,7 +5,7 @@
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:ViewModelsFields="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.RequestBuilder"
@@ -100,71 +100,80 @@
 
 					<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
 
-					<Grid>
+					<Grid ColumnDefinitions="Auto,60,*,*"
+						  Margin="40,0,0,0"
+						  HorizontalAlignment="Left">
 
-						<TextBlock Text="Slave ID"
+						<TextBlock Grid.Column="0"
+								   Text="Slave ID"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
-								   Margin="40,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								   VerticalAlignment="Center"/>
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+						<TextBlock Grid.Column="1"
+								   Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="110,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-						<TextBox Classes="InputField"
+						<TextBox Grid.Column="2"
+								 Classes="InputField"
 								 Width="60"
 								 Text="{Binding SlaveID, Mode=TwoWay}"
-								 Margin="160,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
-						<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
+						<CheckBox Grid.Column="3"
+								  IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
 								  Content="{l:Loc Macros.Checksum}"
 								  FontSize="14"
 								  Foreground="{DynamicResource App_Color_Text}"
 								  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
 								  Width="170"
-								  Margin="240,0,0,0"
-								  HorizontalAlignment="Left" VerticalAlignment="Top"/>
+								  Margin="20,0,0,0"/>
+					
 					</Grid>
 
 					<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
 					
 					<Grid>
 
-						<TextBlock Text="{l:Loc Common.Address}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text}"
-								   Margin="0,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+						<Grid ColumnDefinitions="Auto,60,*"							  
+							  HorizontalAlignment="Left">
+							
+							<TextBlock Grid.Column="0"
+									   Text="{l:Loc Common.Address}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text}"
+									   VerticalAlignment="Center"/>
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="60,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBlock Grid.Column="1"
+									   Text="{Binding NumberFormat, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="0,0,0,0"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-						<TextBox Classes="InputField"
-								 Width="70"
-								 Text="{Binding Address, Mode=TwoWay}"
-								 Margin="110,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
-								 TextChanged="UppercaseTextBox_TextChanged"/>
+							<TextBox Grid.Column="2"
+									 Classes="InputField"
+									 Width="70"
+									 Text="{Binding Address, Mode=TwoWay}"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
 
-						<TextBlock Text="{l:Loc Macros.RegisterCount}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text}"
-								   Margin="200,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+						</Grid>
+						
+						<StackPanel Orientation="Horizontal" Spacing="10"
+									HorizontalAlignment="Right">
+							
+							<TextBlock Text="{l:Loc Macros.RegisterCount}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text}"
+									   VerticalAlignment="Center"/>
 
-						<TextBox Classes="InputField"
-								 Width="60"
-								 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
-								 Margin="355,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBox Classes="InputField"
+									 Width="60"
+									 Text="{Binding NumberOfRegisters, Mode=TwoWay}"/>
+							
+						</StackPanel>
 
 					</Grid>
 

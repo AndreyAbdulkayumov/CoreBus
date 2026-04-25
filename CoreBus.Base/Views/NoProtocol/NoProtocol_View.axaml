@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
 			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.NoProtocol.TransmitMode;assembly=CoreBus.Base"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+		     xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="800" d:DesignHeight="450"
              x:Class="CoreBus.Base.Views.NoProtocol.NoProtocol_View"

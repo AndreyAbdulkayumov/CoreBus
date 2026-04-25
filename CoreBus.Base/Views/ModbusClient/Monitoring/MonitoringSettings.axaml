@@ -6,7 +6,7 @@
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1100" d:DesignHeight="120"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.MonitoringSettings"
              x:DataType="ViewModels:ModbusMonitoring_VM">
 

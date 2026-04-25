@@ -8,7 +8,7 @@
 			 xmlns:ManualModeView="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
 			 xmlns:MonitoringViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
 			 xmlns:MonitoringView="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="CoreBus.Base.Views.ModbusClient.ModbusClient_View"
@@ -38,27 +38,32 @@
 				
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="{l:Loc Service.Protocol}"
-                       FontSize="16"
-                       Foreground="{DynamicResource App_Color_Text}"
-                       Margin="10,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Left">
 
-			<TextBlock Text="{l:Loc Common.Undefined}"
-                       FontSize="16"
-					   IsVisible="{Binding !UI_IsEnable, Mode=OneWay}"
-                       Foreground="{DynamicResource App_Color_Text_Bright}"
-                       Margin="100,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<TextBlock Text="{l:Loc Service.Protocol}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text}"
+						   VerticalAlignment="Center"/>
 
-			<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
-                      SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
-                      FontSize="16"
-					  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
-					  IsEnabled="{Binding ChangeModbusTypeIsEnabled, Mode=OneWay}"
-                      Width="225"
-                      Margin="100,0,0,0"
-                      HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<Grid VerticalAlignment="Center">
+
+					<TextBlock Text="{l:Loc Common.Undefined}"
+							   FontSize="16"
+							   IsVisible="{Binding !UI_IsEnable, Mode=OneWay}"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+					<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
+							  SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
+							  FontSize="16"
+							  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
+							  IsEnabled="{Binding ChangeModbusTypeIsEnabled, Mode=OneWay}"
+							  Width="225"/>
+					
+				</Grid>
+				
+			</StackPanel>			
 
 			<StackPanel Orientation="Horizontal" Spacing="40"
 			            Margin="0,0,20,0"

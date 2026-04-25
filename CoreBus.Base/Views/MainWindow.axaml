@@ -240,17 +240,20 @@
 
 					<Grid>
 
-						<TextBlock Text="{l:Loc Main.SelectedPreset}"
-								   Margin="10,0,0,0"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<StackPanel Orientation="Horizontal" Spacing="15"
+									Margin="10,0,0,0"
+									HorizontalAlignment="Left" VerticalAlignment="Center">
 
-						<ComboBox Height="30" Width="160"
-								  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
-								  ItemsSource="{Binding Presets, Mode=OneWay}"
-								  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
-								  Margin="180,0,0,0"
-								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+							<TextBlock Text="{l:Loc Main.SelectedPreset}"
+									   FontSize="16"
+									   VerticalAlignment="Center"/>
+
+							<ComboBox Height="30" Width="160"
+									  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+									  ItemsSource="{Binding Presets, Mode=OneWay}"
+									  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"/>
+							
+						</StackPanel>						
 
 						<Button Margin="380,0,0,0"
 								Content="{l:Loc Common.Connect}"

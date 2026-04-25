@@ -5,7 +5,7 @@
 			 xmlns:local="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
              xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:Representations="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.Representations;assembly=CoreBus.Base"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
              d:DesignWidth="1000" d:DesignHeight="550"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.ModbusManualMode_View"
