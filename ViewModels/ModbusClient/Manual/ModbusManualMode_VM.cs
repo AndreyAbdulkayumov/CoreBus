@@ -95,6 +95,7 @@ public class ModbusManualMode_VM : ReactiveObject
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
     private readonly RequestBuilder_VM _normalMode_VM;
+    private readonly ILocalizationService _localization;
 
     private ushort _packageNumber = 0;
 
@@ -103,13 +104,14 @@ public class ModbusManualMode_VM : ReactiveObject
 
     public ModbusManualMode_VM(IUIService uiServices, IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_Modbus modbusModel,
-        RequestBuilder_VM modbusRequestBuilder_VM)
+        RequestBuilder_VM modbusRequestBuilder_VM, ILocalizationService localization)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));        
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _normalMode_VM = modbusRequestBuilder_VM ?? throw new ArgumentNullException(nameof(modbusRequestBuilder_VM));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -162,7 +164,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
             await _uiServices.CopyToClipboard(data);
         });
-        Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования запроса в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
+        Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyRequest") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -178,7 +180,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
             await _uiServices.CopyToClipboard(data);
         });
-        Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования ответа в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
+        Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyResponse") + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     public void ClearData()
@@ -264,13 +266,13 @@ public class ModbusManualMode_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            SendMacrosActionResponse(macros, false, "Клиент отключен.", MessageType.Error);
+            SendMacrosActionResponse(macros, false, _localization.Get("Exception.ClientDisconnected"), MessageType.Error);
             return;
         }
 
         if (macros.Commands == null || macros.Commands.Count == 0)
         {
-            SendMacrosActionResponse(macros, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+            SendMacrosActionResponse(macros, false, _localization.Get("Macros.NoCommands", macros.MacrosName), MessageType.Warning);
             return;
         }
 
@@ -313,7 +315,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
                 else
                 {
-                    throw new Exception("Выбранна неизвестная Modbus функция");
+                    throw new Exception(_localization.Get("Macros.UnknownModbusFunction"));
                 }
             }
 
@@ -324,18 +326,18 @@ public class ModbusManualMode_VM : ReactiveObject
 
                 var exceptionMessage = await ModbusErrorHandler(currentCommand.Content.Address, error);
 
-                errorMessages.Add($"Ошибка в команде \"{currentCommand.Name}\".\n\n{exceptionMessage}");
+                errorMessages.Add(_localization.Get("Macros.CommandErrorPrefix", currentCommand.Name ?? string.Empty) + "\n\n" + exceptionMessage);
             }
 
             catch (Exception error)
             {
-                errorMessages.Add($"Ошибка в команде \"{currentCommand?.Name}\".\n\n{error.Message}");
+                errorMessages.Add(_localization.Get("Macros.CommandErrorPrefix", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
             }
         }
 
         if (errorMessages.Any())
         {
-            errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
+            errorMessages.Insert(0, _localization.Get("Macros.MacroErrorsHeader", macros.MacrosName ?? string.Empty));
 
             SendMacrosActionResponse(macros, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
         }
@@ -399,17 +401,17 @@ public class ModbusManualMode_VM : ReactiveObject
     {
         if (_connectedHostModel.HostIsConnect == false)
         {
-            throw new Exception("Клиент отключен.");
+            throw new Exception(_localization.Get("Exception.ClientDisconnected"));
         }
 
         if (ModbusClient_VM.ModbusMessageType == null)
         {
-            throw new Exception("Не задан тип протокола Modbus.");
+            throw new Exception(_localization.Get("Exception.ModbusTypeNotSet"));
         }
 
         if (numberOfRegisters < 1)
         {
-            throw new Exception("Сколько, сколько регистров вы хотите прочитать? :)");
+            throw new Exception(_localization.Get("Exception.TooManyRegistersToRead"));
         }
 
         _currentFunction = readFunction;
@@ -441,17 +443,17 @@ public class ModbusManualMode_VM : ReactiveObject
     {
         if (_connectedHostModel.HostIsConnect == false)
         {
-            throw new Exception("Клиент отключен.");
+            throw new Exception(_localization.Get("Exception.ClientDisconnected"));
         }
 
         if (ModbusClient_VM.ModbusMessageType == null)
         {
-            throw new Exception("Не задан тип протокола Modbus.");
+            throw new Exception(_localization.Get("Exception.ModbusTypeNotSet"));
         }
 
         if (modbusWriteData == null || modbusWriteData.Length == 0)
         {
-            throw new Exception("Укажите данные для записи.");
+            throw new Exception(_localization.Get("Exception.SpecifyDataToWrite"));
         }
 
         _currentFunction = writeFunction;
@@ -489,7 +491,7 @@ public class ModbusManualMode_VM : ReactiveObject
             Address = address,
             ViewAddress = CreateViewAddress(address, 1),
             Data = Array.Empty<byte>(),
-            ViewData = $"Ошибка Modbus.\nКод: {error.ErrorCode.ToString()}"
+            ViewData = _localization.Get("Modbus.ErrorViewData", error.ErrorCode.ToString())
         },
         error.Details);
 
@@ -497,15 +499,11 @@ public class ModbusManualMode_VM : ReactiveObject
 
         if (_currentFunction == Function.ForceSingleCoil && error.ErrorCode == 3)
         {
-            addition = $"\n\nВ функции {Function.ForceSingleCoil.DisplayedName} используется логический тип данных.\n" +
-                "\nTrue - это 0xFF00" +
-                "\nFalse - это 0x0000";
+            addition = _localization.Get("Modbus.ForceSingleCoilHint", Function.ForceSingleCoil.DisplayedName);
         }
 
         return
-            "Ошибка Modbus.\n\n" +
-            $"Код функции: {error.FunctionCode.ToString()}\n" +
-            $"Код ошибки: {error.ErrorCode.ToString()}\n\n" +
+            _localization.Get("Modbus.ErrorBoxText", error.FunctionCode.ToString(), error.ErrorCode.ToString()) + "\n\n" +
             error.Message +
             addition;
     }

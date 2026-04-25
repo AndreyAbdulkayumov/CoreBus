@@ -1,6 +1,7 @@
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Globalization;
 using System.Text;
 using ViewModels.Validation;
@@ -82,7 +83,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                     catch (Exception error)
                     {
-                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+                        messageBox.Show(LocalizationProvider.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                     }
                 });
         }
@@ -108,11 +109,11 @@ namespace ViewModels.Macros.MacrosEdit
             if (!UseCommonSlaveId) 
                 return null;
 
-            string errorSource = "Ошибки в дополнительных настройках:\n\n";
+            string errorSource = LocalizationProvider.Get("Macros.AdditionalSettingsErrors") + "\n\n";
 
             if (string.IsNullOrWhiteSpace(CommonSlaveId))
             {
-                return $"{errorSource}Не задан единый Slave ID.";
+                return errorSource + LocalizationProvider.Get("Macros.CommonSlaveIdNotSet");
             }
 
             StringBuilder message = new StringBuilder();
@@ -127,7 +128,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (message.Length > 0)
             {
-                message.Insert(0, $"{errorSource}Ошибки валидации:\n\n");
+                message.Insert(0, errorSource + LocalizationProvider.Get("Validation.ErrorsHeader") + "\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 

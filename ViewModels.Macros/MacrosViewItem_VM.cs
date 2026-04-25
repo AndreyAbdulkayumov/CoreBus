@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using Services.Interfaces;
 using System.Reactive;
 using MessageBox.Core;
 
@@ -30,10 +31,10 @@ public class MacrosViewItem_VM : ReactiveObject
         _messageBox = messageBox;
 
         Command_EditMacros = ReactiveCommand.CreateFromTask(() => editMacros(Title));
-        Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
+        Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.EditMacro", Title) + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_MacrosDelete = ReactiveCommand.CreateFromTask(() => DeleteMacros(deleteMacrosAction));
-        Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
+        Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.RemoveMacro", Title) + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     public void MacrosAction()
@@ -51,7 +52,7 @@ public class MacrosViewItem_VM : ReactiveObject
 
     private async Task DeleteMacros(Action<string> deleteMacrosAction)
     {
-        if (await _messageBox.ShowYesNoDialog($"Вы действительно хотите удалить макрос \"{Title}\"?", MessageType.Information) == MessageBoxResult.Yes)
+        if (await _messageBox.ShowYesNoDialog(LocalizationProvider.Get("Confirm.DeleteMacro", Title), MessageType.Information) == MessageBoxResult.Yes)
         {
             deleteMacrosAction(Title);
         }

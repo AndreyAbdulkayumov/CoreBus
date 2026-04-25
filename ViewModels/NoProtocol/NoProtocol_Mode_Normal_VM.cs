@@ -74,7 +74,7 @@ public class NoProtocol_Mode_Normal_VM : ReactiveObject
 
             await _noProtocolModel.SendBytes(buffer);
         });
-        Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка отправки данных.\n\n{error.Message}", MessageType.Error, error));
+        Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show(LocalizationProvider.Get("Error.SendData") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.IsBytesSend)
             .Subscribe(IsBytes =>

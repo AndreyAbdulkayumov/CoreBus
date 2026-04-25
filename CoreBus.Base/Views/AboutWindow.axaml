@@ -4,10 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
         mc:Ignorable="d"
         x:Class="CoreBus.Base.Views.AboutWindow"
 		x:DataType="ViewModels:AboutApp_VM"
-        Title="О приложении"
+        Title="{l:Loc Common.About}"
 		Width="520" Height="450"
 		Background="Transparent"
 		CanResize="False"
@@ -46,7 +47,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 					
@@ -83,12 +84,12 @@
 								Orientation="Vertical" Spacing="10"
 								Margin="10,10,0,0">
 
-						<TextBlock Text="Разработал:"
+						<TextBlock Text="{l:Loc About.Developer}"
 								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
 								   TextAlignment="Center"/>
 
-						<TextBlock Text="Абдулкаюмов Андрей Ренатович"
+						<TextBlock Text="{l:Loc About.AuthorName}"
 								   Width="140"
 								   FontSize="16"
 								   TextWrapping="Wrap"
@@ -97,7 +98,7 @@
 
 						<Grid Margin="40,0,0,0">
 
-							<TextBlock Text="Версия .NET:"
+							<TextBlock Text="{l:Loc About.NetVersion}"
 									   Foreground="{DynamicResource App_Color_Text_Back}"
 									   FontSize="16"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -111,7 +112,7 @@
 
 						<Grid Margin="40,0,0,0">
 
-							<TextBlock Text="Версия Avalonia UI:"
+							<TextBlock Text="{l:Loc About.AvaloniaVersion}"
 									   Foreground="{DynamicResource App_Color_Text_Back}"
 									   FontSize="16"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -134,7 +135,7 @@
 
 						<StackPanel Orientation="Horizontal" Spacing="5">
 
-							<TextBlock Text="Исходный код:"
+							<TextBlock Text="{l:Loc About.SourceCode}"
 									   FontSize="14"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -144,7 +145,7 @@
 
 						</StackPanel>
 
-						<Button ToolTip.Tip="Копировать ссылку на исходный код в буфер обмена"
+						<Button ToolTip.Tip="{l:Loc About.CopySourceLink}"
 								CornerRadius="5"
 								Width="30" Height="30"
 								HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -170,7 +171,7 @@
 
 						<StackPanel Orientation="Horizontal" Spacing="5">
 
-							<TextBlock Text="Связаться с автором:"
+							<TextBlock Text="{l:Loc About.ContactAuthor}"
 									   FontSize="14"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -180,7 +181,7 @@
 
 						</StackPanel>
 
-						<Button ToolTip.Tip="Копировать адрес электронной почты в буфер обмена"
+						<Button ToolTip.Tip="{l:Loc About.CopyEmail}"
 								CornerRadius="5"
 								Width="30" Height="30"
 								HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -206,11 +207,11 @@
 
 				<Grid>
 					
-					<Button Content="Проверить обновления"
+					<Button Content="{l:Loc About.CheckUpdates}"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
 							Command="{Binding Command_CheckUpdate}"/>
 					
-					<Button Content="Поддержать проект"
+					<Button Content="{l:Loc About.SupportProject}"
 							HorizontalAlignment="Right" VerticalAlignment="Center"
 							Command="{Binding Command_MakeDonate}"/>
 					

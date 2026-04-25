@@ -21,7 +21,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.13" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.1.58" />
   </ItemGroup>
@@ -112,6 +112,16 @@
 
   <ItemGroup>
     <None Update="Documentation\UserManual.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!--
+    Файлы локализации. Для добавления нового языка достаточно положить файл <code>.json</code>
+    в папку Localization/ — он будет найден автоматически, и код при этом не меняется.
+  -->
+  <ItemGroup>
+    <None Update="Localization\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -5,12 +5,13 @@
 		xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels.Chart;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
         mc:Ignorable="d" 
 		Width="1000" Height="620"
         x:Class="CoreBus.Base.Views.Chart.ChartWindow"
         x:DataType="ViewModels:Chart_VM"
         Icon="/Resources/MainLogo.ico"
-		Title="График"
+		Title="{l:Loc Common.Chart}"
 		Topmost="{Binding WindowIsTopmost, Mode=OneWay}"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
@@ -51,7 +52,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Свернуть"
+				<Button ToolTip.Tip="{l:Loc Common.Minimize}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,50,0"
 						Click="Button_Minimize_Click">
@@ -60,7 +61,7 @@
 
 				</Button>
 
-				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+				<Button ToolTip.Tip="{l:Loc Common.MaximizeRestore}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,25,0"
 						Click="Button_Maximize_Click">
@@ -69,7 +70,7 @@
 
 				</Button>
 				
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
@@ -89,7 +90,7 @@
 
 						<StackPanel Orientation="Horizontal" Spacing="10">
 
-							<TextBlock Text="Количество отображаемых точек"
+							<TextBlock Text="{l:Loc Chart.PointsCount}"
 				                       FontSize="13"
 									   VerticalAlignment="Center"/>
 
@@ -104,7 +105,7 @@
 						</StackPanel>					
 						
 						<CheckBox IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
-								  Content="Поверх всех окон"
+								  Content="{l:Loc Chart.AlwaysOnTop}"
 								  FontSize="13"
 								  Foreground="{DynamicResource App_Color_Text}"
 								  HorizontalAlignment="Right"/>

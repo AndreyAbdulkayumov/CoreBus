@@ -45,25 +45,27 @@ public class AboutApp_VM : ReactiveObject
     private readonly IMessageBox _messageBox;
     private readonly IUIService _uiService;
     private readonly Model_AppUpdateSystem _appUpdateSystemModel;
+    private readonly ILocalizationService _localization;
 
     public AboutApp_VM(IMessageBoxAboutApp messageBox, IUIService uiService,
-        Model_AppUpdateSystem appUpdateSystemModel)
+        Model_AppUpdateSystem appUpdateSystemModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         Command_Copy_SourceCodeRepositoryAddress = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
-        Command_Copy_SourceCodeRepositoryAddress.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования ссылки на исходный код:\n\n{error.Message}", MessageType.Error, error));
+        Command_Copy_SourceCodeRepositoryAddress.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopySourceLink") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Copy_Email = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
-        Command_Copy_Email.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования почты автора:\n\n{error.Message}", MessageType.Error, error));
+        Command_Copy_Email.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyEmail") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_CheckUpdate = ReactiveCommand.CreateFromTask(CheckUpdate);
-        Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error, error));
+        Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CheckUpdates") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_MakeDonate = ReactiveCommand.Create(_appUpdateSystemModel.GoToDonatePage);
-        Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка :(\n\n{error.Message}", MessageType.Error, error));
+        Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.Donate") + "\n\n" + error.Message, MessageType.Error, error));
 
         _appVersionFull = _uiService.GetAppVersion();
 
@@ -87,16 +89,16 @@ public class AboutApp_VM : ReactiveObject
             {
                 string downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
 
-                if (await _messageBox.ShowYesNoDialog($"Доступна новая версия приложения - {info.Version}\nПерейти на страницу скачивания?", MessageType.Information) == MessageBoxResult.Yes)
+                if (await _messageBox.ShowYesNoDialog(_localization.Get("Info.NewVersionPrompt", info.Version), MessageType.Information) == MessageBoxResult.Yes)
                 {
                     _appUpdateSystemModel.GoToWebPage(downloadLink);
                 }
                 return;
             }
 
-            throw new Exception("Нарушена целостность файла с информацией об обновлении.");
+            throw new Exception(_localization.Get("Exception.UpdateFileCorrupted"));
         }
 
-        _messageBox.Show("Вы используйте актуальную версию приложения!", MessageType.Information);
+        _messageBox.Show(_localization.Get("Info.AppUpToDate"), MessageType.Information);
     }
 }

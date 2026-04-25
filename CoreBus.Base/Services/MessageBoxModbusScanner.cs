@@ -11,7 +11,7 @@ public class MessageBoxModbusScanner : IMessageBoxModbusScanner
 {
     private readonly IUIService _uiService;
 
-    private string? _appVersion;
+    private readonly string? _appVersion;
 
     public MessageBoxModbusScanner(IUIService uiService)
     {

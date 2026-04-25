@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.WriteFields.MultipleRegisters"
@@ -16,7 +17,7 @@
 					Width="415"
 					IsVisible="{Binding FloatFormatChangeIsEnabled, Mode=OneWay}">
 
-			<TextBlock Text="Формат числа типа float"
+			<TextBlock Text="{l:Loc Modbus.FloatFormat}"
 					   VerticalAlignment="Center"/>
 			
 			<ComboBox Width="100"
@@ -66,7 +67,7 @@
 								  VerticalAlignment="Top"/>
 
 						<Button Content="X"
-								ToolTip.Tip="Удалить элемент"
+								ToolTip.Tip="{l:Loc Modbus.DeleteItem}"
 								FontSize="14"
 								Height="32"
 								Command="{Binding Command_RemoveItem}"
@@ -82,7 +83,7 @@
 
 		</ItemsControl>
 
-		<Button Content="Добавить регистр"
+		<Button Content="{l:Loc Modbus.AddRegister}"
 				FontSize="14"
 				HorizontalAlignment="Center" VerticalAlignment="Center"
 				Command="{Binding Command_AddRegister}"/>

@@ -5,10 +5,11 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Tabs="clr-namespace:CoreBus.Base.Views.Settings.Tabs;assembly=CoreBus.Base"
 		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
         mc:Ignorable="d"
         x:Class="CoreBus.Base.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:Settings_VM"
-        Title="Настройки"
+        Title="{l:Loc Common.Settings}"
 		Width="540" Height="510"
 		Background="Transparent"
 		CanResize="False"
@@ -51,7 +52,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 				
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 					
@@ -83,7 +84,7 @@
 									Margin="10">
 
 							<Button Classes="ToolBarButton" 
-									ToolTip.Tip="Создать новый файл"
+									ToolTip.Tip="{l:Loc NoProtocol.CreateNewFile}"
 									Command="{Binding Command_File_AddNew}">
 								
 								<Icons:MaterialIcon Kind="FilePlusOutline"/>
@@ -92,7 +93,7 @@
 
 
 							<Button Classes="ToolBarButton" 
-									ToolTip.Tip="Добавить существующий файл"
+									ToolTip.Tip="{l:Loc NoProtocol.AddExistingFile}"
 									Command="{Binding Command_File_AddExisting}">
 
 								<Icons:MaterialIcon Kind="FolderOpenOutline"/>
@@ -100,7 +101,7 @@
 							</Button>
 
 							<Button Classes="ToolBarButton" 
-									ToolTip.Tip="Удалить выбранный файл"
+									ToolTip.Tip="{l:Loc NoProtocol.DeleteSelectedFile}"
 									Command="{Binding Command_File_Delete}">
 
 								<Icons:MaterialIcon Kind="FileRemoveOutline"/>
@@ -108,7 +109,7 @@
 							</Button>
 
 							<Button Classes="ToolBarButton" 
-									ToolTip.Tip="Сохранить выбранный файл"
+									ToolTip.Tip="{l:Loc NoProtocol.SaveSelectedFile}"
 									Command="{Binding Command_File_Save}">
 
 								<Icons:MaterialIcon Kind="ContentSave"/>
@@ -126,7 +127,7 @@
 									Spacing="15"
 									Margin="10">
 
-							<TextBlock Text="Пресет:"
+							<TextBlock Text="{l:Loc Settings.Preset}"
 									   FontSize="16"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -144,11 +145,11 @@
 
 						<TabControl>
 
-							<TabItem Header="Подключение">
+							<TabItem Header="{l:Loc Settings.Connection}">
 								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
 							</TabItem>
 
-							<TabItem Header="Без протокола">
+							<TabItem Header="{l:Loc Common.NoProtocol}">
 								<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
 							</TabItem>
 
@@ -156,7 +157,7 @@
 								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
 							</TabItem>
 
-							<TabItem Header="Приложение">
+							<TabItem Header="{l:Loc Settings.Application}">
 								<Tabs:AppSettings DataContext="{Binding Tab_AppSettings_VM}"/>
 							</TabItem>
 

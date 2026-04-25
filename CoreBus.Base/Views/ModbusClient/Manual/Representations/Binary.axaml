@@ -5,6 +5,7 @@
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
 			 xmlns:DataTypes="clr-namespace:ViewModels.ModbusClient.Manual.DataTypes;assembly=ViewModels"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.Representations.Binary"
@@ -35,7 +36,7 @@
 			                  ColumnDefinitions="90,580,50">
 
 							<TextBlock Grid.Row="0" Grid.Column="0"
-									   Text="Адрес"
+									   Text="{l:Loc Common.Address}"
 									   FontSize="16"
 									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -46,7 +47,7 @@
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 							<TextBlock Grid.Row="1" Grid.Column="0"
-									   Text="Значение"
+									   Text="{l:Loc Common.Value}"
 									   FontSize="16"
 									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -112,7 +113,7 @@
 							</ItemsControl>
 
 							<Button Grid.Row="2" Grid.Column="2"
-									ToolTip.Tip="Копировать слово в буфер обмена"
+									ToolTip.Tip="{l:Loc Modbus.CopyWord}"
 									CornerRadius="5"
 									Width="32" Height="32"
 									HorizontalAlignment="Left" VerticalAlignment="Center"

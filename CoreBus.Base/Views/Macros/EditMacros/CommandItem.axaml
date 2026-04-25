@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.CommandItem"
 			 x:DataType="ViewModels:MacrosCommandItem_VM">
 	
@@ -18,7 +19,7 @@
 					HorizontalAlignment="Center">
 
 			<Button Classes="ToolBarButton"
-					ToolTip.Tip="Запустить команду"
+					ToolTip.Tip="{l:Loc Macros.RunCommand}"
 					Command="{Binding Command_RunCommand}">
 
 				<Icons:MaterialIcon Kind="Play"/>
@@ -31,7 +32,7 @@
 					 Text="{Binding CommandName, Mode=TwoWay}"/>
 
 			<Button Classes="ToolBarButton"
-					ToolTip.Tip="Редактировать команду"
+					ToolTip.Tip="{l:Loc Macros.EditCommand}"
 					Command="{Binding Command_EditCommand}">
 
 				<Icons:MaterialIcon Kind="Cog"/>
@@ -39,7 +40,7 @@
 			</Button>
 
 			<Button Classes="ToolBarButton"
-					ToolTip.Tip="Удалить команду"
+					ToolTip.Tip="{l:Loc Macros.DeleteCommand}"
 					Command="{Binding Command_RemoveCommand}">
 
 				<Icons:MaterialIcon Kind="CloseBold"/>

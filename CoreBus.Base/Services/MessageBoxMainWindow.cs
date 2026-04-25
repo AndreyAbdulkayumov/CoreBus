@@ -1,4 +1,4 @@
-﻿using MessageBox.AvaloniaUI;
+using MessageBox.AvaloniaUI;
 using MessageBox.Core;
 using System.Threading.Tasks;
 using CoreBus.Base.Views;
@@ -11,7 +11,7 @@ public class MessageBoxMainWindow : IMessageBoxMainWindow
 {
     private readonly IUIService _uiService;
 
-    private string? _appVersion;
+    private readonly string? _appVersion;
 
     public MessageBoxMainWindow(IUIService uiService)
     {

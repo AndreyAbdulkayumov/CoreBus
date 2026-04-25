@@ -8,6 +8,7 @@
 			 xmlns:ManualModeView="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
 			 xmlns:MonitoringViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
 			 xmlns:MonitoringView="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="CoreBus.Base.Views.ModbusClient.ModbusClient_View"
@@ -37,39 +38,44 @@
 				
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="Протокол:"
-                       FontSize="16"
-                       Foreground="{DynamicResource App_Color_Text}"
-                       Margin="10,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Left">
 
-			<TextBlock Text="не определен"
-                       FontSize="16"
-					   IsVisible="{Binding !UI_IsEnable, Mode=OneWay}"
-                       Foreground="{DynamicResource App_Color_Text_Bright}"
-                       Margin="100,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<TextBlock Text="{l:Loc Service.Protocol}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text}"
+						   VerticalAlignment="Center"/>
 
-			<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
-                      SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
-                      FontSize="16"
-					  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
-					  IsEnabled="{Binding ChangeModbusTypeIsEnabled, Mode=OneWay}"
-                      Width="225"
-                      Margin="100,0,0,0"
-                      HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<Grid VerticalAlignment="Center">
+
+					<TextBlock Text="{l:Loc Common.Undefined}"
+							   FontSize="16"
+							   IsVisible="{Binding !UI_IsEnable, Mode=OneWay}"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+					<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
+							  SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
+							  FontSize="16"
+							  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
+							  IsEnabled="{Binding ChangeModbusTypeIsEnabled, Mode=OneWay}"
+							  Width="225"/>
+					
+				</Grid>
+				
+			</StackPanel>			
 
 			<StackPanel Orientation="Horizontal" Spacing="40"
 			            Margin="0,0,20,0"
 			            HorizontalAlignment="Right">
 				
-				<Button Content="Очистить данные"
+				<Button Content="{l:Loc Service.ClearData}"
 						Width="145"
 						HorizontalContentAlignment="Center"
 						VerticalContentAlignment="Center"
 						Command="{Binding Command_ClearData}"/>
 
-				<Button Content="Сканнер"
+				<Button Content="{l:Loc Modbus.Scanner}"
 						IsEnabled="{Binding ButtonModbusScanner_IsEnabled, Mode=OneWay}"
 						IsVisible="{Binding ButtonModbusScanner_IsVisible, Mode=OneWay}"
 						Width="80" Height="32"
@@ -77,8 +83,8 @@
 						VerticalContentAlignment="Center"
 						Command="{Binding Command_Open_ModbusScanner}"/>
 
-				<ToggleSwitch OffContent="Мониторинг"
-							  OnContent="Мониторинг"
+				<ToggleSwitch OffContent="{l:Loc Common.Monitoring}"
+							  OnContent="{l:Loc Common.Monitoring}"
 							  IsChecked="{Binding IsMonitoringMode, Mode=OneWay}"
 							  Click="MonitoringSwitch_OnClick"/>	
 

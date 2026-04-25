@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="150"
              x:Class="CoreBus.Base.Views.NoProtocol.TransmitMode.Normal"
@@ -28,7 +29,7 @@
 						Margin="20,0,0,0"
 						HorizontalAlignment="Left">
 				
-				<TextBlock Text="Добавить в конце сообщения:"
+				<TextBlock Text="{l:Loc Macros.AppendAtEnd}"
 						   Foreground="{DynamicResource App_Color_Text}"
 					       FontSize="14"
 						   VerticalAlignment="Center"/>
@@ -49,11 +50,11 @@
 						Margin="0,0,20,0"
 						HorizontalAlignment="Right">
 				
-				<ToggleSwitch OffContent="Строка"
-							  OnContent="Байты"
+				<ToggleSwitch OffContent="{l:Loc Common.String}"
+							  OnContent="{l:Loc Common.Bytes}"
 							  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"/>
 				
-				<Button Content="Отправить"
+				<Button Content="{l:Loc Common.Send}"
 						Width="95"
 						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 						Command="{Binding Command_Send}"/>				

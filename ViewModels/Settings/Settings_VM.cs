@@ -68,17 +68,20 @@ public class Settings_VM : ReactiveObject
     private readonly IFileSystemService _fileSystemService;
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IMessageBoxSettings _messageBox;
+    private readonly ILocalizationService _localization;
 
     private readonly Model_Settings _settingsModel;
 
     public Settings_VM(IFileSystemService fileSystemService, IOpenChildWindowService openChildWindowService, IMessageBoxSettings messageBox,
         Model_Settings settingsModel,
-        Connection_VM connectionVM, Settings_NoProtocol_VM settingsNoProtocolVM, Modbus_VM modbusVM, AppSettings_VM appSettingsVM)
+        Connection_VM connectionVM, Settings_NoProtocol_VM settingsNoProtocolVM, Modbus_VM modbusVM, AppSettings_VM appSettingsVM,
+        ILocalizationService localization)
     {
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         _tab_Connection_VM = connectionVM ?? throw new ArgumentNullException(nameof(connectionVM));
         _tab_NoProtocol_VM = settingsNoProtocolVM ?? throw new ArgumentNullException(nameof(settingsNoProtocolVM));
         _tab_Modbus_VM = modbusVM ?? throw new ArgumentNullException(nameof(modbusVM));
@@ -169,7 +172,7 @@ public class Settings_VM : ReactiveObject
     {
         try
         {
-            string? filePath = await _fileSystemService.GetFilePath("Добавление уже существующего файла настроек", "Файл настроек", ["*.json"]);
+            string? filePath = await _fileSystemService.GetFilePath(_localization.Get("Settings.AddExistingFileTitle"), _localization.Get("Settings.FileTypeLabel"), ["*.json"]);
 
             if (string.IsNullOrEmpty(filePath))
             {
@@ -185,7 +188,7 @@ public class Settings_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка при добавлении уже существующего файла.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.AddExistingSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -195,11 +198,11 @@ public class Settings_VM : ReactiveObject
         {
             if (Presets.Count <= 1)
             {
-                _messageBox.Show("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.CannotDeleteLastFile"), MessageType.Warning);
                 return;
             }
 
-            MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog($"Вы действительно желайте удалить файл {SelectedPreset}?", MessageType.Warning);
+            MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.DeletePresetFile", SelectedPreset), MessageType.Warning);
 
             if (dialogResult != MessageBoxResult.Yes)
             {
@@ -215,7 +218,7 @@ public class Settings_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка удаления файла настроек.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.DeleteSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -281,12 +284,12 @@ public class Settings_VM : ReactiveObject
 
             _tab_Connection_VM.PresetSaveHandler(data.Connection_SerialPort);
 
-            _messageBox.Show("Настройки успешно сохранены!", MessageType.Information);
+            _messageBox.Show(_localization.Get("Info.SettingsSaved"), MessageType.Information);
         }
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка сохранения файла настроек.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.SaveSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -316,7 +319,7 @@ public class Settings_VM : ReactiveObject
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 

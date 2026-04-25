@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual;assembly=ViewModels"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="CoreBus.Base.Views.ModbusClient.Manual.Representations.Float"
@@ -119,7 +120,7 @@
 			
 				</ItemsControl>
 
-				<TextBlock Text="Для преобразования в число нужно минимум 2 регистра Modbus"
+				<TextBlock Text="{l:Loc Modbus.NeedTwoRegisters}"
 			               IsVisible="{Binding !FloatRepresentationItems.Count}"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 

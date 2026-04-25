@@ -18,7 +18,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 {
     private const string SenderName = "MacrosWorkspace";
 
-    private const string ModeName_NoProtocol = "Без протокола";
+    private const string ModeName_NoProtocol_Key = "Common.NoProtocol";
     private const string ModeName_ModbusClient = "Modbus";
 
     private bool _windowIsVisible = true;
@@ -60,14 +60,16 @@ public class Macros_VM : ReactiveObject, IDisposable
     private readonly IFileSystemService _fileSystemService;
     private readonly IMessageBox _messageBox;
     private readonly Model_Settings _settingsModel;
+    private readonly ILocalizationService _localization;
 
     public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox,
-        Model_Settings settingsModel)
+        Model_Settings settingsModel, ILocalizationService localization)
     {
         _openChildWindowService = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         /****************************************************/
         //
@@ -92,13 +94,13 @@ public class Macros_VM : ReactiveObject, IDisposable
         /****************************************************/
 
         Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
-        Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error, error));
+        Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosImport") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
-        Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error, error));
+        Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosExport") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
-        Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error, error));
+        Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosCreate") + "\n\n" + error.Message, MessageType.Error, error));
 
         MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 
@@ -124,7 +126,7 @@ public class Macros_VM : ReactiveObject, IDisposable
         if (_modbusMacros != null)
             return _settingsModel.FilePath_Macros_Modbus;
 
-        throw new Exception("Не выбран режим.");
+        throw new Exception(_localization.Get("Exception.ModeNotSelected"));
     }
 
     private string GetModeName(ApplicationWorkMode mode)
@@ -132,7 +134,7 @@ public class Macros_VM : ReactiveObject, IDisposable
         switch (mode)
         {
             case ApplicationWorkMode.NoProtocol:
-                return ModeName_NoProtocol;
+                return _localization.Get(ModeName_NoProtocol_Key);
 
             case ApplicationWorkMode.ModbusClient:
                 return ModeName = ModeName_ModbusClient;
@@ -321,14 +323,13 @@ public class Macros_VM : ReactiveObject, IDisposable
         string modeName = GetModeName(workMode);
 
         if (await _messageBox.ShowYesNoDialog(
-            $"Внимание!!!\n\n" +
-            $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления. Продолжить?",
+            _localization.Get("Confirm.ImportMacrosWarning", modeName),
             MessageType.Warning) != MessageBoxResult.Yes)
         {
             return;
         }
 
-        string? macrosFilePath = await _fileSystemService.GetFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".", "Файл макросов", ["*.json"]);
+        string? macrosFilePath = await _fileSystemService.GetFilePath(_localization.Get("Macros.ImportDialogTitle", modeName), _localization.Get("Macros.FileTypeLabel"), ["*.json"]);
 
         if (macrosFilePath != null)
         {
@@ -339,7 +340,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
             if (fileName != validFileName)
             {
-                throw new Exception($"Некорректное имя файла макроса.\nОжидается имя \"{validFileName}\".");
+                throw new Exception(_localization.Get("Exception.InvalidMacrosFileName", validFileName));
             }
 
             try
@@ -361,7 +362,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
             catch (Exception error)
             {
-                throw new Exception($"Ошибка чтения файла.\n\n{error.Message}");
+                throw new Exception(_localization.Get("Exception.FileReadError") + "\n\n" + error.Message);
             }
 
             _settingsModel.DeleteFile(macrosValidFilePath);
@@ -374,13 +375,13 @@ public class Macros_VM : ReactiveObject, IDisposable
                 UpdateWorkspace(workMode);
             }
 
-            _messageBox.Show($"Файл с макросами для режима \"{modeName}\" успешно импортирован!", MessageType.Information);
+            _messageBox.Show(_localization.Get("Info.MacrosImportSuccess", modeName), MessageType.Information);
         }
     }
 
     private async Task ExportMacros()
     {
-        string? outputFilePath = await _fileSystemService.GetFolderPath("Выбор папки для экспорта файла макросов.");
+        string? outputFilePath = await _fileSystemService.GetFolderPath(_localization.Get("Macros.ExportDialogTitle"));
 
         if (outputFilePath != null)
         {
@@ -390,7 +391,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
             _settingsModel.CopyFile(macrosFileName, outputFileName);
 
-            _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
+            _messageBox.Show(_localization.Get("Info.MacrosExportSuccess", outputFileName), MessageType.Information);
         }
     }
 
@@ -402,7 +403,7 @@ public class Macros_VM : ReactiveObject, IDisposable
         if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
             return new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(modbusContent, SenderName);
 
-        throw new NotImplementedException($"Поддержка режима не реализована.");
+        throw new NotImplementedException(_localization.Get("Exception.ModeNotSupported"));
     }
 
     private void SaveMacros(ApplicationWorkMode mode)

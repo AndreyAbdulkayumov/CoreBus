@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+             xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.Settings.Tabs.AppSettings"
@@ -11,14 +12,8 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
-
-		<Style Selector="TextBlock.Parameters">
-			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="0,6,340,0"/>
-			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Top"/>
-		</Style>
 
 	</UserControl.Styles>
 	
@@ -30,18 +25,18 @@
 
 		<Grid>
 
-			<TextBlock Text="Тема" 
+			<TextBlock Text="{l:Loc Settings.Theme}" 
 					   Margin="90,6,0,0"
 					   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-			<Button Content="Темная"
+			<Button Content="{l:Loc Settings.ThemeDark}"
 					Width="90"
 					Margin="150,0,0,0"
 					HorizontalAlignment="Left" VerticalAlignment="Top"
 					HorizontalContentAlignment="Center"
 					Command="{Binding Select_Dark_Theme}"/>
 
-			<Button Content="Светлая"
+			<Button Content="{l:Loc Settings.ThemeLight}"
 					Width="90"
 					Margin="260,0,0,0"
 					HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -50,7 +45,7 @@
 
 		</Grid>
 
-		<CheckBox Content="Проверять обновления при запуске программы"
+		<CheckBox Content="{l:Loc Settings.CheckUpdatesOnStart}"
 				  Foreground="{DynamicResource App_Color_Text}"
 				  FontSize="14"
 				  Width="220"
@@ -58,6 +53,28 @@
 				  HorizontalAlignment="Left" VerticalAlignment="Top"
 				  IsChecked="{Binding CheckAppUpdateAfterStart, Mode=TwoWay}"/>
 		
+		<Grid>
+
+			<TextBlock Text="{l:Loc Settings.Language}"
+					   Margin="0,6,235,0"
+					   HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+			<ComboBox ItemsSource="{Binding Languages}"
+					  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+					  Width="120"
+					  Margin="235,0,0,0"
+					  HorizontalAlignment="Left" VerticalAlignment="Top">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
 	</StackPanel>
 
 </UserControl>

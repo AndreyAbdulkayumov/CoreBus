@@ -91,16 +91,15 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         }
     }
 
-    private const string Button_Content_Start = "Начать опрос";
-    private const string Button_Content_Stop = "Остановить опрос";
+    private const string Button_Content_Start = "Status.StartPolling";
+    private const string Button_Content_Stop = "Status.StopPolling";
 
-    private string _button_Content = Button_Content_Start;
+    private string _button_ContentKey = Button_Content_Start;
 
-    public string Button_Content
-    {
-        get => _button_Content;
-        set => this.RaiseAndSetIfChanged(ref _button_Content, value);
-    }
+    /// <summary>
+    /// Локализованный текст кнопки пуска/остановки опроса.
+    /// </summary>
+    public string Button_Content => _localization[_button_ContentKey];
 
     private bool _selectedNumberFormat_Hex;
 
@@ -194,12 +193,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     private readonly MonitoringDataGrid_VM _monitoringDataGrid_VM;
     private readonly Chart_VM _chart_VM;
     private readonly FileLogger _logger;
+    private readonly ILocalizationService _localization;
 
 
     public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         Model_Settings settingsModel, ConnectedHost connectedHostModel,
         Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM,
-        FileLogger logger)
+        FileLogger logger, ILocalizationService localization)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
@@ -210,6 +210,9 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         _monitoringDataGrid_VM = monitoringDataGrid_VM ?? throw new ArgumentNullException(nameof(monitoringDataGrid_VM));
         _chart_VM = chart_VM ?? throw new ArgumentNullException(nameof(chart_VM));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(Button_Content));
         
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -250,7 +253,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_RemoveSelectedItems = ReactiveCommand.Create(_monitoringDataGrid_VM.RemoveSelectedItems);
-        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка удаления выбранных регистров.\n\n{error.Message}", MessageType.Error, error));
+        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.RemoveSelectedRegisters") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenChart = ReactiveCommand.Create(() =>
         {
@@ -262,7 +265,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
             {
-                _messageBox.Show("Не выбрано ни одного регистра для отображения на графике.", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.NoRegistersForChart"), MessageType.Warning);
                 return;
             }
 
@@ -270,16 +273,16 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             InitChartAxes();
         });
-        Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна графика.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenChartWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_StartLogging = ReactiveCommand.Create(StartLogging);
-        Command_StartLogging.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска логгирования.\n\n{error.Message}", MessageType.Error, error));
+        Command_StartLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.StartLogging") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_StopLogging = ReactiveCommand.CreateFromTask(StopLogging);
-        Command_StopLogging.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка остановки логгирования.\n\n{error.Message}", MessageType.Error, error));
+        Command_StopLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.StopLogging") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenLogFolder = ReactiveCommand.CreateFromTask(async () => await _fileSystemService.OpenFolder(_settingsModel.LogFolderPath));
-        Command_OpenLogFolder.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия папки с логами.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenLogFolder.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenLogFolder") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -307,7 +310,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
                 catch (Exception error)
                 {
-                    _messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+                    _messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
 
@@ -406,7 +409,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (!IsMonitoringRunning)
             return;
 
-        _messageBox.Show($"Ошибка мониторинга.\n\n{e.Message}", MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Error.Monitoring") + "\n\n" + e.Message, MessageType.Error, e);
 
         StopPolling();
     }
@@ -436,7 +439,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
         {
-            _messageBox.Show("Не выбрано ни одного регистра для записи в лог.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.NoRegistersForLog"), MessageType.Warning);
             ResetLogFlags();
             return;
         }
@@ -493,13 +496,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         {
             if (_openChildWindowService.MacrosWindowIsOpen)
             {
-                _messageBox.Show("Для запуска опроса регистров необходимо закрыть окно макросов.", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.CloseMacrosToStartPoll"), MessageType.Warning);
                 return;
             }
 
             if (_monitoringDataGrid_VM.IsEmpty)
             {
-                _messageBox.Show("Не заданы регистры для опроса.", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.NoRegistersToPoll"), MessageType.Warning);
                 return;
             }
 
@@ -513,11 +516,12 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             if (_selectedPeriod == 0)
             {
-                _messageBox.Show("Вы не ошиблись с периодом? :)", MessageType.Warning);
+                _messageBox.Show(_localization.Get("Warning.WrongPeriod"), MessageType.Warning);
                 return;
             }
 
-            Button_Content = Button_Content_Stop;
+            _button_ContentKey = Button_Content_Stop;
+            this.RaisePropertyChanged(nameof(Button_Content));
             IsMonitoringRunning = true;
 
             _monitoringDataGrid_VM.BlockUI(true);
@@ -556,7 +560,8 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
     {
         _modbusModel.MonitoringStop();
 
-        Button_Content = Button_Content_Start;
+        _button_ContentKey = Button_Content_Start;
+        this.RaisePropertyChanged(nameof(Button_Content));
         IsMonitoringRunning = false;
 
         _monitoringDataGrid_VM.BlockUI(false);
@@ -576,10 +581,10 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return;
 
             if (_connectedHostModel.HostIsConnect == false)
-                throw new Exception("Клиент отключен.");
+                throw new Exception(_localization.Get("Exception.ClientDisconnected"));
 
             if (ModbusClient_VM.ModbusMessageType == null)
-                throw new Exception("Не задан тип протокола Modbus.");
+                throw new Exception(_localization.Get("Exception.ModbusTypeNotSet"));
 
             var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
 

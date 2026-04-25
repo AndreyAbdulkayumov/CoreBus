@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Macros;assembly=ViewModels.Macros"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="100" d:DesignHeight="100"
              x:Class="CoreBus.Base.Views.Macros.MacrosItem"
@@ -22,7 +23,7 @@
 					BorderBrush="Transparent"
 					BorderThickness="1"
 					Cursor="Hand"
-					ToolTip.Tip="Редактировать"
+					ToolTip.Tip="{l:Loc Common.Edit}"
 					HorizontalAlignment="Left" VerticalAlignment="Top"
 					Command="{Binding Command_EditMacros}">
 
@@ -45,7 +46,7 @@
 					BorderBrush="Transparent"
 					BorderThickness="1"
 					Cursor="Hand"
-					ToolTip.Tip="Удалить"
+					ToolTip.Tip="{l:Loc Common.Delete}"
 					HorizontalAlignment="Right" VerticalAlignment="Top"
 					Command="{Binding Command_MacrosDelete}">
 

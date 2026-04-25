@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Services.Interfaces;
 
 namespace ViewModels.Helpers;
 
@@ -26,7 +27,7 @@ public static class AppEncoding
                 return Encoding.UTF8;
 
             default:
-                throw new Exception("Задан неизвестный тип кодировки: " + encodingName);
+                throw new Exception(LocalizationProvider.Get("Exception.UnknownEncoding", encodingName ?? string.Empty));
         }
     }
 }

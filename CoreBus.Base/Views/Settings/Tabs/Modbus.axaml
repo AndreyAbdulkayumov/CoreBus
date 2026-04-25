@@ -5,6 +5,7 @@
 			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
 			 xmlns:FloatNumber="clr-namespace:ViewModels.Helpers.FloatNumber;assembly=ViewModels"
 			 xmlns:Converters="clr-namespace:CoreBus.Base.Converters;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.Settings.Tabs.Modbus"
@@ -73,30 +74,30 @@
 		
 		<Grid>
 
-			<TextBlock Text="Таймаут записи" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Settings.WriteTimeout}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Text="{Binding WriteTimeout, Mode=TwoWay}"/>
 
-			<TextBlock Text="мс." Classes="Units"/>
+			<TextBlock Text="{l:Loc Common.Ms}" Classes="Units"/>
 
 		</Grid>
 
 
 		<Grid>
 
-			<TextBlock Text="Таймаут чтения" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Settings.ReadTimeout}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Text="{Binding ReadTimeout, Mode=TwoWay}"/>
 
-			<TextBlock Text="мс." Classes="Units"/>
+			<TextBlock Text="{l:Loc Common.Ms}" Classes="Units"/>
 
 		</Grid>
 
 		<Grid>
 
-			<TextBlock Text="Метка времени в логах" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Settings.LogTimestamp}" Classes="Parameters"/>
 
 			<ComboBox ItemsSource="{Binding TimestampFormats}"
 					  SelectedItem="{Binding SelectedTimestampFormat, Mode=TwoWay}"
@@ -113,7 +114,7 @@
 			<StackPanel Orientation="Vertical" Spacing="20"
 						Margin="20">
 
-				<TextBlock Text="Формат записи числа типа float"
+				<TextBlock Text="{l:Loc Settings.FloatFormat}"
 						   HorizontalAlignment="Center"/>
 
 				<Grid ColumnDefinitions="Auto,Auto" 

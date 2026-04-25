@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
 			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.NoProtocol.TransmitMode;assembly=CoreBus.Base"
+		     xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="800" d:DesignHeight="450"
              x:Class="CoreBus.Base.Views.NoProtocol.NoProtocol_View"
@@ -50,7 +51,7 @@
 						Margin="10,0,0,0"
 						HorizontalAlignment="Left" VerticalAlignment="Center">
 
-				<TextBlock Text="Интерфейс:"
+				<TextBlock Text="{l:Loc NoProtocol.Interface}"
 						   FontSize="16"
                            Foreground="{DynamicResource App_Color_Text}"/>
 
@@ -65,7 +66,7 @@
 						Margin="250,0,0,0"
 						HorizontalAlignment="Left" VerticalAlignment="Center">
 
-				<TextBlock Text="Кодировка:"
+				<TextBlock Text="{l:Loc NoProtocol.Encoding}"
 						   FontSize="16"
                            Foreground="{DynamicResource App_Color_Text}"/>
 
@@ -79,14 +80,21 @@
 						Margin="0,0,20,0"
 					    HorizontalAlignment="Right" VerticalAlignment="Center">
 
-				<TextBlock Text="Тип отправки:"
+				<TextBlock Text="{l:Loc NoProtocol.SendType}"
 						   FontSize="16"
                            Foreground="{DynamicResource App_Color_Text}"
 						   VerticalAlignment="Center"/>
 				
 				<ComboBox Height="32" Width="125"
 						  ItemsSource="{Binding AllSendModes, Mode=OneWay}"
-					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}"/>
+					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="x:String">
+							<!-- Конвертер преобразует ключ локализации в текущее локализованное значение. -->
+							<TextBlock Text="{Binding ., Converter={x:Static l:LocalizeKeyConverter.Instance}}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 				
 			</StackPanel>
 
@@ -116,7 +124,7 @@
 
 			<Grid Grid.Row="1">
 
-				<CheckBox Content="Каждое сообщение на новой строке"
+				<CheckBox Content="{l:Loc NoProtocol.EachMessageOnNewLine}"
 						  Foreground="{DynamicResource App_Color_Text}"
 						  FontSize="14"
 						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
@@ -127,11 +135,11 @@
 							Margin="0,0,20,0"
 							HorizontalAlignment="Right">
 
-					<ToggleSwitch OffContent="Строка"
-								  OnContent="Байты"
+					<ToggleSwitch OffContent="{l:Loc Common.String}"
+								  OnContent="{l:Loc Common.Bytes}"
 								  IsChecked="{Binding RX_IsByteView, Mode=TwoWay}"/>
 
-					<Button Content="Очистить поле"
+					<Button Content="{l:Loc NoProtocol.ClearField}"
 							Width="120"
 							Command="{Binding Command_ClearRX}"/>
 					

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.NoProtocolCommand"
 			 x:DataType="ViewModelsLocal:NoProtocolCommand_VM"
 			 DataContextChanged="UserControl_DataContextChanged">
@@ -24,17 +25,20 @@
 			<RowDefinition Height="1*"/>
 		</Grid.RowDefinitions>
 
-		<Grid Grid.Row="0">
+		<Grid Grid.Row="0" 
+		      ColumnDefinitions="Auto,*"
+			  Margin="20,0,20,0"
+			  VerticalAlignment="Center">
 
-			<TextBlock Text="Имя команды"
+			<TextBlock Grid.Column="0"
+			           Text="{l:Loc Macros.CommandName}"
 					   FontSize="16"
-					   Margin="20,0,0,0"
-					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					   Margin="0,0,10,0"
+					   VerticalAlignment="Center"/>
 
-			<TextBox Classes="InputField"
-					 Text="{Binding Name, Mode=TwoWay}"
-					 Margin="140,0,20,0"
-					 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+			<TextBox Grid.Column="1"
+			         Classes="InputField"
+					 Text="{Binding Name, Mode=TwoWay}"/>
 
 		</Grid>
 
@@ -57,7 +61,7 @@
 							Margin="20,0,0,0"
 							HorizontalAlignment="Left">
 
-					<TextBlock Text="Кодировка строки:"
+					<TextBlock Text="{l:Loc Macros.StringEncoding}"
 							   VerticalAlignment="Center"/>
 
 					<ComboBox Width="100"
@@ -68,8 +72,8 @@
 				</StackPanel>
 
 				<ToggleSwitch Grid.Row="0"
-							  OffContent="Строка"
-							  OnContent="Байты"
+							  OffContent="{l:Loc Common.String}"
+							  OnContent="{l:Loc Common.Bytes}"
 							  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"
 							  Margin="0,0,20,0"
 							  HorizontalAlignment="Right"/>
@@ -86,7 +90,7 @@
 								Margin="20,0,0,0"
 								HorizontalAlignment="Left">
 
-						<TextBlock Text="Добавить в конце сообщения:"
+						<TextBlock Text="{l:Loc Macros.AppendAtEnd}"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="14"
 								   VerticalAlignment="Center"/>

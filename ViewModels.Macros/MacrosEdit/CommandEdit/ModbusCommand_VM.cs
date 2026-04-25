@@ -6,6 +6,7 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
+using Services.Interfaces;
 using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields;
@@ -219,7 +220,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
                 catch (Exception error)
                 {
-                    messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+                    messageBox.Show(LocalizationProvider.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
     }
@@ -312,7 +313,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
             return;
         }
 
-        throw new Exception($"Выбрана неизвестная функция записи \"{displayedName}\"");
+        throw new Exception(LocalizationProvider.Get("Exception.UnknownWriteFunction", displayedName));
     }
 
     public object GetContent()
@@ -344,12 +345,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (!uncheckedFields.Contains(FieldNames.SlaveID) && string.IsNullOrWhiteSpace(SlaveID))
         {
-            validationMessages.Add("Не задан SlaveID.");
+            validationMessages.Add(LocalizationProvider.Get("Validation.SlaveIdNotSet"));
         }
 
         if (string.IsNullOrWhiteSpace(Address))
         {
-            validationMessages.Add("Не задан Адрес.");
+            validationMessages.Add(LocalizationProvider.Get("Validation.AddressNotSet"));
         }
 
         string? writeReadMessages = SelectedFunctionType_Write ? CheckWriteFields(uncheckedFields) : CheckReadFields(uncheckedFields);
@@ -396,7 +397,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, LocalizationProvider.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -407,12 +408,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     {
         if (string.IsNullOrWhiteSpace(NumberOfReadRegisters))
         {
-            return "Укажите количество регистров для чтения.";
+            return LocalizationProvider.Get("Validation.SpecifyReadRegisterCountShort");
         }
 
         if (_selectedNumberOfReadRegisters < 1)
         {
-            return "Сколько, сколько регистров вы хотите прочитать? :)";
+            return LocalizationProvider.Get("Validation.TooManyRegisters");
         }
 
         if (!HasErrors)
@@ -434,7 +435,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, LocalizationProvider.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -480,10 +481,10 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
                 return "Slave ID";
 
             case nameof(Address):
-                return "Адрес";
+                return LocalizationProvider.Get("Common.Address");
 
             case nameof(NumberOfReadRegisters):
-                return "Кол-во регистров";
+                return LocalizationProvider.Get("Common.RegisterCount");
 
             default:
                 return fieldName;

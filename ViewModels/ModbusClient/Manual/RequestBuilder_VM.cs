@@ -159,12 +159,14 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
     private readonly IMessageBoxMainWindow _messageBox;
+    private readonly ILocalizationService _localization;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Settings _settingsModel;
 
-    public RequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
+    public RequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
@@ -208,10 +210,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         /****************************************************/
 
         Command_Read = ReactiveCommand.Create(ReadButtonHandler);
-        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке чтения: \n\n{error.Message}", MessageType.Error, error));
+        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.ReadAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Write = ReactiveCommand.Create(WriteButtonHandler);
-        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке записи:\n\n{error.Message}", MessageType.Error, error));
+        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.WriteAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -269,19 +271,19 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(NumberOfRegisters))
         {
-            _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.SpecifyReadRegisterCount"), MessageType.Warning);
             return;
         }
 
@@ -318,7 +320,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -329,19 +331,19 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (CurrentWriteFieldViewModel == null)
         {
-            _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.WriteFieldTypeNotSelected"), MessageType.Warning);
             return;
         }
 
@@ -390,7 +392,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -442,7 +444,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -456,10 +458,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
                 return "Slave ID";
 
             case nameof(Address):
-                return "Адрес";
+                return _localization.Get("Common.Address");
 
             case nameof(NumberOfRegisters):
-                return "Кол-во регистров";
+                return _localization.Get("Common.RegisterCount");
 
             default:
                 return fieldName;

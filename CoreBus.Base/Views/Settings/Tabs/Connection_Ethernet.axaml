@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="CoreBus.Base.Views.Settings.Tabs.Connection_Ethernet"
@@ -42,7 +43,7 @@
 		
 		<Grid>
 			
-			<TextBlock Text="IP-адрес" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Common.IpAddress}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Width="140"
@@ -54,7 +55,7 @@
 		
 		<Grid>
 
-			<TextBlock Text="Порт" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Common.Port}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Width="70"

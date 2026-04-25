@@ -21,6 +21,12 @@ public class AppInfo
     public bool CheckUpdateAfterStart { get; set; }
     public string? SkippedAppVersion { get; set; }
 
+    /// <summary>
+    /// Код языка интерфейса (ru, en, ...). Соответствует имени файла
+    /// в папке Localization/ (без расширения) или полю _meta.code в JSON.
+    /// </summary>
+    public string? LanguageCode { get; set; }
+
 
     public static AppInfo GetDefault(string defaultPresetName)
     {
@@ -32,6 +38,7 @@ public class AppInfo
             IsModbusMonitoringMode = false,
             CheckUpdateAfterStart = true,
             SkippedAppVersion = null,
+            LanguageCode = "ru",
         };
     }
 }

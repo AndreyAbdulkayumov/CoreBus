@@ -23,13 +23,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             foreach (KeyValuePair<string, ValidateMessage> itemElement in checkedItem.ActualErrors)
             {
-                validationMessages.AppendLine($"[Элемент {i + 1} - {checkedItem.GetFieldViewName(itemElement.Key)}]\n{checkedItem.GetFullErrorMessage(itemElement.Key)}\n");
+                validationMessages.AppendLine($"[{_localization.Get("Validation.ItemFieldLabel", i + 1, checkedItem.GetFieldViewName(itemElement.Key))}]\n{checkedItem.GetFullErrorMessage(itemElement.Key)}\n");
             }
         }
 
         if (validationMessages.Length > 0)
         {
-            validationMessages.Insert(0, "Ошибки валидации:\n\n");
+            validationMessages.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return validationMessages.ToString().TrimEnd('\r', '\n');
         }
 
@@ -46,7 +46,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 return "Slave ID";
 
             case nameof(Period_ms):
-                return "Период";
+                return _localization.Get("Common.Period");
 
             default:
                 return fieldName;

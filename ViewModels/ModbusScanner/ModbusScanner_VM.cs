@@ -87,24 +87,16 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         }
     }
 
-    private string _deviceReadTimeout = "Таймаут чтения ";
+    private int _deviceReadTimeoutValue;
 
-    public string DeviceReadTimeout
-    {
-        get => _deviceReadTimeout;
-        set => this.RaiseAndSetIfChanged(ref _deviceReadTimeout, value);
-    }
+    public string DeviceReadTimeout => _localization.Get("Scanner.ReadTimeoutPrefix") + _deviceReadTimeoutValue + " " + _localization.Get("Common.Ms");
 
-    private const string ButtonContent_Start = "Начать поиск";
-    private const string ButtonContent_Stop = "Остановить поиск";
+    private const string ButtonContent_Start_Key = "Status.StartSearch";
+    private const string ButtonContent_Stop_Key = "Status.StopSearch";
 
-    private string _actionButtonContent = ButtonContent_Start;
+    private string _actionButtonContentKey = ButtonContent_Start_Key;
 
-    public string ActionButtonContent
-    {
-        get => _actionButtonContent;
-        set => this.RaiseAndSetIfChanged(ref _actionButtonContent, value);
-    }
+    public string ActionButtonContent => _localization.Get(_actionButtonContentKey);
 
     private string _currentSlaveID = string.Empty;
 
@@ -135,10 +127,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         get => 255;
     }
 
-    public string ErrorMessageInUI
-    {
-        get => "Ни одно устройство не ответило.\nВозможно стоит повысить значение паузы между запросами\nили поменять шаблон функции в PDU.";
-    }
+    public string ErrorMessageInUI => _localization.Get("Scanner.NoDeviceResponded");
 
     private bool _errorIsVisible = false;
 
@@ -153,6 +142,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly IMessageBox _messageBox;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Modbus _modbusModel;
+    private readonly ILocalizationService _localization;
 
     private ModbusMessage _messageType;
 
@@ -213,11 +203,18 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     };
 
     public ModbusScanner_VM(IMessageBoxModbusScanner messageBox,
-        ConnectedHost connectedHostModel, Model_Modbus modbusModel)
+        ConnectedHost connectedHostModel, Model_Modbus modbusModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        _localization.LanguageChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(ActionButtonContent));
+            this.RaisePropertyChanged(nameof(DeviceReadTimeout));
+            this.RaisePropertyChanged(nameof(ErrorMessageInUI));
+        };
 
         _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
 
@@ -227,7 +224,8 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
         SelectedModbusType = _messageType.ProtocolName;
 
-        DeviceReadTimeout += _connectedHostModel.Host_ReadTimeout.ToString() + " мс.";
+        _deviceReadTimeoutValue = _connectedHostModel.Host_ReadTimeout;
+        this.RaisePropertyChanged(nameof(DeviceReadTimeout));
 
         Command_Start_Stop_Search = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -270,7 +268,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
                         break;
 
                     default:
-                        _messageBox.Show($"Задан неизвестный тип Modbus протокола: {SelectedModbusType}", MessageType.Warning);
+                        _messageBox.Show(_localization.Get("Warning.UnknownModbusTypeMultiline", SelectedModbusType ?? string.Empty), MessageType.Warning);
                         break;
                 }
             });
@@ -293,7 +291,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(PauseBetweenRequests))
         {
-            _messageBox.Show("Не задано значение паузы.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Warning.PauseNotSet"), MessageType.Warning);
             return;
         }
 
@@ -305,7 +303,8 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        ActionButtonContent = ButtonContent_Stop;
+        _actionButtonContentKey = ButtonContent_Stop_Key;
+        this.RaisePropertyChanged(nameof(ActionButtonContent));
         SearchInProcess = true;
 
         SlavesAddresses = string.Empty;
@@ -341,7 +340,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -362,7 +361,8 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     private void StopPolling_UI_Actions()
     {
-        ActionButtonContent = ButtonContent_Start;
+        _actionButtonContentKey = ButtonContent_Start_Key;
+        this.RaisePropertyChanged(nameof(ActionButtonContent));
         SearchInProcess = false;
 
         ProgressBar_Value = ProgressBar_Minimum;
@@ -375,7 +375,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             var searchFunction = AllSearchFunctions.FirstOrDefault(e => e.DisplayedName == SelectedFunction);
 
             if (searchFunction == null)
-                throw new Exception($"Не удалось найти подходящую функцию. Выбрана функция: {SelectedFunction}");
+                throw new Exception(_localization.Get("Exception.SuitableFunctionNotFound", SelectedFunction ?? string.Empty));
 
             // Для демонстрации неодходимо оставить только эти вызовы метода, остальные закомментировать.
             //ViewSlaveAddress(42);
@@ -442,7 +442,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         switch (fieldName)
         {
             case nameof(PauseBetweenRequests):
-                return "Пауза";
+                return _localization.Get("Common.Pause");
 
             default:
                 return fieldName;

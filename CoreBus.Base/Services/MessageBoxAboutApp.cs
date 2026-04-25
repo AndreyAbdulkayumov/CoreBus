@@ -1,4 +1,4 @@
-﻿using MessageBox.AvaloniaUI;
+using MessageBox.AvaloniaUI;
 using MessageBox.Core;
 using Services.Interfaces;
 using System;
@@ -11,7 +11,7 @@ public class MessageBoxAboutApp : IMessageBoxAboutApp
 {
     private readonly IUIService _uiService;
 
-    private string? _appVersion;
+    private readonly string? _appVersion;
 
     public MessageBoxAboutApp(IUIService uiService)
     {

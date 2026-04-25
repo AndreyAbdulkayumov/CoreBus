@@ -5,10 +5,11 @@
 		xmlns:local="clr-namespace:CoreBus.Base.Views.Macros;assembly=CoreBus.Base"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels.Macros;assembly=ViewModels.Macros"
+        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
 		Width="1000" Height="620"
         x:Class="CoreBus.Base.Views.Macros.MacrosWindow"
 		x:DataType="ViewModels:Macros_VM"
-		Title="Макросы"
+		Title="{l:Loc Common.Macros}"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
@@ -46,7 +47,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Свернуть"
+				<Button ToolTip.Tip="{l:Loc Common.Minimize}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,50,0"
 						Click="Button_Minimize_Click">
@@ -55,7 +56,7 @@
 
 				</Button>
 
-				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+				<Button ToolTip.Tip="{l:Loc Common.MaximizeRestore}"
 						Classes="WindowChromeButton_All"
 						Margin="0,0,25,0"
 						Click="Button_Maximize_Click">
@@ -64,7 +65,7 @@
 
 				</Button>
 				
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
@@ -90,7 +91,7 @@
 									Margin="10,0,0,0"
 									HorizontalAlignment="Left" VerticalAlignment="Center">
 
-							<TextBlock Text="Выбранный режим:"
+							<TextBlock Text="{l:Loc Macros.SelectedMode}"
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text}"/>
 									   
@@ -104,13 +105,13 @@
 									Margin="0,0,10,0"
 									HorizontalAlignment="Right" VerticalAlignment="Center">
 							
-							<Button Content="Импорт"
+							<Button Content="{l:Loc Common.Import}"
 									Command="{Binding Command_Import}"/>
 
-							<Button Content="Экспорт"
+							<Button Content="{l:Loc Common.Export}"
 									Command="{Binding Command_Export}"/>
 							
-							<Button Content="Создать макрос"
+							<Button Content="{l:Loc Macros.CreateMacro}"
 									Command="{Binding Command_CreateMacros}"/>
 							
 						</StackPanel>

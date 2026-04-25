@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MessageBox.AvaloniaUI;
 using MessageBox.Core;
@@ -11,7 +11,7 @@ public class MessageBoxEditMacros : IMessageBoxEditMacros
 {
     private readonly IUIService _uiService;
 
-    private string? _appVersion;
+    private readonly string? _appVersion;
 
     public MessageBoxEditMacros(IUIService uiService)
     {

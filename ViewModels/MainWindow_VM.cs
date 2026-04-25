@@ -109,16 +109,15 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _connectionString, value);
     }
 
-    private const string ConnectionStatus_Connected = "Подключено";
-    private const string ConnectionStatus_Disconnected = "Отключено";
+    private const string ConnectionStatus_Connected = "Status.Connected";
+    private const string ConnectionStatus_Disconnected = "Status.Disconnected";
 
-    private string _connectionStatus = ConnectionStatus_Disconnected;
+    private string _connectionStatusKey = ConnectionStatus_Disconnected;
 
-    public string ConnectionStatus
-    {
-        get => _connectionStatus;
-        set => this.RaiseAndSetIfChanged(ref _connectionStatus, value);
-    }
+    /// <summary>
+    /// Локализованный статус подключения. Перечитывается при смене языка.
+    /// </summary>
+    public string ConnectionStatus => _localization[_connectionStatusKey];
 
     private bool _connectionTimer_IsVisible = false;
 
@@ -190,6 +189,7 @@ public class MainWindow_VM : ReactiveObject
     private readonly Model_AppUpdateSystem _appUpdateSystemModel;
     private readonly ModbusMonitoring_VM _modbusMonitoring_VM;
     private readonly FileLogger _logger;
+    private readonly ILocalizationService _localization;
 
     private readonly object TX_View_Locker = new object();
     private readonly object RX_View_Locker = new object();
@@ -199,7 +199,8 @@ public class MainWindow_VM : ReactiveObject
     public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM,
         ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel,
-        ModbusMonitoring_VM modbusMonitoring_VM, FileLogger logger)
+        ModbusMonitoring_VM modbusMonitoring_VM, FileLogger logger,
+        ILocalizationService localization)
     {
         _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
@@ -212,6 +213,14 @@ public class MainWindow_VM : ReactiveObject
         _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
         _modbusMonitoring_VM = modbusMonitoring_VM ?? throw new ArgumentNullException(nameof(modbusMonitoring_VM));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        // При смене языка перечитываем локализуемые свойства и обновляем строку подключения.
+        _localization.LanguageChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(ConnectionStatus));
+            try { ConnectionString = GetConnectionString(); } catch { /* игнорируем, если настройки ещё не инициализированы */ }
+        };
 
         SettingsDocument = _settingsModel.AppData.SelectedPresetFileName;
 
@@ -241,16 +250,16 @@ public class MainWindow_VM : ReactiveObject
             .Subscribe(SwitchToPreset);
 
         Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
-        Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenSettingsWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.About());
-        Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"О программе\".\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenAboutWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
-        Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenUserManual") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
-        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия страницы с видеороликами.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenVideoPage") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Connect = ReactiveCommand.Create(ConnectHandler);
         Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
@@ -265,10 +274,10 @@ public class MainWindow_VM : ReactiveObject
         Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
-        Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна макросов.\n\n{error.Message}", MessageType.Error, error));
+        Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenMacrosWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
-        Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error, error));
+        Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AppDownloadLink") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
         {
@@ -405,7 +414,7 @@ public class MainWindow_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Error.PresetSelection") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -413,7 +422,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_settingsModel.Settings == null)
         {
-            throw new Exception("Настройки не инициализированы.");
+            throw new Exception(_localization.Get("Exception.SettingsNotInitialized"));
         }
 
         DeviceData settings = (DeviceData)_settingsModel.Settings.Clone();
@@ -436,13 +445,13 @@ public class MainWindow_VM : ReactiveObject
                         string.IsNullOrEmpty(settings.Connection_SerialPort.DataBits) ||
                         string.IsNullOrEmpty(settings.Connection_SerialPort.StopBits))
                     {
-                        connectionString = "Не заданы настройки для последовательного порта";
+                        connectionString = _localization.Get("ConnectionInfo.SerialPortNotConfigured");
                     }
 
                     else
                     {
                         connectionString =
-                            (string.IsNullOrEmpty(settings.Connection_SerialPort.Port) ? "Порт не задан" : settings.Connection_SerialPort.Port) +
+                            (string.IsNullOrEmpty(settings.Connection_SerialPort.Port) ? _localization.Get("ConnectionInfo.PortNotSet") : settings.Connection_SerialPort.Port) +
                             separator +
                             (settings.Connection_SerialPort.BaudRate_IsCustom == true ?
                                 settings.Connection_SerialPort.BaudRate_Custom : settings.Connection_SerialPort.BaudRate) +
@@ -457,7 +466,7 @@ public class MainWindow_VM : ReactiveObject
 
                 else
                 {
-                    connectionString = "Настройки не заданы";
+                    connectionString = _localization.Get("ConnectionInfo.SettingsNotSet");
                 }
 
                 break;
@@ -467,20 +476,20 @@ public class MainWindow_VM : ReactiveObject
                 if (settings.Connection_IP != null)
                 {
                     connectionString =
-                        (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP-адрес не задан" : settings.Connection_IP.IP_Address) +
+                        (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? _localization.Get("ConnectionInfo.IpAddressNotSet") : settings.Connection_IP.IP_Address) +
                         separator +
-                        (string.IsNullOrEmpty(settings.Connection_IP.Port) ? "Порт не задан" : settings.Connection_IP.Port);
+                        (string.IsNullOrEmpty(settings.Connection_IP.Port) ? _localization.Get("ConnectionInfo.PortNotSet") : settings.Connection_IP.Port);
                 }
 
                 else
                 {
-                    connectionString = "Настройки не заданы";
+                    connectionString = _localization.Get("ConnectionInfo.SettingsNotSet");
                 }
 
                 break;
 
             default:
-                throw new Exception("Задан неизвестный тип подключения: " + settings.TypeOfConnection);
+                throw new Exception(_localization.Get("Exception.UnknownConnectionType", settings.TypeOfConnection ?? string.Empty));
         }
 
         return connectionString;
@@ -509,7 +518,8 @@ public class MainWindow_VM : ReactiveObject
 
         UI_IsConnectedState = true;
 
-        ConnectionStatus = ConnectionStatus_Connected;
+        _connectionStatusKey = ConnectionStatus_Connected;
+        this.RaisePropertyChanged(nameof(ConnectionStatus));
 
         ConnectionTimer_IsVisible = true;
 
@@ -551,7 +561,8 @@ public class MainWindow_VM : ReactiveObject
 
         UI_IsConnectedState = false;
 
-        ConnectionStatus = ConnectionStatus_Disconnected;
+        _connectionStatusKey = ConnectionStatus_Disconnected;
+        this.RaisePropertyChanged(nameof(ConnectionStatus));
 
         ConnectionTimer_IsVisible = false;
     }
@@ -582,7 +593,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_settingsModel.Settings == null)
         {
-            throw new Exception("Настройки не инициализированы.");
+            throw new Exception(_localization.Get("Exception.SettingsNotInitialized"));
         }
 
         DeviceData settings = (DeviceData)_settingsModel.Settings.Clone();
@@ -616,7 +627,7 @@ public class MainWindow_VM : ReactiveObject
                 break;
 
             default:
-                throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
+                throw new Exception(_localization.Get("Exception.UnknownInterfaceInSettings"));
         }
 
         _connectedHostModel.Connect(info);
@@ -626,7 +637,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_modbusMonitoring_VM.IsMonitoringRunning)
         {
-            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и отключиться?", MessageType.Warning);
+            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.StopPollingAndDisconnect"), MessageType.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -641,7 +652,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_modbusMonitoring_VM.IsMonitoringRunning)
         {
-            var result = await _messageBox.ShowYesNoDialog("Сейчас идет опрос регистров.\n\nВы уверены, что хотите остановить опрос и переключиться в режим \"Без протокола\"?", MessageType.Warning);
+            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.StopPollingAndSwitchNoProtocol"), MessageType.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;

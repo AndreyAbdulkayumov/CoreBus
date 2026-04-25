@@ -135,16 +135,12 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
 
     #region Button
 
-    private const string Button_Content_Start = "Начать опрос";
-    private const string Button_Content_Stop = "Остановить опрос";
+    private const string Button_Content_Start = "Status.StartPolling";
+    private const string Button_Content_Stop = "Status.StopPolling";
 
-    private string _button_Content = Button_Content_Start;
+    private string _button_ContentKey = Button_Content_Start;
 
-    public string Button_Content
-    {
-        get => _button_Content;
-        set => this.RaiseAndSetIfChanged(ref _button_Content, value);
-    }
+    public string Button_Content => _localization[_button_ContentKey];
 
     public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
 
@@ -153,12 +149,17 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
     private readonly IMessageBoxMainWindow _messageBox;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_NoProtocol _noProtocolModel;
+    private readonly ILocalizationService _localization;
 
-    public NoProtocol_Mode_Cycle_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel)
+    public NoProtocol_Mode_Cycle_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        // Перечитывание локализуемых свойств при смене языка.
+        _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(Button_Content));
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -208,7 +209,7 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
 
     private void NoProtocol_Model_ErrorInCycleMode(object? sender, Exception e)
     {
-        _messageBox.Show($"Ошибка отправки команды в цикличном опросе.\n\n{e.Message}\n\nОпрос остановлен.", MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Error.CyclicSendCommand") + "\n\n" + e.Message + "\n\n" + _localization.Get("Info.PollingStopped"), MessageType.Error, e);
     }
 
     public void SourceWindowClosingAction()
@@ -221,7 +222,8 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
     {
         _noProtocolModel.CycleMode_Stop();
 
-        Button_Content = Button_Content_Start;
+        _button_ContentKey = Button_Content_Start;
+        this.RaisePropertyChanged(nameof(Button_Content));
         IsStart = false;
     }
 
@@ -244,7 +246,8 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
 
         await _noProtocolModel.CycleMode_Start(info);
 
-        Button_Content = Button_Content_Stop;
+        _button_ContentKey = Button_Content_Stop;
+        this.RaisePropertyChanged(nameof(Button_Content));
         IsStart = true;
     }
 }
