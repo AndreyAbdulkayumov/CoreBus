@@ -168,6 +168,9 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     private ushort _selectedAddress = 0;
     private ushort _selectedNumberOfReadRegisters = 1;
 
+    private byte _selectedReadFunctionNumber = Function.ReadInputRegisters.Number;
+    private byte _selectedWriteFunctionNumber = Function.PresetSingleRegister.Number;
+
     private readonly IWriteField_VM WriteField_MultipleCoils_VM;
     private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
     private readonly IWriteField_VM WriteField_SingleCoil_VM;
@@ -194,7 +197,18 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         this.WhenAnyValue(x => x.SelectedWriteFunction)
             .WhereNotNull()
-            .Subscribe(SetWriteFieldVM);
+            .Subscribe(displayedName =>
+            {
+                var writeFunction = Function.AllWriteFunctions.First(e => e.DisplayedName == displayedName);
+                SetWriteFieldVM(writeFunction);
+            });
+
+        this.WhenAnyValue(x => x.SelectedReadFunction)
+            .WhereNotNull()
+            .Subscribe(displayedName =>
+            {
+                _selectedReadFunctionNumber = Function.AllReadFunctions.First(e => e.DisplayedName == displayedName).Number;
+            });
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -259,6 +273,8 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
                 SelectedReadFunction = selectedFunction.DisplayedName;
                 SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+                _selectedReadFunctionNumber = selectedFunction.Number;
+                _selectedWriteFunctionNumber = Function.PresetSingleRegister.Number;
             }
 
             else
@@ -267,8 +283,10 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
                 SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
                 SelectedWriteFunction = selectedFunction.DisplayedName;
+                _selectedReadFunctionNumber = Function.ReadInputRegisters.Number;
+                _selectedWriteFunctionNumber = selectedFunction.Number;
 
-                SetWriteFieldVM(selectedFunction.DisplayedName);
+                SetWriteFieldVM(selectedFunction);
 
                 if (data.Content.WriteInfo != null)
                 {
@@ -285,42 +303,46 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
         SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+        _selectedReadFunctionNumber = Function.ReadInputRegisters.Number;
+        _selectedWriteFunctionNumber = Function.PresetSingleRegister.Number;
     }
 
-    private void SetWriteFieldVM(string displayedName)
+    private void SetWriteFieldVM(ModbusFunction function)
     {
-        if (displayedName == Function.ForceMultipleCoils.DisplayedName)
+        _selectedWriteFunctionNumber = function.Number;
+
+        if (function.Number == Function.ForceMultipleCoils.Number)
         {
             CurrentWriteFieldViewModel = WriteField_MultipleCoils_VM;
             return;
         }
 
-        if (displayedName == Function.PresetMultipleRegisters.DisplayedName)
+        if (function.Number == Function.PresetMultipleRegisters.Number)
         {
             CurrentWriteFieldViewModel = WriteField_MultipleRegisters_VM;
             return;
         }
 
-        if (displayedName == Function.ForceSingleCoil.DisplayedName)
+        if (function.Number == Function.ForceSingleCoil.Number)
         {
             CurrentWriteFieldViewModel = WriteField_SingleCoil_VM;
             return;
         }
 
-        if (displayedName == Function.PresetSingleRegister.DisplayedName)
+        if (function.Number == Function.PresetSingleRegister.Number)
         {
             CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
             return;
         }
 
-        throw new Exception(LocalizationProvider.Get("Exception.UnknownWriteFunction", displayedName));
+        throw new Exception(LocalizationProvider.Get("Exception.UnknownWriteFunction", function.DisplayedName));
     }
 
     public object GetContent()
     {
-        var selectedFunction = SelectedFunctionType_Read ? SelectedReadFunction : SelectedWriteFunction;
-
-        int functionNumber = Function.AllFunctions.Single(x => x.DisplayedName == selectedFunction).Number;
+        int functionNumber = SelectedFunctionType_Read
+            ? _selectedReadFunctionNumber
+            : _selectedWriteFunctionNumber;
 
         ModbusMacrosWriteInfo? writeData = CurrentWriteFieldViewModel?.GetMacrosData();
 
