@@ -1,5 +1,6 @@
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Models.Settings;
+using Services.Interfaces;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -13,9 +14,11 @@ public class Model_AppUpdateSystem
 
     private const string UrlVideo = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/video.html";
 
-    public Model_AppUpdateSystem()
-    {
+    private readonly ILocalizationService _localization;
 
+    public Model_AppUpdateSystem(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
     }
 
     /// <summary>
@@ -44,7 +47,7 @@ public class Model_AppUpdateSystem
             return null;
         }
 
-        throw new Exception("Нарушена целостность файла с информацией о последней версии приложения.");
+        throw new Exception(_localization.Get("Exception.UpdateFileCorrupted"));
     }
 
     /// <summary>
@@ -95,7 +98,7 @@ public class Model_AppUpdateSystem
 
         if (string.IsNullOrEmpty(downloadLink))
         {
-            throw new Exception("Не удалось получить ссылку на скачивание новой версии приложения.");
+            throw new Exception(_localization.Get("Core.DownloadLinkGetFailed"));
         }
 
         return downloadLink;

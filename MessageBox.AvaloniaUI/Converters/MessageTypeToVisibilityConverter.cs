@@ -16,13 +16,13 @@ public class MessageTypeToVisibilityConverter : IValueConverter
                 "Information" => MessageType.Information,
                 "Warning" => MessageType.Warning,
                 "Error" => MessageType.Error,
-                _ => throw new ArgumentException("Недопустимый параметр"),
+                _ => throw new ArgumentException("Invalid converter parameter."),
             };
 
             return messageType == enumValue ? true : false;
         }
 
-        throw new ArgumentException("Недопустимые входные данные");
+        throw new ArgumentException("Invalid converter input.");
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -1,4 +1,5 @@
 ﻿using Core.Models.Modbus.DataTypes;
+using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models.Modbus.Message;
@@ -7,9 +8,9 @@ public class ModbusASCII_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus ASCII";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data)
+    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data);
+        byte[] PDU = Modbus_PDU.Create(function, data, localization);
 
         // В этом массиве содержится SlaveID + PDU
         byte[] mainPart = new byte[1 + PDU.Length];
@@ -53,7 +54,7 @@ public class ModbusASCII_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray)
+    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
     {
         int sizeOfArray = 0;
 
@@ -92,7 +93,7 @@ public class ModbusASCII_Message : ModbusMessage
             Command = convertedArray[1]
         };
 
-        CheckErrorCode(TypeOfModbus.ASCII, ref decodingResponse, convertedArray);
+        CheckErrorCode(TypeOfModbus.ASCII, ref decodingResponse, convertedArray, localization);
 
         if (currentFunction is ModbusReadFunction)
         {
@@ -100,9 +101,7 @@ public class ModbusASCII_Message : ModbusMessage
 
             if (decodingResponse.LengthOfData == 0)
             {
-                throw new Exception("Длина информационной части пакета равна 0.\n" +
-                    "Код функции: " + currentFunction.Number.ToString() + "\n" +
-                    "Возможно нарушение целостности пакета Modbus ASCII.");
+                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartAscii", currentFunction.Number));
             }
 
             decodingResponse.Data = new byte[decodingResponse.LengthOfData];
@@ -128,7 +127,7 @@ public class ModbusASCII_Message : ModbusMessage
 
         else
         {
-            throw new Exception("Неподдерживаемый код Modbus команды (Код: " + currentFunction.Number + ")");
+            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
         }
 
         return decodingResponse;

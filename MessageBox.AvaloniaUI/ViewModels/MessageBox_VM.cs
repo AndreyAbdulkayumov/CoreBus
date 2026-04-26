@@ -1,5 +1,6 @@
 ﻿using MessageBox.Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -18,10 +19,12 @@ public enum MessageBoxToolType
 public class ButtonContent
 {
     public string Content { get; set; }
+    public MessageBoxResult Result { get; set; }
 
-    public ButtonContent(string Content)
+    public ButtonContent(string content, MessageBoxResult result)
     {
-        this.Content = Content;
+        Content = content;
+        Result = result;
     }
 }
 
@@ -53,10 +56,6 @@ public class MessageBox_VM : ReactiveObject
 
     public ObservableCollection<ButtonContent> Buttons { get; set; } = new ObservableCollection<ButtonContent>();
 
-    public const string Content_OK = "ОК";
-    public const string Content_Yes = "Да";
-    public const string Content_No = "Нет";
-
     private bool _errorReportIsVisible;
 
     public bool ErrorReportIsVisible
@@ -70,9 +69,11 @@ public class MessageBox_VM : ReactiveObject
     public ReactiveCommand<Unit, Unit>? Command_CopyErrorToFile { get; set; }
 
     private readonly string? _appVersion;
+    private readonly MessageBoxToolType _toolType;
+    private readonly ILocalizationService _localization;
 
     public MessageBox_VM(Action<string> openErrorReport, Func<string, Task> copyToClipboard, Func<string, Task<string?>> getFolderPath,
-        string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+        string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, ILocalizationService localization, Exception? error = null)
     {
         Content = message;
         Title = title;
@@ -80,6 +81,11 @@ public class MessageBox_VM : ReactiveObject
         Type = messageType;
 
         _appVersion = appVersion;
+        _toolType = toolType;
+
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        _localization.LanguageChanged += (_, _) => RefreshLocalizedState();
 
         if (error != null)
         {
@@ -103,33 +109,45 @@ public class MessageBox_VM : ReactiveObject
 
             Command_CopyErrorToFile = ReactiveCommand.CreateFromTask(async () =>
             {
-                string? folderPath = await getFolderPath("Выбор папки для сохранения файла отчета об ошибке.");
+                string? folderPath = await getFolderPath(_localization.Get("MessageBox.ErrorReportSelectFolder"));
 
                 if (folderPath == null)
                 {
                     return;
                 }
 
-                string fileName = Path.Combine(folderPath, $"Отчет об ошибке {reportDate: yyyyMMdd_HHmmss}.txt");
+                string fileName = Path.Combine(folderPath, _localization.Get("MessageBox.ErrorReportFileName", reportDate));
 
                 File.WriteAllText(fileName, report);
             });
             Command_CopyErrorToFile.ThrownExceptions.Subscribe(error => { });
         }
 
-        switch (toolType)
+        RebuildButtons();
+    }
+
+    private void RefreshLocalizedState()
+    {
+        RebuildButtons();
+    }
+
+    private void RebuildButtons()
+    {
+        Buttons.Clear();
+
+        switch (_toolType)
         {
             case MessageBoxToolType.Default:
-                Buttons.Add(new ButtonContent(Content_OK));
+                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Ok"), MessageBoxResult.Default));
                 break;
 
             case MessageBoxToolType.YesNo:
-                Buttons.Add(new ButtonContent(Content_Yes));
-                Buttons.Add(new ButtonContent(Content_No));
+                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Yes"), MessageBoxResult.Yes));
+                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.No"), MessageBoxResult.No));
                 break;
 
             default:
-                Buttons.Add(new ButtonContent(Content_OK));
+                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Ok"), MessageBoxResult.Default));
                 break;
         }
     }
@@ -143,7 +161,7 @@ public class MessageBox_VM : ReactiveObject
 
         if (!isInner)
         {
-            info.AppendLine($"CoreBus, версия {_appVersion}");
+            info.AppendLine($"CoreBus, version {_appVersion}");
         }
 
         info.AppendLine("----------------------------------------------------------");

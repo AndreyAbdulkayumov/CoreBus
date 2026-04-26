@@ -1,16 +1,30 @@
-﻿namespace Core.Models.Modbus.DataTypes;
+using Services.Interfaces;
+using System.ComponentModel;
 
-public abstract class ModbusFunction
+namespace Core.Models.Modbus.DataTypes;
+
+public abstract class ModbusFunction : INotifyPropertyChanged
 {
-    public readonly string DisplayedName;
-    public readonly string DisplayedNumber;
+    private readonly string _displayedNameKey;
+    private readonly string _displayedNumberKey;
     public readonly byte Number;
 
-    public ModbusFunction(string displayedName, string displayedNumber, byte number)
+    public string DisplayedName => LocalizationProvider.Get(_displayedNameKey);
+    public string DisplayedNumber => LocalizationProvider.Get(_displayedNumberKey);
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public ModbusFunction(string displayedNameKey, string displayedNumberKey, byte number)
     {
-        DisplayedName = displayedName;
-        DisplayedNumber = displayedNumber;
+        _displayedNameKey = displayedNameKey;
+        _displayedNumberKey = displayedNumberKey;
         Number = number;
+    }
+
+    internal void RaiseLocalizationChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayedName)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayedNumber)));
     }
 }
 
@@ -35,28 +49,46 @@ public class ModbusWriteFunction : ModbusFunction
 
 public static class Function
 {
+    static Function()
+    {
+        try
+        {
+            LocalizationProvider.Instance.LanguageChanged += (_, _) =>
+            {
+                foreach (var function in AllFunctions)
+                {
+                    function.RaiseLocalizationChanged();
+                }
+            };
+        }
+        catch (InvalidOperationException)
+        {
+            // Localization provider can be initialized later during app startup.
+        }
+    }
+
     public static readonly ModbusReadFunction ReadCoilStatus =
         new ModbusReadFunction(
-            "0x01 Чтение регистров флагов",
-            "0x01 (чтение)",
+            "Core.Modbus.Function.ReadCoilStatus.Name",
+            "Core.Modbus.Function.ReadCoilStatus.Number",
             0x01);
 
     public static readonly ModbusReadFunction ReadDiscreteInputs =
         new ModbusReadFunction(
-            "0x02 Чтение дискретных входов",
-            "0x02 (чтение)",
+            "Core.Modbus.Function.ReadDiscreteInputs.Name",
+            "Core.Modbus.Function.ReadDiscreteInputs.Number",
             0x02);
 
     public static readonly ModbusReadFunction ReadHoldingRegisters =
         new ModbusReadFunction(
-            "0x03 Чтение регистров хранения",
-            "0x03 (чтение)",
+            "Core.Modbus.Function.ReadHoldingRegisters.Name",
+            "Core.Modbus.Function.ReadHoldingRegisters.Number",
             0x03);
 
     public static readonly ModbusReadFunction ReadInputRegisters =
         new ModbusReadFunction(
-            "0x04 Чтение входных регистров",
-            "0x04 (чтение)",
+            "Core.Modbus.Function.ReadInputRegisters.Name",
+            "Core.Modbus.Function.ReadInputRegisters.Number",
             0x04);
 
     public static readonly ModbusReadFunction[] AllReadFunctions =
@@ -69,26 +101,26 @@ public static class Function
 
     public static readonly ModbusWriteFunction ForceSingleCoil =
         new ModbusWriteFunction(
-            "0x05 Запись одного флага",
-            "0x05 (запись)",
+            "Core.Modbus.Function.ForceSingleCoil.Name",
+            "Core.Modbus.Function.ForceSingleCoil.Number",
             0x05);
 
     public static readonly ModbusWriteFunction PresetSingleRegister =
         new ModbusWriteFunction(
-            "0x06 Запись одного регистра",
-            "0x06 (запись)",
+            "Core.Modbus.Function.PresetSingleRegister.Name",
+            "Core.Modbus.Function.PresetSingleRegister.Number",
             0x06);
 
     public static readonly ModbusWriteFunction ForceMultipleCoils =
         new ModbusWriteFunction(
-            "0x0F Запись нескольких флагов",
-            "0x0F (запись)",
+            "Core.Modbus.Function.ForceMultipleCoils.Name",
+            "Core.Modbus.Function.ForceMultipleCoils.Number",
             0x0F);
 
     public static readonly ModbusWriteFunction PresetMultipleRegisters =
         new ModbusWriteFunction(
-            "0x10 Запись нескольких регистров",
-            "0x10 (запись)",
+            "Core.Modbus.Function.PresetMultipleRegisters.Name",
+            "Core.Modbus.Function.PresetMultipleRegisters.Number",
             0x10);
 
     public static readonly ModbusWriteFunction[] AllWriteFunctions =

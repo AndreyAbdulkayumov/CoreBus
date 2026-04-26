@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\MessageBox.Core\MessageBox.Core.csproj" />
+    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>

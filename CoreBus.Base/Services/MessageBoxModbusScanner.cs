@@ -10,26 +10,28 @@ namespace CoreBus.Base.Services;
 public class MessageBoxModbusScanner : IMessageBoxModbusScanner
 {
     private readonly IUIService _uiService;
+    private readonly ILocalizationService _localization;
 
     private readonly string? _appVersion;
 
-    public MessageBoxModbusScanner(IUIService uiService)
+    public MessageBoxModbusScanner(IUIService uiService, ILocalizationService localization)
     {
         _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         _appVersion = _uiService.GetAppVersion()?.ToString();
     }
 
     public void Show(string message, MessageType type, Exception? error = null)
     {
-        var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion);
+        var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion, _localization);
 
         messageBox.Show(message, type, error);
     }
 
     public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
     {
-        var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion);
+        var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion, _localization);
 
         return await messageBox.ShowYesNoDialog(message, type, error);
     }

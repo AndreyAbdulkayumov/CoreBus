@@ -175,10 +175,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
     private readonly IWriteField_VM WriteField_SingleCoil_VM;
     private readonly IWriteField_VM WriteField_SingleRegister_VM;
+    private readonly ILocalizationService _localization;
 
-    public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox, Model_Settings settingsModel, bool useCommonSlaveId)
+    public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox, Model_Settings settingsModel, ILocalizationService localization, bool useCommonSlaveId)
     {
         _id = id;
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         UseCommonSlaveId = useCommonSlaveId;
 
@@ -186,6 +188,8 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true, settingsModel);
         WriteField_SingleCoil_VM = new SingleCoil_VM();
         WriteField_SingleRegister_VM = new SingleRegister_VM();
+
+        _localization.LanguageChanged += (_, _) => RefreshLocalizedFunctionLists();
 
         InitUI(parameters);
 
@@ -234,7 +238,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
                 catch (Exception error)
                 {
-                    messageBox.Show(LocalizationProvider.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
+                    messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
     }
@@ -243,15 +247,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     {
         SelectedNumberFormat_Hex = true;
 
-        foreach (ModbusReadFunction element in Function.AllReadFunctions)
-        {
-            ReadFunctions.Add(element.DisplayedName);
-        }
-
-        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
-        {
-            WriteFunctions.Add(element.DisplayedName);
-        }
+        RefreshLocalizedFunctionLists();
 
         Name = parameters.CommandName;
 
@@ -335,7 +331,36 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
             return;
         }
 
-        throw new Exception(LocalizationProvider.Get("Exception.UnknownWriteFunction", function.DisplayedName));
+        throw new Exception(_localization.Get("Exception.UnknownWriteFunction", function.DisplayedName));
+    }
+
+    private void RefreshLocalizedFunctionLists()
+    {
+        byte selectedReadFunctionNumber =
+            Function.AllReadFunctions.FirstOrDefault(f => f.DisplayedName == SelectedReadFunction)?.Number
+            ?? _selectedReadFunctionNumber;
+
+        byte selectedWriteFunctionNumber =
+            Function.AllWriteFunctions.FirstOrDefault(f => f.DisplayedName == SelectedWriteFunction)?.Number
+            ?? _selectedWriteFunctionNumber;
+
+        ReadFunctions.Clear();
+
+        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        {
+            ReadFunctions.Add(element.DisplayedName);
+        }
+
+        WriteFunctions.Clear();
+
+        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+        {
+            WriteFunctions.Add(element.DisplayedName);
+        }
+
+        SelectedReadFunction =  Function.AllReadFunctions.First(f => f.Number == selectedReadFunctionNumber).DisplayedName;
+
+        SelectedWriteFunction = Function.AllWriteFunctions.First(f => f.Number == selectedWriteFunctionNumber).DisplayedName;
     }
 
     public object GetContent()
@@ -367,12 +392,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (!uncheckedFields.Contains(FieldNames.SlaveID) && string.IsNullOrWhiteSpace(SlaveID))
         {
-            validationMessages.Add(LocalizationProvider.Get("Validation.SlaveIdNotSet"));
+            validationMessages.Add(_localization.Get("Validation.SlaveIdNotSet"));
         }
 
         if (string.IsNullOrWhiteSpace(Address))
         {
-            validationMessages.Add(LocalizationProvider.Get("Validation.AddressNotSet"));
+            validationMessages.Add(_localization.Get("Validation.AddressNotSet"));
         }
 
         string? writeReadMessages = SelectedFunctionType_Write ? CheckWriteFields(uncheckedFields) : CheckReadFields(uncheckedFields);
@@ -419,7 +444,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (message.Length > 0)
         {
-            message.Insert(0, LocalizationProvider.Get("Validation.ErrorsHeader") + "\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -430,12 +455,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     {
         if (string.IsNullOrWhiteSpace(NumberOfReadRegisters))
         {
-            return LocalizationProvider.Get("Validation.SpecifyReadRegisterCountShort");
+            return _localization.Get("Validation.SpecifyReadRegisterCountShort");
         }
 
         if (_selectedNumberOfReadRegisters < 1)
         {
-            return LocalizationProvider.Get("Validation.TooManyRegisters");
+            return _localization.Get("Validation.TooManyRegisters");
         }
 
         if (!HasErrors)
@@ -457,7 +482,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
         if (message.Length > 0)
         {
-            message.Insert(0, LocalizationProvider.Get("Validation.ErrorsHeader") + "\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -503,10 +528,10 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
                 return "Slave ID";
 
             case nameof(Address):
-                return LocalizationProvider.Get("Common.Address");
+                return _localization.Get("Common.Address");
 
             case nameof(NumberOfReadRegisters):
-                return LocalizationProvider.Get("Common.RegisterCount");
+                return _localization.Get("Common.RegisterCount");
 
             default:
                 return fieldName;

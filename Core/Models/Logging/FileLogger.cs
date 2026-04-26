@@ -1,4 +1,5 @@
 using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 using System.Globalization;
 using System.Text;
 using System.Threading.Channels;
@@ -17,6 +18,13 @@ public class FileLogger : IAsyncDisposable
     public bool IsRunning => _channel != null;
 
     private TimestampFormat _selectedTimestampFormat;
+    
+    private readonly ILocalizationService _localization;
+
+    public FileLogger(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+    }
 
     public void Start(string filePath, string columnNames, TimestampFormat logTimestampFormat)
     {
@@ -47,7 +55,7 @@ public class FileLogger : IAsyncDisposable
             AutoFlush = true
         };
 
-        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? "Время\t" : string.Empty)}{columnNames}");
+        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? _localization.Get("Core.LogTimeHeader") + "\t" : string.Empty)}{columnNames}");
 
         _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token));
     }

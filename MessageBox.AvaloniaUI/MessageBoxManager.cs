@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using MessageBox.AvaloniaUI.Localization;
 using MessageBox.AvaloniaUI.ViewModels;
 using MessageBox.AvaloniaUI.Views;
 using MessageBox.Core;
+using Services.Interfaces;
 
 namespace MessageBox.AvaloniaUI;
 
@@ -16,10 +18,15 @@ public class MessageBoxManager : IMessageBox
 
     private readonly string? _appVersion;
 
-    public MessageBoxManager(Window? owner, string? appVersion)
+    private readonly ILocalizationService _localization;
+
+    public MessageBoxManager(Window? owner, string? appVersion, ILocalizationService localization)
     {
         Owner = owner;
         _appVersion = appVersion;
+
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        Localizer.Instance = _localization;
     }
 
     public void Show(string message, MessageType messageType, Exception? error = null)
@@ -28,7 +35,7 @@ public class MessageBoxManager : IMessageBox
         {
             var window = new MessageBoxWindow();
 
-            window.SetDataContext(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
+            window.SetDataContext(message, Title, messageType, MessageBoxToolType.Default, _appVersion, _localization, error);
 
             await CallMessageBox(window);
         });
@@ -40,7 +47,7 @@ public class MessageBoxManager : IMessageBox
         {
             var window = new MessageBoxWindow();
 
-            window.SetDataContext(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
+            window.SetDataContext(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, _localization, error);
 
             await CallMessageBox(window);
 

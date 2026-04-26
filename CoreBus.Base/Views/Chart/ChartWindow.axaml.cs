@@ -5,6 +5,7 @@ using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
+using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using ViewModels.Chart;
@@ -69,7 +70,7 @@ public partial class ChartWindow : Window
             _loggers.Add(axis.Id, logger);
         }
 
-        _chart.Plot.Axes.Bottom.Label.Text = "Время, мс.";
+        _chart.Plot.Axes.Bottom.Label.Text = LocalizationProvider.Get("Chart.TimeAxisMs");
         _chart.Plot.Axes.Bottom.Label.Bold = false;
 
         _incrementX = e.IncrementX;
@@ -112,7 +113,7 @@ public partial class ChartWindow : Window
 
     private void Window_DataContextChanged(object? sender, EventArgs e)
     {
-        _viewModel = DataContext as Chart_VM ?? throw new Exception("Окну графика задана неправильная ViewModel.");
+        _viewModel = DataContext as Chart_VM ?? throw new Exception(LocalizationProvider.Get("Chart.InvalidViewModel"));
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

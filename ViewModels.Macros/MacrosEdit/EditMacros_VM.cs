@@ -1,4 +1,4 @@
-﻿using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
@@ -80,12 +80,12 @@ public class EditMacros_VM : ReactiveObject, IDisposable
     private readonly Model_Settings _settingsModel;
     private readonly ILocalizationService _localization;
 
-
     public EditMacros_VM(IMessageBoxEditMacros messageBox, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
         _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(EmptyCommandMessage));
 
         /****************************************************/
@@ -248,7 +248,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
                 return new NoProtocolCommand_VM(id, parameters);
 
             case ApplicationWorkMode.ModbusClient:
-                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel, CommonSlaveIdFieldViewModel?.UseCommonSlaveId ?? false);
+                return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel, _localization, CommonSlaveIdFieldViewModel?.UseCommonSlaveId ?? false);
 
             default:
                 throw new NotImplementedException();

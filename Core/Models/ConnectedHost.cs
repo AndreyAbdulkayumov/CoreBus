@@ -3,6 +3,7 @@ using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
 using Core.Models.Settings;
+using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models;
@@ -27,6 +28,7 @@ public class ConnectedHost
     private readonly Model_NoProtocol NoProtocolModel;
     private readonly Model_Modbus ModbusModel;
     private readonly Model_Settings SettingsModel;
+    private readonly ILocalizationService _localization;
 
     public IConnection? Client { get; private set; }
 
@@ -36,11 +38,12 @@ public class ConnectedHost
     public static Encoding GlobalEncoding { get; private set; } = Encoding.Default;
 
 
-    public ConnectedHost(Model_NoProtocol noProtocolModel, Model_Modbus modbusModel, Model_Settings settingsModel)
+    public ConnectedHost(Model_NoProtocol noProtocolModel, Model_Modbus modbusModel, Model_Settings settingsModel, ILocalizationService localization)
     {
         NoProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
         ModbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         SettingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         DeviceIsConnect += NoProtocolModel.Host_DeviceIsConnect;
         DeviceIsDisconnected += NoProtocolModel.Host_DeviceIsDisconnected;
@@ -72,22 +75,22 @@ public class ConnectedHost
     {
         if (SelectedProtocol == null)
         {
-            throw new Exception("Не выбран протокол.");
+            throw new Exception(_localization.Get("Exception.ModeNotSelected"));
         }
 
         if (information.Info as SerialPortInfo != null)
         {
-            Client = new SerialPortClient();
+            Client = new SerialPortClient(_localization);
         }
 
         else if (information.Info as SocketInfo != null)
         {
-            Client = new IPClient();
+            Client = new IPClient(_localization);
         }
 
         else
         {
-            throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
+            throw new Exception(_localization.Get("Exception.UnknownInterfaceInSettings"));
         }
 
         Client.Connect(information);

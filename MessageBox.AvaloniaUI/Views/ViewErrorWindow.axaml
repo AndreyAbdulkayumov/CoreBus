@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="MessageBox.AvaloniaUI.ViewErrorWindow"
-        Title="Отчет об ошибке"
+        Title="Error report"
 		Height="500" Width="750"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
@@ -44,7 +44,8 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button ToolTip.Tip="Закрыть"
+				<Button x:Name="Button_Close"
+						ToolTip.Tip="Close"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 

@@ -21,7 +21,9 @@
   },
   "Chart": {
     "AlwaysOnTop": "Always on top",
-    "PointsCount": "Number of points displayed"
+    "PointsCount": "Number of points displayed",
+    "TimeAxisMs": "Time, ms.",
+    "InvalidViewModel": "Chart window has an invalid ViewModel."
   },
   "Common": {
     "About": "About",
@@ -312,10 +314,114 @@
     "SettingsNotSet": "Settings are not set",
     "IpAddressNotSet": "IP address is not set"
   },
+  "Core": {
+    "HostNotInitialized": "Host is not initialized.",
+    "HostNoResponse": "Host did not respond.",
+    "HostNoResponseInTimeout": "Host did not respond within the specified timeout.",
+    "WriteTimeoutMs": "Write timeout: {0} ms.",
+    "ReadTimeoutMs": "Read timeout: {0} ms.",
+    "UnknownReadMode": "Unknown read mode is set for client: {0}",
+    "EthernetSettingsMissing": "Ethernet connection settings are missing.",
+    "SerialSettingsMissing": "Serial port connection settings are missing.",
+    "PortParseError": "Failed to parse port number as integer.\nReceived port value: {0}",
+    "ServerConnectError": "Failed to connect to server.\n\nIP address: {0}\nPort: {1}",
+    "WriteTimeoutPrefix": "Write timeout: ",
+    "ReadTimeoutPrefix": "Read timeout: ",
+    "TimeoutInfinite": "infinite",
+    "ReceiveDataError": "Data receive error:",
+    "ReadStreamNotInitialized": "Read stream is not initialized.",
+    "BaudRateNotSet": "BaudRate is not set.",
+    "ParityNotSet": "Parity is not set.",
+    "DataBitsNotSet": "DataBits is not set.",
+    "StopBitsNotSet": "StopBits is not set.",
+    "BaudRateParseError": "Failed to parse BaudRate as integer.\nReceived BaudRate value: {0}",
+    "DataBitsParseError": "Failed to parse DataBits as integer.\nReceived DataBits value: {0}",
+    "InvalidParity": "Invalid Parity value.",
+    "InvalidStopBits": "Invalid StopBits value.",
+    "SerialConnectErrorPrefix": "Failed to connect to serial port.",
+    "ConnectionDataHeader": "Connection data:",
+    "SerialDisconnectError": "Failed to disconnect from COM port.",
+    "ClientNotInitialized": "Client is not initialized.",
+    "SendBufferEmpty": "Send buffer is empty. Enter data to send.",
+    "FormulaSolveError": "Formula: {0}\nx = {1}",
+    "FormulaAllowedChars": "Allowed only:\n• Digits: 0-9\n• Operators: +, -, *, /\n• Brackets: (, )\n• Decimal point: .\n• Variable: x\n• Functions: pow, sqrt, abs, cos, sin, tan, acos, asin, atan, exp, log\n\nExamples: 3.14, 2+3*(x-1), sin(x), sqrt(x+1)",
+    "FormulaMultipleOperators": "Multiple operators are not allowed: *-, +*, //, +- etc.",
+    "FormulaInvalidStart": "Formula cannot start with +, *, /, )",
+    "FormulaInvalidEnd": "Formula cannot end with operator +, -, *, /, (",
+    "FormulaBracketMismatch": "The number of opening and closing brackets does not match.",
+    "FormulaMissingOperatorNearBracket": "A number before or after bracket is missing an operator.",
+    "FormulaParseError": "Formula contains errors.\nDecimal numbers must use dot separator: 5.12",
+    "SettingsFileNameNotSet": "Settings file name is not set.",
+    "SettingsSaveError": "Settings save error.",
+    "SettingsReadErrorDetailed": "Error reading data from document. Check file integrity or choose another settings file. This file may be incompatible with the current app version.",
+    "FileNotFoundInFolder": "Failed to find file \"{0}\" in folder {1}",
+    "AppSettingsSaveError": "Application settings save error.",
+    "MonitoringRegistersSaveError": "Modbus monitoring registers save error.",
+    "UnsupportedMacrosTypeSaveAttempt": "Attempt to save unsupported macros type.",
+    "SerializationTypeNotFound": "Failed to find type {0} in serialization context declaration.",
+    "SettingsFileNotExistsPath": "Settings file does not exist.\n\nPath: {0}",
+    "FileAlreadyExistsInDirectory": "File named \"{0}\" already exists in directory \"{1}\".",
+    "FileNotExists": "File \"{0}\" does not exist.",
+    "DownloadLinkGetFailed": "Failed to get download link for the new application version.",
+    "LogTimeHeader": "Time",
+    "Modbus": {
+      "Function": {
+        "ReadCoilStatus": {
+          "Name": "0x01 Read coil status",
+          "Number": "0x01 (read)"
+        },
+        "ReadDiscreteInputs": {
+          "Name": "0x02 Read discrete inputs",
+          "Number": "0x02 (read)"
+        },
+        "ReadHoldingRegisters": {
+          "Name": "0x03 Read holding registers",
+          "Number": "0x03 (read)"
+        },
+        "ReadInputRegisters": {
+          "Name": "0x04 Read input registers",
+          "Number": "0x04 (read)"
+        },
+        "ForceSingleCoil": {
+          "Name": "0x05 Write single coil",
+          "Number": "0x05 (write)"
+        },
+        "PresetSingleRegister": {
+          "Name": "0x06 Write single register",
+          "Number": "0x06 (write)"
+        },
+        "ForceMultipleCoils": {
+          "Name": "0x0F Write multiple coils",
+          "Number": "0x0F (write)"
+        },
+        "PresetMultipleRegisters": {
+          "Name": "0x10 Write multiple registers",
+          "Number": "0x10 (write)"
+        }
+      },
+      "ExceptionCode1": "The function code received in the query is not recognized or allowed.",
+      "ExceptionCode2": "The data address specified in the query is not available.",
+      "ExceptionCode3": "The value contained in the query data field is invalid.",
+      "ExceptionCode4": "An unrecoverable error occurred while the slave was attempting to perform the requested action.",
+      "ExceptionCode5": "The slave accepted the request and is processing it, but this requires a long duration. This response prevents a timeout error on the master.",
+      "ExceptionCode6": "The slave is busy processing a command. The master should retry later when the slave is free.",
+      "ExceptionCode7": "The slave cannot perform the program function specified in the request. This code is returned for unsuccessful program requests using functions 13 or 14. The master should request diagnostics or error information from the slave.",
+      "ExceptionCode8": "The slave detected a parity check error while reading extended memory. The master may retry later, but hardware service is usually required.",
+      "ExceptionCode10": "Gateway is misconfigured or overloaded with requests.",
+      "ExceptionCode11": "Target slave is not present on the network or did not respond.",
+      "UnknownErrorWithCodes": "Function code: {0}\nUnknown Modbus error (Code {1})",
+      "EmptyDataPartAscii": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus ASCII packet integrity violation.",
+      "EmptyDataPartRtu": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus RTU packet integrity violation.",
+      "EmptyDataPartTcp": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus TCP packet integrity violation.",
+      "UnsupportedCommandCode": "Unsupported Modbus command code (Code: {0})",
+      "PduBuildErrorUnsupportedFunction": "Error while building PDU.\nUnsupported function code: {0}"
+    }
+  },
   "Confirm": {
     "StopPollingAndDisconnect": "A register poll is currently running.\n\nAre you sure you want to stop the poll and disconnect?",
     "StopPollingAndSwitchNoProtocol": "A register poll is currently running.\n\nAre you sure you want to stop the poll and switch to \"No protocol\" mode?",
     "StopPollingAndExitMonitoring": "A register poll is currently running.\n\nAre you sure you want to stop the poll and exit monitoring mode?",
+    "CloseChartWhileMonitoring": "Modbus register polling is still running.\n\nAre you sure you want to close the chart window and lose all displayed data?",
     "DeleteAllFiles": "Do you really want to delete all files?",
     "DeletePresetFile": "Do you really want to delete the file {0}?",
     "DeleteCommand": "Do you really want to delete the command \"{0}\"?",
@@ -369,5 +475,21 @@
   },
   "SerialPort": {
     "PortNotFound": "{0} is not found"
+  },
+  "MessageBox": {
+    "Close": "Close",
+    "ErrorReport": "Error report",
+    "View": "View",
+    "CopyToClipboard": "Copy to clipboard",
+    "CopyToFile": "Copy to file",
+    "Ok": "OK",
+    "Yes": "Yes",
+    "No": "No",
+    "ErrorReportSelectFolder": "Select folder to save the error report file.",
+    "ErrorReportFileName": "Error report {0:yyyyMMdd_HHmmss}.txt"
+  },
+  "CoreBase": {
+    "WindowOwnerNotSet": "Window owner is not set.",
+    "UnsupportedOsType": "Unsupported OS type."
   }
 }

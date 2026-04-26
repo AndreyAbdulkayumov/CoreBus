@@ -13,6 +13,13 @@ namespace CoreBus.Base.Services;
 
 public class FileSystemService : IFileSystemService
 {
+    private readonly ILocalizationService _localization;
+
+    public FileSystemService(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+    }
+
     public async Task<string?> GetFilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string>? patterns)
     {
         // Get top level from the current control. Alternatively, you can use Window reference instead.
@@ -90,7 +97,7 @@ public class FileSystemService : IFileSystemService
             return;
         }
 
-        throw new Exception("Неподдерживаемый тип ОС.");
+        throw new Exception(_localization.Get("CoreBase.UnsupportedOsType"));
     }
 
     public async Task OpenFolder(string folderPath)
@@ -104,7 +111,7 @@ public class FileSystemService : IFileSystemService
             bool successOpen = await topLevel.Launcher.LaunchDirectoryInfoAsync(dirInfo);
 
             if (!successOpen)
-                throw new Exception("Не удалось открыть папку с логами");
+                throw new Exception(_localization.Get("Error.OpenLogFolder"));
         }
     }
 }

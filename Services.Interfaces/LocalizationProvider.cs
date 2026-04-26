@@ -1,5 +1,3 @@
-using System;
-
 namespace Services.Interfaces;
 
 /// <summary>

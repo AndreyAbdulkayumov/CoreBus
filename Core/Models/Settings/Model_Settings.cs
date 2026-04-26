@@ -1,5 +1,6 @@
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 
 namespace Core.Models.Settings;
 
@@ -43,9 +44,13 @@ public class Model_Settings
     private const string FileExtension = ".json";
 
     private readonly AppDirectoryManager DirectoryManager = new AppDirectoryManager();
+    
+    private readonly ILocalizationService _localization;
 
-    public Model_Settings()
+    public Model_Settings(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        
         AppData = ReadAppInfo();
 
         ModbusMonitoringItems = ReadModbusMonitoringItems();
@@ -63,7 +68,7 @@ public class Model_Settings
         {
             if (fileName == string.Empty)
             {
-                throw new Exception("Не задано имя файла настроек.");
+                throw new Exception(_localization.Get("Core.SettingsFileNameNotSet"));
             }
 
             string filePath = Path.Combine(FolderPath_Settings, fileName + FileExtension);
@@ -75,7 +80,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка сохранения настроек.\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.SettingsSaveError") + "\n\n" + error.Message);
         }
     }
 
@@ -91,7 +96,7 @@ public class Model_Settings
         {
             if (fileName == string.Empty)
             {
-                throw new Exception("Не задано имя файла настроек.");
+                throw new Exception(_localization.Get("Core.SettingsFileNameNotSet"));
             }
 
             string filePath = Path.Combine(FolderPath_Settings, fileName + FileExtension);
@@ -103,10 +108,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка чтения данных из документа. " +
-                "Проверьте его целостность или выберите другой файл настроек. " +
-                "Возможно данный файл не совместим с текущей версией программы.\n\n" +
-                error.Message);
+            throw new Exception(_localization.Get("Core.SettingsReadErrorDetailed") + "\n\n" + error.Message);
         }
     }
 
@@ -136,7 +138,7 @@ public class Model_Settings
 
         else
         {
-            throw new Exception("Не удалось найти файл \"" + fileName + "\" в папке " + DirectoryManager.SettingsFiles_Directory);
+            throw new Exception(_localization.Get("Core.FileNotFoundInFolder", fileName, DirectoryManager.SettingsFiles_Directory));
         }
     }
 
@@ -199,7 +201,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка сохранения настроек приложения.\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.AppSettingsSaveError") + "\n\n" + error.Message);
         }
     }
 
@@ -237,7 +239,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка сохранения Modbus регистров мониторинга.\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.MonitoringRegistersSaveError") + "\n\n" + error.Message);
         }
     }
 
@@ -281,7 +283,7 @@ public class Model_Settings
 
         if (macros == null)
         {
-            throw new Exception("Не удалось прочитать файл макроса.");
+            throw new Exception(_localization.Get("Exception.FileReadError"));
         }
 
         return macros;
@@ -323,7 +325,7 @@ public class Model_Settings
 
         else
         {
-            throw new Exception("Попытка сохранить неподдерживаемый тип макросов.");
+            throw new Exception(_localization.Get("Core.UnsupportedMacrosTypeSaveAttempt"));
         }
 
         return DirectoryManager.FindOrCreateFile(

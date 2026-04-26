@@ -5,6 +5,7 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Converters="clr-namespace:MessageBox.AvaloniaUI.Converters;assembly=MessageBox.AvaloniaUI"
 		xmlns:ViewModels="clr-namespace:MessageBox.AvaloniaUI.ViewModels;assembly=MessageBox.AvaloniaUI"
+		xmlns:l="clr-namespace:MessageBox.AvaloniaUI.Localization;assembly=MessageBox.AvaloniaUI"
         mc:Ignorable="d"
 		d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MessageBox.AvaloniaUI.Views.MessageBoxWindow"
@@ -56,7 +57,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 				
-				<Button ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="{l:Loc MessageBox.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
@@ -128,20 +129,20 @@
 						  Margin="10,0,0,0"
 						  HorizontalAlignment="Left" VerticalAlignment="Center">
 
-						<MenuItem Header="Отчет об ошибке"
+						<MenuItem Header="{l:Loc MessageBox.ErrorReport}"
 								  Background="{DynamicResource Button_Color_Enabled_Background}"
 								  Foreground="{DynamicResource Button_Color_Enabled_Foreground}"
 								  CornerRadius="4">
 
-							<MenuItem Header="Посмотреть"
+							<MenuItem Header="{l:Loc MessageBox.View}"
 									  Foreground="Black"
 									  Command="{Binding Command_ViewError}"/>
 							
-							<MenuItem Header="Копировать в буфер обмена"
+							<MenuItem Header="{l:Loc MessageBox.CopyToClipboard}"
 									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToClipboard}"/>
 							
-							<MenuItem Header="Копировать в файл"
+							<MenuItem Header="{l:Loc MessageBox.CopyToFile}"
 									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToFile}"/>
 						

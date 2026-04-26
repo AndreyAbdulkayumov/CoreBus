@@ -182,6 +182,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
     private NumberStyles _numberViewStyle;
     private byte _selectedSlaveID;
+    private byte _selectedReadFunctionNumber = Function.ReadInputRegisters.Number;
     private uint _selectedPeriod;
 
     private readonly IOpenChildWindowService _openChildWindowService;
@@ -212,7 +213,11 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
-        _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(Button_Content));
+        _localization.LanguageChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(Button_Content));
+            RefreshLocalizedFunctionList();
+        };
         
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -227,10 +232,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         //
         /****************************************************/
 
-        foreach (ModbusReadFunction element in Function.AllReadFunctions)
-        {
-            ReadFunctions.Add(element.DisplayedName);
-        }
+        RefreshLocalizedFunctionList();
 
         DataGrid_VM = _monitoringDataGrid_VM;
 
@@ -314,6 +316,14 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
                 }
             });
 
+        this.WhenAnyValue(x => x.SelectedReadFunction)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                _selectedReadFunctionNumber = Function.AllReadFunctions
+                    .FirstOrDefault(f => f.DisplayedName == x)?.Number ?? _selectedReadFunctionNumber;
+            });
+
         // Действия после запуска приложения
 
         SetMonitoringParameters(_settingsModel.ModbusMonitoringItems);
@@ -333,11 +343,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (function != null && ReadFunctions.Any(displayedName => displayedName == function.DisplayedName))
         {
             SelectedReadFunction = function.DisplayedName;
+            _selectedReadFunctionNumber = function.Number;
         }
 
         else
         {
             SelectedReadFunction = ReadFunctions.First();
+            _selectedReadFunctionNumber = Function.AllReadFunctions.First(f => f.DisplayedName == SelectedReadFunction).Number;
         }
 
         Period_ms = data.Period.ToString();
@@ -353,12 +365,31 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         }
     }
 
+    private void RefreshLocalizedFunctionList()
+    {
+        byte selectedReadFunctionNumber =
+            Function.AllReadFunctions.FirstOrDefault(f => f.DisplayedName == SelectedReadFunction)?.Number
+            ?? _selectedReadFunctionNumber;
+
+        ReadFunctions.Clear();
+
+        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        {
+            ReadFunctions.Add(element.DisplayedName);
+        }
+
+        SelectedReadFunction =
+            Function.AllReadFunctions.First(f => f.Number == selectedReadFunctionNumber).DisplayedName;
+
+        _selectedReadFunctionNumber = selectedReadFunctionNumber;
+    }
+
     public ModbusMonitoringParameters GetParametersForSave()
     {
         return new ModbusMonitoringParameters()
         {
             SlaveID = _selectedSlaveID,
-            FunctionNumber = Function.AllReadFunctions.FirstOrDefault(e => e.DisplayedName == SelectedReadFunction)?.Number ?? 1,
+            FunctionNumber = _selectedReadFunctionNumber,
             Period = _selectedPeriod,
             NumberStyle = _numberViewStyle,
             ChartInfo = new MonitoringChart()
@@ -591,7 +622,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
             ushort startingAddress = allAddresses.Min();
             int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
 
-            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
             MessageData data = new ReadTypeMessage(
                 _selectedSlaveID,

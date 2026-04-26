@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using MessageBox.AvaloniaUI.ViewModels;
 using MessageBox.Core;
+using Services.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,22 +14,28 @@ namespace MessageBox.AvaloniaUI.Views;
 public partial class MessageBoxWindow : Window
 {
     public MessageBoxResult Result { get; private set; } = MessageBoxResult.Default;
+    private ILocalizationService? _localization;
 
     public MessageBoxWindow()
     {
         InitializeComponent();
     }
 
-    public void SetDataContext(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+    public void SetDataContext(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, ILocalizationService localization, Exception? error = null)
     {
+        _localization = localization;
+
         DataContext = new MessageBox_VM(
             OpenErrorReport, CopyToClipboard, GetFolderPath,
-            message, title, messageType, toolType, appVersion, error);
+            message, title, messageType, toolType, appVersion, localization, error);
     }
 
     private void OpenErrorReport(string errorReport)
     {
-        var window = new ViewErrorWindow();
+        if (_localization == null)
+            return;
+
+        var window = new ViewErrorWindow(_localization);
 
         window.SetErrorReport(errorReport);
 
@@ -71,18 +78,9 @@ public partial class MessageBoxWindow : Window
     {
         var clickedButton = sender as Button;
 
-        if (clickedButton != null)
+        if (clickedButton?.DataContext is ButtonContent buttonContent)
         {
-            switch (clickedButton.Content)
-            {
-                case MessageBox_VM.Content_Yes:
-                    Result = MessageBoxResult.Yes;
-                    break;
-
-                case MessageBox_VM.Content_No:
-                    Result = MessageBoxResult.No;
-                    break;
-            }
+            Result = buttonContent.Result;
 
             Close();
         }

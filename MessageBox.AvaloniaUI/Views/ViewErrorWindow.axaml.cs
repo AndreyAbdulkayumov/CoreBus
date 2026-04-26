@@ -1,14 +1,29 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Services.Interfaces;
+using System;
 
 namespace MessageBox.AvaloniaUI;
 
 public partial class ViewErrorWindow : Window
 {
+    private readonly ILocalizationService? _localization;
+
     public ViewErrorWindow()
     {
         InitializeComponent();
+    }
+
+    public ViewErrorWindow(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        InitializeComponent();
+
+        UpdateLocalization();
+
+        _localization.LanguageChanged += (_, _) => UpdateLocalization();
     }
 
     public void SetErrorReport(string errorReport)
@@ -40,5 +55,14 @@ public partial class ViewErrorWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
+    }
+
+    private void UpdateLocalization()
+    {
+        if (_localization == null)
+            return;
+
+        Title = _localization.Get("MessageBox.ErrorReport");
+        ToolTip.SetTip(Button_Close, _localization.Get("MessageBox.Close"));
     }
 }
