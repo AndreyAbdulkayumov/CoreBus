@@ -4,7 +4,7 @@ using Avalonia.Interactivity;
 using Services.Interfaces;
 using System;
 
-namespace MessageBox.AvaloniaUI;
+namespace MessageBox.Avalonia;
 
 public partial class ViewErrorWindow : Window
 {

@@ -1,5 +1,5 @@
 using CoreBus.Base.Views.Chart;
-using MessageBox.AvaloniaUI;
+using MessageBox.Avalonia;
 using MessageBox.Core;
 using Services.Interfaces;
 using System;

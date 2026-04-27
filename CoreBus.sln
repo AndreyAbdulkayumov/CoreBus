@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBus.Base", "CoreBus.Bas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBus.Desktop", "CoreBus.Desktop\CoreBus.Desktop.csproj", "{0E6F2A26-CB2A-40EF-80DA-C1CAE44899CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox.AvaloniaUI", "MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj", "{B7EF3178-3901-4C0D-B430-F394E65DD3F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox.Avalonia", "MessageBox.Avalonia\MessageBox.Avalonia.csproj", "{B7EF3178-3901-4C0D-B430-F394E65DD3F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppDesign", "AppDesign\AppDesign.csproj", "{734A305C-6E39-4DCF-A814-8F3BD77F22A0}"
 EndProject

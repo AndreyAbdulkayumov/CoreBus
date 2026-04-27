@@ -2,14 +2,14 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using MessageBox.AvaloniaUI.ViewModels;
+using MessageBox.Avalonia.ViewModels;
 using MessageBox.Core;
 using Services.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MessageBox.AvaloniaUI.Views;
+namespace MessageBox.Avalonia.Views;
 
 public partial class MessageBoxWindow : Window
 {

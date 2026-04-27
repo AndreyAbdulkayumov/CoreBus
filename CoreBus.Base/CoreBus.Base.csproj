@@ -32,7 +32,7 @@
     <ProjectReference Include="..\Localization.Avalonia\Localization.Avalonia.csproj" />
     <ProjectReference Include="..\Localization.Core\Localization.Core.csproj" />
     <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
-    <ProjectReference Include="..\MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj" />
+    <ProjectReference Include="..\MessageBox.Avalonia\MessageBox.Avalonia.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels.Macros\ViewModels.Macros.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />

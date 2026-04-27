@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Localization.Avalonia;
-using MessageBox.AvaloniaUI.ViewModels;
-using MessageBox.AvaloniaUI.Views;
+using MessageBox.Avalonia.ViewModels;
+using MessageBox.Avalonia.Views;
 using MessageBox.Core;
 
-namespace MessageBox.AvaloniaUI;
+namespace MessageBox.Avalonia;
 
 public class MessageBoxManager : IMessageBox
 {

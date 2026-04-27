@@ -3,7 +3,7 @@ using MessageBox.Core;
 using System;
 using System.Globalization;
 
-namespace MessageBox.AvaloniaUI.Converters;
+namespace MessageBox.Avalonia.Converters;
 
 public class MessageTypeToVisibilityConverter : IValueConverter
 {

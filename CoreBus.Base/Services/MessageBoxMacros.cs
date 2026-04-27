@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using MessageBox.AvaloniaUI;
+using MessageBox.Avalonia;
 using MessageBox.Core;
 using CoreBus.Base.Views.Macros;
 using Services.Interfaces;

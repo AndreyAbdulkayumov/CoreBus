@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Markup.Xaml;
 
-namespace MessageBox.AvaloniaUI;
+namespace MessageBox.Avalonia;
 
 public partial class App : Application
 {

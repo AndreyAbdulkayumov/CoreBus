@@ -8,7 +8,7 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessageBox.AvaloniaUI.ViewModels;
+namespace MessageBox.Avalonia.ViewModels;
 
 public enum MessageBoxToolType
 {
