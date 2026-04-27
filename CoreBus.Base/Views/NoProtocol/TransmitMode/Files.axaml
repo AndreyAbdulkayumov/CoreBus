@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="200"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
              x:Class="CoreBus.Base.Views.NoProtocol.TransmitMode.Files"
 			 x:DataType="ViewModels:NoProtocol_Mode_Files_VM">
 

@@ -5,7 +5,7 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Tabs="clr-namespace:CoreBus.Base.Views.Settings.Tabs;assembly=CoreBus.Base"
 		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
         mc:Ignorable="d"
         x:Class="CoreBus.Base.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:Settings_VM"

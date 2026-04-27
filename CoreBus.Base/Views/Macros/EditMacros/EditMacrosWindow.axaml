@@ -7,7 +7,7 @@
 		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 		xmlns:EditCommandViews="clr-namespace:CoreBus.Base.Views.Macros.EditMacros.EditCommandViews;assembly=CoreBus.Base"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
         x:Class="CoreBus.Base.Views.Macros.EditMacros.EditMacrosWindow"
 		x:DataType="ViewModelsLocal:EditMacros_VM"
         Title="{l:Loc Macros.EditMacroTitle}"

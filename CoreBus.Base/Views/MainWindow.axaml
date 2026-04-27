@@ -6,7 +6,7 @@
 		xmlns:ModbusClientView="clr-namespace:CoreBus.Base.Views.ModbusClient;assembly=CoreBus.Base"
 		xmlns:NoProtocolView="clr-namespace:CoreBus.Base.Views.NoProtocol;assembly=CoreBus.Base"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
 		mc:Ignorable="d"
 		Width="1300" Height="830"
         x:Class="CoreBus.Base.Views.MainWindow"

@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.13" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.13" />
+    <PackageReference Include="Avalonia" Version="11.3.14" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.14" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.14" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.13" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.14" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
@@ -29,10 +29,17 @@
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Localization.Avalonia\Localization.Avalonia.csproj" />
+    <ProjectReference Include="..\Localization.Core\Localization.Core.csproj" />
+    <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
     <ProjectReference Include="..\MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels.Macros\ViewModels.Macros.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Localization.Interfaces" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,12 +124,7 @@
   </ItemGroup>
 
   <!--
-    Файлы локализации. Для добавления нового языка достаточно положить файл <code>.json</code>
-    в папку Localization/ — он будет найден автоматически, и код при этом не меняется.
+    Файлы локализации хранятся в проекте Localization.Core (папка Localization/).
+    В runtime-выход (папка Localization/ рядом с exe) они копируются из CoreBus.Desktop.csproj.
   -->
-  <ItemGroup>
-    <None Update="Localization\*.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

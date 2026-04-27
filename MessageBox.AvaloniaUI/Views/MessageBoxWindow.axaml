@@ -5,7 +5,7 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Converters="clr-namespace:MessageBox.AvaloniaUI.Converters;assembly=MessageBox.AvaloniaUI"
 		xmlns:ViewModels="clr-namespace:MessageBox.AvaloniaUI.ViewModels;assembly=MessageBox.AvaloniaUI"
-		xmlns:l="clr-namespace:MessageBox.AvaloniaUI.Localization;assembly=MessageBox.AvaloniaUI"
+		xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
         mc:Ignorable="d"
 		d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MessageBox.AvaloniaUI.Views.MessageBoxWindow"

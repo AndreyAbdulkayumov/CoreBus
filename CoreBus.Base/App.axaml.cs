@@ -7,7 +7,8 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using CoreBus.Base.Views;
 using CoreBus.Base.Services;
-using CoreBus.Base.Localization;
+using Localization.Core;
+using Localization.Avalonia;
 using ViewModels;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
@@ -129,7 +130,7 @@ public partial class App : Application
         Localizer.Instance = localization;
         // Глобальный провайдер для кода, куда нельзя прокинуть сервис через DI
         // (static-хелперы, исключения, абстрактные базовые классы).
-        global::Services.Interfaces.LocalizationProvider.Instance = localization;
+        global::Localization.Interfaces.LocalizationProvider.Instance = localization;
 
         // Применяем сохранённый язык (если файл настроек уже прочитан моделью).
         // Fallback — русский, если его нет — первый доступный язык из папки Localization/.

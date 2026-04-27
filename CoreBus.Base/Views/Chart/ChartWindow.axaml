@@ -5,7 +5,7 @@
 		xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels.Chart;assembly=ViewModels"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
         mc:Ignorable="d" 
 		Width="1000" Height="620"
         x:Class="CoreBus.Base.Views.Chart.ChartWindow"

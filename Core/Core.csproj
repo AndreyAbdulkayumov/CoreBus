@@ -13,7 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Localization.Interfaces" />
   </ItemGroup>
 
   <ItemGroup>

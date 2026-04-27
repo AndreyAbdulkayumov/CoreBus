@@ -1,4 +1,3 @@
-using Services.Interfaces;
 using System.ComponentModel;
 
 namespace Core.Tests.Infrastructure;
@@ -23,7 +22,7 @@ internal sealed class TestLocalizationService : ILocalizationService
         remove { }
     }
 
-    public string Get(string key, params object[] args)
+    public string Get(string key, params object?[] args)
     {
         if (args == null || args.Length == 0)
         {

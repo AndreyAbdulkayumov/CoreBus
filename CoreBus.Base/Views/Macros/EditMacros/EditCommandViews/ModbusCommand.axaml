@@ -5,7 +5,7 @@
 			 xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.Manual.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual.WriteFields;assembly=CoreBus.Base"
-			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
              x:Class="CoreBus.Base.Views.Macros.EditMacros.EditCommandViews.ModbusCommand"
 			 x:DataType="ViewModelsLocal:ModbusCommand_VM">
 

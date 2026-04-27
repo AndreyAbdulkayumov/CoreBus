@@ -8,7 +8,7 @@
 			 xmlns:ManualModeView="clr-namespace:CoreBus.Base.Views.ModbusClient.Manual;assembly=CoreBus.Base"
 			 xmlns:MonitoringViewModels="clr-namespace:ViewModels.ModbusClient.Monitoring;assembly=ViewModels"
 			 xmlns:MonitoringView="clr-namespace:CoreBus.Base.Views.ModbusClient.Monitoring;assembly=CoreBus.Base"
-			 xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+			 xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="CoreBus.Base.Views.ModbusClient.ModbusClient_View"

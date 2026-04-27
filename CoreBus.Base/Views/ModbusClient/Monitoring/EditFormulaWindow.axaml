@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModels="using:ViewModels.ModbusClient.Monitoring"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:l="clr-namespace:CoreBus.Base.Localization;assembly=CoreBus.Base"
+        xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
         x:Class="CoreBus.Base.Views.ModbusClient.Monitoring.EditFormulaWindow"
 		x:DataType="ViewModels:EditFormula_VM"
 		Width="300"

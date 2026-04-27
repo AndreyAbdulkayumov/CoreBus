@@ -12,9 +12,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
     <ProjectReference Include="..\MessageBox.Core\MessageBox.Core.csproj" />
     <ProjectReference Include="..\MessageBusTypes\MessageBusTypes.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Localization.Interfaces" />
   </ItemGroup>
 
 </Project>

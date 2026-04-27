@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using MessageBox.AvaloniaUI.Localization;
+using Localization.Avalonia;
 using MessageBox.AvaloniaUI.ViewModels;
 using MessageBox.AvaloniaUI.Views;
 using MessageBox.Core;
-using Services.Interfaces;
 
 namespace MessageBox.AvaloniaUI;
 
