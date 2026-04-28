@@ -32,7 +32,8 @@ internal sealed class TestLocalizationService : ILocalizationService
         return $"{key}|{string.Join(",", args)}";
     }
 
-    public void SetLanguage(string code)
+    public bool TrySetLanguage(string code)
     {
+        return true;
     }
 }

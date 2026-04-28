@@ -19,6 +19,6 @@ public interface ILocalizationService : INotifyPropertyChanged
     LanguageInfo CurrentLanguage { get; }
     string this[string key] { get; }
     string Get(string key, params object?[] args);
-    void SetLanguage(string code);
+    bool TrySetLanguage(string code);
     event EventHandler? LanguageChanged;
 }

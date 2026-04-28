@@ -227,7 +227,7 @@
     "DeleteSelectedFile": "Удалить выбранный файл",
     "EachMessageOnNewLine": "Каждое сообщение на новой строке",
     "Encoding": "Кодировка:",
-    "HostReply": "&#171;Ответ хоста&#187;",
+    "HostReply": "«Ответ хоста»",
     "Interface": "Интерфейс:",
     "SaveSelectedFile": "Сохранить выбранный файл",
     "SendFile": "Отправить файл",

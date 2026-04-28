@@ -31,17 +31,17 @@ public sealed class LocalizationService : ILocalizationService
         LoadAll();
     }
 
-    public void SetLanguage(string code)
+    public bool TrySetLanguage(string code)
     {
         if (string.IsNullOrWhiteSpace(code) || !_translations.TryGetValue(code, out var dict))
         {
-            return;
+            return false;
         }
 
         var lang = _languages.FirstOrDefault(l => string.Equals(l.Code, code, StringComparison.OrdinalIgnoreCase));
         if (lang is null)
         {
-            return;
+            return false;
         }
 
         _current = dict;
@@ -51,6 +51,7 @@ public sealed class LocalizationService : ILocalizationService
         handler?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         handler?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         LanguageChanged?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
     public string Get(string key, params object?[] args)

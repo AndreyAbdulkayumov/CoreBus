@@ -7,12 +7,17 @@ namespace Localization.Interfaces;
 public static class LocalizationProvider
 {
     private static ILocalizationService? _instance;
+    public static event EventHandler? InstanceChanged;
 
     public static ILocalizationService Instance
     {
         get => _instance ?? throw new InvalidOperationException(
             "LocalizationProvider.Instance is not initialized. Set it in App startup.");
-        set => _instance = value ?? throw new ArgumentNullException(nameof(value));
+        set
+        {
+            _instance = value ?? throw new ArgumentNullException(nameof(value));
+            InstanceChanged?.Invoke(null, EventArgs.Empty);
+        }
     }
 
     public static string Get(string key)

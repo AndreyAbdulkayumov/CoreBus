@@ -45,7 +45,7 @@ public class AppSettings_VM : ReactiveObject
             if (string.Equals(value.Code, _localization.CurrentLanguage.Code, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            _localization.SetLanguage(value.Code);
+            _ = _localization.TrySetLanguage(value.Code);
             _settingsModel.AppData.LanguageCode = value.Code;
             this.RaisePropertyChanged();
         }

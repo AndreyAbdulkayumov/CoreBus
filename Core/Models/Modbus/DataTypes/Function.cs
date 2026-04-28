@@ -1,4 +1,3 @@
-using Services.Interfaces;
 using System.ComponentModel;
 
 namespace Core.Models.Modbus.DataTypes;
@@ -49,21 +48,40 @@ public class ModbusWriteFunction : ModbusFunction
 
 public static class Function
 {
+    private static bool _isLanguageChangedSubscribed;
+
     static Function()
     {
+        LocalizationProvider.InstanceChanged += (_, _) => EnsureLocalizationSubscription();
+        EnsureLocalizationSubscription();
+    }
+
+    private static void EnsureLocalizationSubscription()
+    {
+        // Класс Function может инициализироваться раньше LocalizationProvider.Instance.
+        // Поэтому подписку на LanguageChanged нужно пытаться установить повторно
+        // после назначения Instance, но только один раз.
+        if (_isLanguageChangedSubscribed)
+        {
+            return;
+        }
+
         try
         {
-            LocalizationProvider.Instance.LanguageChanged += (_, _) =>
-            {
-                foreach (var function in AllFunctions)
-                {
-                    function.RaiseLocalizationChanged();
-                }
-            };
+            LocalizationProvider.Instance.LanguageChanged += OnLanguageChanged;
+            _isLanguageChangedSubscribed = true;
         }
         catch (InvalidOperationException)
         {
-            // Localization provider can be initialized later during app startup.
+            // Провайдер локализации может быть инициализирован позже в процессе запуска приложения.
+        }
+    }
+
+    private static void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        foreach (var function in AllFunctions)
+        {
+            function.RaiseLocalizationChanged();
         }
     }
 

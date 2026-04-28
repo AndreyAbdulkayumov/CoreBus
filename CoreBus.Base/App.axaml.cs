@@ -136,11 +136,10 @@ public partial class App : Application
         // Fallback — русский, если его нет — первый доступный язык из папки Localization/.
         var settingsModel = _serviceProvider.GetRequiredService<Model_Settings>();
         var preferredCode = settingsModel.AppData?.LanguageCode ?? "ru";
-        localization.SetLanguage(preferredCode);
-        if (!string.Equals(localization.CurrentLanguage.Code, preferredCode, StringComparison.OrdinalIgnoreCase)
+        if (!localization.TrySetLanguage(preferredCode)
             && localization.AvailableLanguages.Count > 0)
         {
-            localization.SetLanguage(localization.AvailableLanguages[0].Code);
+            _ = localization.TrySetLanguage(localization.AvailableLanguages[0].Code);
         }
     }
 
