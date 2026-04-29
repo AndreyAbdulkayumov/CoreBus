@@ -1,6 +1,5 @@
 using Core.Models.Settings.FileTypes;
 using ReactiveUI;
-using Services.Interfaces;
 using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
@@ -43,7 +42,6 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
             new TimestampFormatItem(TimestampFormat.ISO8601, "ISO 8601")
         ];
 
-
     private TimestampFormatItem? _selectedTimestampFormat;
 
     public TimestampFormatItem? SelectedTimestampFormat
@@ -71,6 +69,7 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
             // Перерисовать список при смене языка и сохранить текущий выбор
             var current = SelectedTimestampFormat?.Value;
             this.RaisePropertyChanged(nameof(TimestampFormats));
+
             if (current.HasValue)
             {
                 SelectedTimestampFormat = TimestampFormats.FirstOrDefault(e => e.Value == current.Value);

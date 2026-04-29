@@ -10,12 +10,21 @@ using MessageBusTypes.Macros;
 using MessageBusTypes.NoProtocol;
 using ReactiveUI;
 using Services.Interfaces;
-using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using ViewModels.Helpers;
 
 namespace ViewModels.NoProtocol;
+
+public enum SendModeType
+{
+    Normal,
+    Cycle,
+    Files
+}
+
+public record SendModeItem(SendModeType Value, string Display);
 
 public class NoProtocol_VM : ReactiveObject
 {
@@ -37,30 +46,19 @@ public class NoProtocol_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
     }
 
-    // Ключи режимов отправки (локализуемые ярлыки выводятся через ILocalizationService).
-    public const string SendMode_Normal = "NoProtocol.SendMode.Normal";
-    public const string SendMode_Cycle = "NoProtocol.SendMode.Cycle";
-    public const string SendMode_Files = "NoProtocol.SendMode.Files";
+    public IEnumerable<SendModeItem> AllSendModes =>
+        [
+            new SendModeItem(SendModeType.Normal, _localization.Get("NoProtocol.SendMode.Normal")),
+            new SendModeItem(SendModeType.Cycle, _localization.Get("NoProtocol.SendMode.Cycle")),
+            new SendModeItem(SendModeType.Files, _localization.Get("NoProtocol.SendMode.Files"))
+        ];
 
-    private string _selectedSendModeKey = SendMode_Normal;
+    private SendModeItem? _selectedSendMode;
 
-    /// <summary>
-    /// Ключ текущего выбранного режима отправки (для биндинга в ComboBox).
-    /// </summary>
-    public string SelectedSendMode
+    public SendModeItem? SelectedSendMode
     {
-        get => _selectedSendModeKey;
-        set => this.RaiseAndSetIfChanged(ref _selectedSendModeKey, value);
-    }
-
-    private ObservableCollection<string> _allSendModes = new ObservableCollection<string>()
-    {
-        SendMode_Normal, SendMode_Cycle, SendMode_Files
-    };
-
-    public ObservableCollection<string> AllSendModes
-    {
-        get => _allSendModes;
+        get => _selectedSendMode;
+        set => this.RaiseAndSetIfChanged(ref _selectedSendMode, value);
     }
 
     private const string InterfaceType_Default = "Common.Undefined";
@@ -154,6 +152,15 @@ public class NoProtocol_VM : ReactiveObject
         _localization.LanguageChanged += (_, _) =>
         {
             this.RaisePropertyChanged(nameof(InterfaceType));
+
+            // Перерисовать список при смене языка и сохранить текущий выбор
+            var currentModeKey = SelectedSendMode?.Value;
+            this.RaisePropertyChanged(nameof(AllSendModes));
+
+            if (currentModeKey.HasValue)
+            {
+                SelectedSendMode = AllSendModes.FirstOrDefault(mode => mode.Value == currentModeKey);
+            }
         };
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
@@ -176,27 +183,30 @@ public class NoProtocol_VM : ReactiveObject
 
         Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
+        SelectedSendMode = AllSendModes.FirstOrDefault(mode => mode.Value == SendModeType.Normal);
+
         this.WhenAnyValue(x => x.SelectedSendMode)
-            .Subscribe(_ =>
+            .Where(mode => mode is not null)
+            .Subscribe(mode =>
             {
-                if (SelectedSendMode != SendMode_Cycle)
+                if (mode!.Value != SendModeType.Cycle)
                 {
                     _cycleMode_VM.StopPolling();
                 }
 
-                EncodingIsVisible = SelectedSendMode != SendMode_Files;
+                EncodingIsVisible = mode.Value != SendModeType.Files;
 
-                switch (SelectedSendMode)
+                switch (mode.Value)
                 {
-                    case SendMode_Normal:
+                    case SendModeType.Normal:
                         CurrentModeViewModel = _normalMode_VM;
                         break;
 
-                    case SendMode_Cycle:
+                    case SendModeType.Cycle:
                         CurrentModeViewModel = _cycleMode_VM;
                         break;
 
-                    case SendMode_Files:
+                    case SendModeType.Files:
                         CurrentModeViewModel = _filesMode_VM;
                         break;
                 }
