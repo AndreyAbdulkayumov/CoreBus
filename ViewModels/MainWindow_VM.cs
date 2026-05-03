@@ -1,3 +1,5 @@
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.AppUpdateSystem;
@@ -339,6 +341,25 @@ public class MainWindow_VM : ReactiveObject
 
     public async Task MainWindowLoaded()
     {
+        var hasRussian = _localization.AvailableLanguages.Any(e => e.Code == "ru");
+
+        if (!hasRussian)
+        {
+            await _messageBox.ShowDialog(_localization.Get("Message.Error.RussianLanguageIsMissing"), MessageType.Error);
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Shutdown();
+            }
+
+            else
+            {
+                Environment.Exit(0);
+            }
+
+            return;
+        }
+
         UpdateListOfPresets();
 
         if (_settingsModel.AppData.CheckUpdateAfterStart)

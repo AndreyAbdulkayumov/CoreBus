@@ -29,6 +29,13 @@ public class MessageBoxMainWindow : IMessageBoxMainWindow
         messageBox.Show(message, type, error);
     }
 
+    public async Task ShowDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBoxManager(MainWindow.Instance, _appVersion, _localization);
+
+        await messageBox.ShowDialog(message, type, error);
+    }
+
     public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
     {
         var messageBox = new MessageBoxManager(MainWindow.Instance, _appVersion, _localization);

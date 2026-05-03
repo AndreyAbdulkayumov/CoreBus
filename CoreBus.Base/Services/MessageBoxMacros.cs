@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
+using CoreBus.Base.Views.Macros;
 using MessageBox.Avalonia;
 using MessageBox.Core;
-using CoreBus.Base.Views.Macros;
 using Services.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace CoreBus.Base.Services;
 
@@ -27,6 +27,13 @@ public class MessageBoxMacros : IMessageBoxMacros
         var messageBox = new MessageBoxManager(MacrosWindow.Instance, _appVersion, _localization);
 
         messageBox.Show(message, type, error);
+    }
+
+    public async Task ShowDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBoxManager(MacrosWindow.Instance, _appVersion, _localization);
+
+        await messageBox.ShowDialog(message, type, error);
     }
 
     public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)

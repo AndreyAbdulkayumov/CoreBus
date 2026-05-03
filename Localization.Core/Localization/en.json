@@ -417,7 +417,8 @@
       "EditMacro": "Error editing the macro \"{0}\".",
       "RemoveMacro": "Error removing the macro \"{0}\".",
       "SendData": "Error sending data.",
-      "CopyRegisterBinary": "Error copying data from the register at address {0} to the clipboard."
+      "CopyRegisterBinary": "Error copying data from the register at address {0} to the clipboard.",
+      "RussianLanguageIsMissing": "Russian localization not found.\nRussian language is required."
     },
     "Info": {
       "AppUpToDate": "You are using the latest version of the application!",

@@ -108,6 +108,15 @@ public sealed class LocalizationService : ILocalizationService
         }
 
         _languages.Sort((a, b) => StringComparer.OrdinalIgnoreCase.Compare(a.Name, b.Name));
+
+        var index = _languages.FindIndex(l => string.Equals(l.Code, "ru", StringComparison.OrdinalIgnoreCase));
+
+        if (index > 0)
+        {
+            var ru = _languages[index];
+            _languages.RemoveAt(index);
+            _languages.Insert(0, ru);
+        }
     }
 
     private static Dictionary<string, string> Flatten(JsonElement root)

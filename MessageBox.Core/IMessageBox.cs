@@ -1,4 +1,4 @@
-﻿namespace MessageBox.Core;
+namespace MessageBox.Core;
 
 public enum MessageType
 {
@@ -17,5 +17,6 @@ public enum MessageBoxResult
 public interface IMessageBox
 {
     void Show(string message, MessageType type, Exception? error = null);
+    Task ShowDialog(string message, MessageType messageType, Exception? error = null);
     Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null);
 }

@@ -1,9 +1,9 @@
+using CoreBus.Base.Views.ModbusScanner;
 using MessageBox.Avalonia;
 using MessageBox.Core;
 using Services.Interfaces;
 using System;
 using System.Threading.Tasks;
-using CoreBus.Base.Views.ModbusScanner;
 
 namespace CoreBus.Base.Services;
 
@@ -27,6 +27,13 @@ public class MessageBoxModbusScanner : IMessageBoxModbusScanner
         var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion, _localization);
 
         messageBox.Show(message, type, error);
+    }
+
+    public async Task ShowDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBoxManager(ModbusScannerWindow.Instance, _appVersion, _localization);
+
+        await messageBox.ShowDialog(message, type, error);
     }
 
     public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
