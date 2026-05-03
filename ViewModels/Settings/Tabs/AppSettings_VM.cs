@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
@@ -69,13 +69,13 @@ public class AppSettings_VM : ReactiveObject
         Select_Dark_Theme = ReactiveCommand.Create(SetDarkTheme);
         Select_Dark_Theme.ThrownExceptions.Subscribe(error =>
             _messageBox.Show(
-                _localization.Get("Error.ThemeSwitchDark") + "\n\n" + error.Message,
+                _localization.Get("Message.Error.ThemeSwitchDark") + "\n\n" + error.Message,
                 MessageType.Error, error));
 
         Select_Light_Theme = ReactiveCommand.Create(SetLightTheme);
         Select_Light_Theme.ThrownExceptions.Subscribe(error =>
             _messageBox.Show(
-                _localization.Get("Error.ThemeSwitchLight") + "\n\n" + error.Message,
+                _localization.Get("Message.Error.ThemeSwitchLight") + "\n\n" + error.Message,
                 MessageType.Error, error));
 
         // При смене языка перечитать все свойства, зависящие от локализации.

@@ -144,7 +144,7 @@ public class ModbusClient_VM : ReactiveObject
                 modbusMonitoring.ClearData();
             }
         });
-        Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedModbusType)
             .WhereNotNull()
@@ -169,7 +169,7 @@ public class ModbusClient_VM : ReactiveObject
                             break;
 
                         default:
-                            _messageBox.Show(_localization.Get("Warning.UnknownModbusTypeMultiline", SelectedModbusType), MessageType.Warning);
+                            _messageBox.Show(_localization.Get("Message.Warning.UnknownModbusTypeMultiline", SelectedModbusType), MessageType.Warning);
                             return;
                     }
 
@@ -203,7 +203,7 @@ public class ModbusClient_VM : ReactiveObject
             // Проверяем, нужно ли подтверждение
             if (CurrentModeViewModel is ModbusMonitoring_VM && _modbusMonitoring_VM.IsMonitoringRunning)
             {
-                var result = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.StopPollingAndExitMonitoring"), MessageType.Warning);
+                var result = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.StopPollingAndExitMonitoring"), MessageType.Warning);
 
                 if (result != MessageBoxResult.Yes)
                     return; // Отмена: IsMonitoringMode не меняется, контрол остаётся в исходном состоянии
@@ -219,7 +219,7 @@ public class ModbusClient_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.SwitchMonitoringMode") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.SwitchMonitoringMode") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -241,7 +241,7 @@ public class ModbusClient_VM : ReactiveObject
 
         else
         {
-            _messageBox.Show(_localization.Get("Warning.UnknownConnectionTypeSimple"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.UnknownConnectionTypeSimple"), MessageType.Warning);
             return;
         }
 

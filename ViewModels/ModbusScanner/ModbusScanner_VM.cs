@@ -268,7 +268,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
                         break;
 
                     default:
-                        _messageBox.Show(_localization.Get("Warning.UnknownModbusTypeMultiline", SelectedModbusType ?? string.Empty), MessageType.Warning);
+                        _messageBox.Show(_localization.Get("Message.Warning.UnknownModbusTypeMultiline", SelectedModbusType ?? string.Empty), MessageType.Warning);
                         break;
                 }
             });
@@ -291,7 +291,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(PauseBetweenRequests))
         {
-            _messageBox.Show(_localization.Get("Warning.PauseNotSet"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.PauseNotSet"), MessageType.Warning);
             return;
         }
 
@@ -477,3 +477,4 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     #endregion Валидация
 }
+

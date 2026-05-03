@@ -69,8 +69,8 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
 
         { IP_Address_Invalid,
             new ValidateMessage(
-                shortMessage: LocalizationProvider.Get("Validation.InvalidIpShort"),
-                fullMessage: LocalizationProvider.Get("Validation.InvalidIpFull")
+                shortMessage: LocalizationProvider.Get("Validation.InvalidIp"),
+                fullMessage: LocalizationProvider.Get("Validation.InvalidIp")
                 )},
     };
 

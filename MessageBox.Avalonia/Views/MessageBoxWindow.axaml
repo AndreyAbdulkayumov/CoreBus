@@ -57,7 +57,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 				
-				<Button ToolTip.Tip="{l:Loc MessageBox.Close}"
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
 						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
@@ -129,20 +129,20 @@
 						  Margin="10,0,0,0"
 						  HorizontalAlignment="Left" VerticalAlignment="Center">
 
-						<MenuItem Header="{l:Loc MessageBox.ErrorReport}"
+						<MenuItem Header="{l:Loc Dialog.MessageBox.ErrorReport}"
 								  Background="{DynamicResource Button_Color_Enabled_Background}"
 								  Foreground="{DynamicResource Button_Color_Enabled_Foreground}"
 								  CornerRadius="4">
 
-							<MenuItem Header="{l:Loc MessageBox.View}"
+							<MenuItem Header="{l:Loc Dialog.MessageBox.View}"
 									  Foreground="Black"
 									  Command="{Binding Command_ViewError}"/>
 							
-							<MenuItem Header="{l:Loc MessageBox.CopyToClipboard}"
+							<MenuItem Header="{l:Loc Dialog.MessageBox.CopyToClipboard}"
 									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToClipboard}"/>
 							
-							<MenuItem Header="{l:Loc MessageBox.CopyToFile}"
+							<MenuItem Header="{l:Loc Dialog.MessageBox.CopyToFile}"
 									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToFile}"/>
 						

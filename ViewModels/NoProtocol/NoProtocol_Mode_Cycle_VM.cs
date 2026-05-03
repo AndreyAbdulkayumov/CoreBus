@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Reactive;
 using MessageBox.Core;
 using Core.Models;
@@ -209,7 +209,7 @@ public class NoProtocol_Mode_Cycle_VM : ReactiveObject
 
     private void NoProtocol_Model_ErrorInCycleMode(object? sender, Exception e)
     {
-        _messageBox.Show(_localization.Get("Error.CyclicSendCommand") + "\n\n" + e.Message + "\n\n" + _localization.Get("Info.PollingStopped"), MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Message.Error.CyclicSendCommand") + "\n\n" + e.Message + "\n\n" + _localization.Get("Message.Info.PollingStopped"), MessageType.Error, e);
     }
 
     public void SourceWindowClosingAction()

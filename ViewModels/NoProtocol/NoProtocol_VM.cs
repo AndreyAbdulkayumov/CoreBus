@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+using Core.Clients;
 using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.NoProtocol;
@@ -248,7 +248,7 @@ public class NoProtocol_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            SendMacrosActionResponse(macros, false, _localization.Get("Macros.ClientDisconnected"), MessageType.Error);
+            SendMacrosActionResponse(macros, false, _localization.Get("Exception.ClientDisconnected"), MessageType.Error);
             return;
         }
 
@@ -286,7 +286,7 @@ public class NoProtocol_VM : ReactiveObject
 
             catch (Exception error)
             {
-                errorMessages.Add(_localization.Get("Macros.CommandErrorPrefix", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
+                errorMessages.Add(_localization.Get("Macros.CommandError", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
             }
         }
 
@@ -338,7 +338,7 @@ public class NoProtocol_VM : ReactiveObject
 
         else
         {
-            _messageBox.Show(_localization.Get("Exception.UnknownConnectionTypeSimple"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.UnknownConnectionTypeSimple"), MessageType.Warning);
             return;
         }
 
@@ -396,6 +396,6 @@ public class NoProtocol_VM : ReactiveObject
 
     private void NoProtocol_Model_ErrorInReadThread(object? sender, Exception e)
     {
-        _messageBox.Show(_localization.Get("Error.AsyncReadError") + "\n\n" + e.Message, MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Message.Error.AsyncReadError") + "\n\n" + e.Message, MessageType.Error, e);
     }
 }

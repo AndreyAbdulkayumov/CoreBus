@@ -238,7 +238,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
 
                 catch (Exception error)
                 {
-                    messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
+                    messageBox.Show(_localization.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
     }
@@ -455,12 +455,12 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
     {
         if (string.IsNullOrWhiteSpace(NumberOfReadRegisters))
         {
-            return _localization.Get("Validation.SpecifyReadRegisterCountShort");
+            return _localization.Get("Message.Warning.SpecifyReadRegisterCount");
         }
 
         if (_selectedNumberOfReadRegisters < 1)
         {
-            return _localization.Get("Validation.TooManyRegisters");
+            return _localization.Get("Message.Warning.TooManyRegistersToRead");
         }
 
         if (!HasErrors)
@@ -604,5 +604,5 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         return null;
     }
 
-# endregion Валидация
+    #endregion Валидация
 }

@@ -114,7 +114,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         {
             if (string.IsNullOrWhiteSpace(MacrosName))
             {
-                _messageBox.Show(_localization.Get("Warning.SpecifyMacroName"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.SpecifyMacroName"), MessageType.Warning);
                 return;
             }
 
@@ -122,18 +122,18 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
             if (!string.IsNullOrEmpty(validationMessages))
             {
-                _messageBox.Show(_localization.Get("Error.FixMacroErrors", _validationMessageSeparator, validationMessages), MessageType.Error);
+                _messageBox.Show(_localization.Get("Message.Error.FixMacroErrors", _validationMessageSeparator, validationMessages), MessageType.Error);
                 return;
             }
 
             Saved = true;
 
-            _messageBox.Show(_localization.Get("Info.MacroSettingsSaved"), MessageType.Information);
+            _messageBox.Show(_localization.Get("Message.Info.MacroSettingsSaved"), MessageType.Information);
         });
-        Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosSave") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.MacrosSave") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_RunMacros = ReactiveCommand.Create(RunMacros);
-        Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosRun") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.MacrosRun") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_AddCommand = ReactiveCommand.Create(() =>
         {
@@ -146,7 +146,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
             CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
             _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
         });
-        Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddCommand") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddCommand") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.EditCommandViewModel)
             .Subscribe(x =>
@@ -536,7 +536,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
             if (!string.IsNullOrEmpty(message))
             {
-                return _localization.Get("Macros.CommandErrorInMacro", command.Name ?? string.Empty) + "\n\n" + message;
+                return _localization.Get("Macros.CommandError", command.Name ?? string.Empty) + "\n\n" + message;
             }
         }
 

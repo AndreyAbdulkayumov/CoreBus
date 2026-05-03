@@ -202,10 +202,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         /****************************************************/
 
         Command_Read = ReactiveCommand.Create(ReadButtonHandler);
-        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.ReadAttempt") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ReadAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Write = ReactiveCommand.Create(WriteButtonHandler);
-        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.WriteAttempt") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.WriteAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -308,19 +308,19 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show(_localization.Get("Warning.SpecifySlaveId"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show(_localization.Get("Warning.SpecifyModbusAddress"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(NumberOfRegisters))
         {
-            _messageBox.Show(_localization.Get("Warning.SpecifyReadRegisterCount"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyReadRegisterCount"), MessageType.Warning);
             return;
         }
 
@@ -368,19 +368,19 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show(_localization.Get("Warning.SpecifySlaveId"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show(_localization.Get("Warning.SpecifyModbusAddress"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (CurrentWriteFieldViewModel == null)
         {
-            _messageBox.Show(_localization.Get("Warning.WriteFieldTypeNotSelected"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.WriteFieldTypeNotSelected"), MessageType.Warning);
             return;
         }
 
@@ -481,7 +481,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 

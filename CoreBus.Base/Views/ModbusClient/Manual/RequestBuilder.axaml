@@ -164,7 +164,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="10"
 									HorizontalAlignment="Right">
 							
-							<TextBlock Text="{l:Loc Macros.RegisterCount}"
+							<TextBlock Text="{l:Loc Common.RegisterCount}"
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text}"
 									   VerticalAlignment="Center"/>

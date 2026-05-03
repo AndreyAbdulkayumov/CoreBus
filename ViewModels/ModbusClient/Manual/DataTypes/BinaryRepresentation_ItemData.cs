@@ -29,7 +29,7 @@ public class BinaryRepresentation_ItemData : ReactiveObject
 
             await copyToClipboard(Data);
         });
-        Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.CopyRegisterBinary", Address) + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Message.Error.CopyRegisterBinary", Address) + "\n\n" + error.Message, MessageType.Error, error));
     }
 }
 

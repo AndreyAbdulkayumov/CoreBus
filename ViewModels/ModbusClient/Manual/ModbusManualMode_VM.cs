@@ -164,7 +164,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
             await _uiServices.CopyToClipboard(data);
         });
-        Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyRequest") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CopyRequest") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -180,7 +180,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
             await _uiServices.CopyToClipboard(data);
         });
-        Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyResponse") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CopyResponse") + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     public void ClearData()
@@ -326,12 +326,12 @@ public class ModbusManualMode_VM : ReactiveObject
 
                 var exceptionMessage = await ModbusErrorHandler(currentCommand.Content.Address, error);
 
-                errorMessages.Add(_localization.Get("Macros.CommandErrorPrefix", currentCommand.Name ?? string.Empty) + "\n\n" + exceptionMessage);
+                errorMessages.Add(_localization.Get("Macros.CommandError", currentCommand.Name ?? string.Empty) + "\n\n" + exceptionMessage);
             }
 
             catch (Exception error)
             {
-                errorMessages.Add(_localization.Get("Macros.CommandErrorPrefix", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
+                errorMessages.Add(_localization.Get("Macros.CommandError", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
             }
         }
 
@@ -411,7 +411,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
         if (numberOfRegisters < 1)
         {
-            throw new Exception(_localization.Get("Exception.TooManyRegistersToRead"));
+            throw new Exception(_localization.Get("Message.Warning.TooManyRegistersToRead"));
         }
 
         _currentFunction = readFunction;

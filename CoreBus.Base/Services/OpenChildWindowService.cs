@@ -341,7 +341,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 if (monitoringVM.IsMonitoringRunning)
                 {
                     var closeWindow = await chartMessageBox.ShowYesNoDialog(
-                        _localization.Get("Confirm.CloseChartWhileMonitoring"),
+                        _localization.Get("Message.Confirm.CloseChartWhileMonitoring"),
                         MessageType.Warning);
 
                     if (closeWindow != MessageBoxResult.No)

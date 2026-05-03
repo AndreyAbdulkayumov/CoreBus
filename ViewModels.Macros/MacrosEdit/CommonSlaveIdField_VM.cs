@@ -83,7 +83,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                     catch (Exception error)
                     {
-                        messageBox.Show(LocalizationProvider.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
+                        messageBox.Show(LocalizationProvider.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                     }
                 });
         }
@@ -173,7 +173,7 @@ namespace ViewModels.Macros.MacrosEdit
             ChangeNumberStyleInErrors(nameof(CommonSlaveId), NumberStyles.Number);
         }
 
-        # region Валидация
+        #region Валидация
 
         public string GetFieldViewName(string fieldName)
         {

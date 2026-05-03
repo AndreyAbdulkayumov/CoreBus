@@ -108,14 +108,14 @@ public class MessageBox_VM : ReactiveObject
 
             Command_CopyErrorToFile = ReactiveCommand.CreateFromTask(async () =>
             {
-                string? folderPath = await getFolderPath(_localization.Get("MessageBox.ErrorReportSelectFolder"));
+                string? folderPath = await getFolderPath(_localization.Get("Dialog.MessageBox.ErrorReportSelectFolder"));
 
                 if (folderPath == null)
                 {
                     return;
                 }
 
-                string fileName = Path.Combine(folderPath, _localization.Get("MessageBox.ErrorReportFileName", reportDate));
+                string fileName = Path.Combine(folderPath, _localization.Get("Dialog.MessageBox.ErrorReportFileName", reportDate));
 
                 File.WriteAllText(fileName, report);
             });
@@ -137,16 +137,16 @@ public class MessageBox_VM : ReactiveObject
         switch (_toolType)
         {
             case MessageBoxToolType.Default:
-                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Ok"), MessageBoxResult.Default));
+                Buttons.Add(new ButtonContent(_localization.Get("Dialog.MessageBox.Ok"), MessageBoxResult.Default));
                 break;
 
             case MessageBoxToolType.YesNo:
-                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Yes"), MessageBoxResult.Yes));
-                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.No"), MessageBoxResult.No));
+                Buttons.Add(new ButtonContent(_localization.Get("Dialog.MessageBox.Yes"), MessageBoxResult.Yes));
+                Buttons.Add(new ButtonContent(_localization.Get("Dialog.MessageBox.No"), MessageBoxResult.No));
                 break;
 
             default:
-                Buttons.Add(new ButtonContent(_localization.Get("MessageBox.Ok"), MessageBoxResult.Default));
+                Buttons.Add(new ButtonContent(_localization.Get("Dialog.MessageBox.Ok"), MessageBoxResult.Default));
                 break;
         }
     }

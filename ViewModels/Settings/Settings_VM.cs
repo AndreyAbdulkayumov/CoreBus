@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -172,7 +172,7 @@ public class Settings_VM : ReactiveObject
     {
         try
         {
-            string? filePath = await _fileSystemService.GetFilePath(_localization.Get("Settings.AddExistingFileTitle"), _localization.Get("Settings.FileTypeLabel"), ["*.json"]);
+            string? filePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Settings.AddExistingFile.Title"), _localization.Get("Dialog.Settings.AddExistingFile.FilterLabel"), ["*.json"]);
 
             if (string.IsNullOrEmpty(filePath))
             {
@@ -188,7 +188,7 @@ public class Settings_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.AddExistingSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.AddExistingSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -198,11 +198,11 @@ public class Settings_VM : ReactiveObject
         {
             if (Presets.Count <= 1)
             {
-                _messageBox.Show(_localization.Get("Warning.CannotDeleteLastFile"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.CannotDeleteLastFile"), MessageType.Warning);
                 return;
             }
 
-            MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.DeletePresetFile", SelectedPreset), MessageType.Warning);
+            MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.DeletePresetFile", SelectedPreset), MessageType.Warning);
 
             if (dialogResult != MessageBoxResult.Yes)
             {
@@ -218,7 +218,7 @@ public class Settings_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.DeleteSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.DeleteSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -284,12 +284,12 @@ public class Settings_VM : ReactiveObject
 
             _tab_Connection_VM.PresetSaveHandler(data.Connection_SerialPort);
 
-            _messageBox.Show(_localization.Get("Info.SettingsSaved"), MessageType.Information);
+            _messageBox.Show(_localization.Get("Message.Info.SettingsSaved"), MessageType.Information);
         }
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.SaveSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.SaveSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 

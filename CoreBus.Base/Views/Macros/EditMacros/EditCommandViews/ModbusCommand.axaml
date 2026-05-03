@@ -201,7 +201,7 @@
 					<StackPanel Orientation="Horizontal" Spacing="15"
 								IsVisible="{Binding SelectedFunctionType_Read, Mode=OneWay}">
 
-						<TextBlock Text="{l:Loc Macros.RegisterCount}"
+						<TextBlock Text="{l:Loc Common.RegisterCount}"
 								   FontSize="16"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,6,0,0"

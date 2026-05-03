@@ -74,7 +74,7 @@
 		
 		<Grid>
 
-			<TextBlock Text="{l:Loc Settings.WriteTimeout}" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Common.WriteTimeoutField}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Text="{Binding WriteTimeout, Mode=TwoWay}"/>
@@ -86,7 +86,7 @@
 
 		<Grid>
 
-			<TextBlock Text="{l:Loc Settings.ReadTimeout}" Classes="Parameters"/>
+			<TextBlock Text="{l:Loc Common.ReadTimeoutField}" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
 					 Text="{Binding ReadTimeout, Mode=TwoWay}"/>

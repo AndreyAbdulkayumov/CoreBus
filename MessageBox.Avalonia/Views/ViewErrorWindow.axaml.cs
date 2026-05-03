@@ -1,10 +1,9 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Services.Interfaces;
 using System;
 
-namespace MessageBox.Avalonia;
+namespace MessageBox.Avalonia.Views;
 
 public partial class ViewErrorWindow : Window
 {
@@ -62,7 +61,7 @@ public partial class ViewErrorWindow : Window
         if (_localization == null)
             return;
 
-        Title = _localization.Get("MessageBox.ErrorReport");
-        ToolTip.SetTip(Button_Close, _localization.Get("MessageBox.Close"));
+        Title = _localization.Get("Dialog.MessageBox.ErrorReport");
+        ToolTip.SetTip(Button_Close, _localization.Get("Common.Close"));
     }
 }

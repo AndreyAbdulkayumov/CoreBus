@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        x:Class="MessageBox.Avalonia.ViewErrorWindow"
+        x:Class="MessageBox.Avalonia.Views.ViewErrorWindow"
         Title="Error report"
 		Height="500" Width="750"
 		ShowInTaskbar="False"
@@ -16,6 +16,7 @@
 
 	<Window.Styles>
 
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
 

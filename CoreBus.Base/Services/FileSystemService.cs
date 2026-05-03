@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CoreBus.Base.Views;
 using Services.Interfaces;
@@ -111,7 +111,7 @@ public class FileSystemService : IFileSystemService
             bool successOpen = await topLevel.Launcher.LaunchDirectoryInfoAsync(dirInfo);
 
             if (!successOpen)
-                throw new Exception(_localization.Get("Error.OpenLogFolder"));
+                throw new Exception(_localization.Get("Message.Error.OpenLogFolder"));
         }
     }
 }

@@ -56,16 +56,16 @@ public class AboutApp_VM : ReactiveObject
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         Command_Copy_SourceCodeRepositoryAddress = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
-        Command_Copy_SourceCodeRepositoryAddress.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopySourceLink") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Copy_SourceCodeRepositoryAddress.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CopySourceLink") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Copy_Email = ReactiveCommand.CreateFromTask<string>(uiService.CopyToClipboard);
-        Command_Copy_Email.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CopyEmail") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Copy_Email.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CopyEmail") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_CheckUpdate = ReactiveCommand.CreateFromTask(CheckUpdate);
-        Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.CheckUpdates") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CheckUpdates") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_MakeDonate = ReactiveCommand.Create(_appUpdateSystemModel.GoToDonatePage);
-        Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.Donate") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.Donate") + "\n\n" + error.Message, MessageType.Error, error));
 
         _appVersionFull = _uiService.GetAppVersion();
 
@@ -89,7 +89,7 @@ public class AboutApp_VM : ReactiveObject
             {
                 string downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
 
-                if (await _messageBox.ShowYesNoDialog(_localization.Get("Info.NewVersionPrompt", info.Version), MessageType.Information) == MessageBoxResult.Yes)
+                if (await _messageBox.ShowYesNoDialog(_localization.Get("Message.Info.NewVersionAvailable", info.Version), MessageType.Information) == MessageBoxResult.Yes)
                 {
                     _appUpdateSystemModel.GoToWebPage(downloadLink);
                 }
@@ -99,6 +99,6 @@ public class AboutApp_VM : ReactiveObject
             throw new Exception(_localization.Get("Exception.UpdateFileCorrupted"));
         }
 
-        _messageBox.Show(_localization.Get("Info.AppUpToDate"), MessageType.Information);
+        _messageBox.Show(_localization.Get("Message.Info.AppUpToDate"), MessageType.Information);
     }
 }

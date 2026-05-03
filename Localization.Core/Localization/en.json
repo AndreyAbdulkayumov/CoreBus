@@ -76,77 +76,6 @@
     "NoDataToSend": "No data to send.",
     "AttentionHeader": "Attention!!!"
   },
-  "Error": {
-    "CheckUpdates": "Update check error:",
-    "CopyEmail": "Error copying author email:",
-    "CopySourceLink": "Error copying source code URL:",
-    "OpenSupportLink": "Error opening download link:",
-    "ThemeSwitchDark": "Could not switch to the dark theme.",
-    "ThemeSwitchLight": "Could not switch to the light theme.",
-    "OpenSettingsWindow": "Error in the \"Settings\" window.",
-    "OpenAboutWindow": "Error in the \"About\" window.",
-    "OpenUserManual": "Error opening the user manual.",
-    "OpenVideoPage": "Error opening the videos page.",
-    "OpenMacrosWindow": "Error opening the macros window.",
-    "AppDownloadLink": "Error navigating to the application download link:",
-    "PresetSelection": "Preset selection error.",
-    "CopyRequest": "Error copying the request to the clipboard.",
-    "CopyResponse": "Error copying the response to the clipboard.",
-    "RemoveSelectedRegisters": "Error removing the selected registers.",
-    "OpenChartWindow": "Error opening the chart window.",
-    "StartLogging": "Error starting logging.",
-    "StopLogging": "Error stopping logging.",
-    "OpenLogFolder": "Error opening the logs folder.",
-    "FormatChange": "Format change error.",
-    "Monitoring": "Monitoring error.",
-    "ReadAttempt": "An error occurred during the read attempt:",
-    "WriteAttempt": "An error occurred during the write attempt:",
-    "MacrosImport": "Error importing macros.",
-    "MacrosExport": "Error exporting the macro.",
-    "MacrosCreate": "Error creating the macro.",
-    "FixMacroErrors": "Fix the errors in the macro.{0}{1}",
-    "MacrosSave": "Error saving the macro.",
-    "MacrosRun": "Error running the macro.",
-    "AddCommand": "Error adding a command.",
-    "FormulaChange": "Formula change error.",
-    "AsyncReadError": "An error occurred during async read.\n\nData reception has stopped.",
-    "ClearData": "Data clear error.",
-    "SwitchMonitoringMode": "Error switching to monitoring mode.",
-    "SerialPortPageUpdate": "Error refreshing values on the SerialPort page.",
-    "AddExistingSettingsFile": "Error adding an existing file.",
-    "DeleteSettingsFile": "Error deleting the settings file.",
-    "SaveSettingsFile": "Error saving the settings file.",
-    "SelectAllRegisters": "Error selecting all registers.",
-    "AddRegister": "Error adding a register.",
-    "EthernetPageUpdate": "Error refreshing values on the Ethernet page.",
-    "CopySourceLinkShort": "Error copying the source code link:",
-    "CopyEmailShort": "Error copying the author's email:",
-    "CheckUpdatesShort": "Error checking for updates:",
-    "Donate": "Error :(",
-    "AddFile": "Error adding the file.",
-    "RemoveAllFiles": "Error deleting all files.",
-    "RunCommand": "Error running the command \"{0}\".",
-    "EditCommand": "Error editing the command \"{0}\".",
-    "RemoveCommand": "Error removing the command \"{0}\".",
-    "SendFile": "Error sending the file \"{0}\".",
-    "RemoveFile": "Error removing the file \"{0}\".",
-    "CyclicSendCommand": "Error sending command during cyclic polling.",
-    "EditMacro": "Error editing the macro \"{0}\".",
-    "RemoveMacro": "Error removing the macro \"{0}\".",
-    "SendData": "Error sending data.",
-    "CopyRegisterBinary": "Error copying data from the register at address {0} to the clipboard."
-  },
-  "Info": {
-    "AppUpToDate": "You are using the latest version of the application!",
-    "NewVersionAvailable": "A new application version is available - {0}\nOpen the download page?",
-    "MacrosImportSuccess": "The macros file for the \"{0}\" mode has been imported successfully!",
-    "MacrosExportSuccess": "Export completed successfully!\n\nFile path:\n{0}",
-    "MacroSettingsSaved": "Macro settings have been saved!",
-    "SettingsSaved": "Settings have been saved successfully!",
-    "NewVersionPrompt": "A new application version is available - {0}\nOpen the download page?",
-    "AppUpToDateBox": "You are using the latest version of the application!",
-    "PollingStopped": "Polling stopped."
-  },
   "Macros": {
     "AddCommand": "Add command",
     "AppendAtEnd": "Append at the end of the message:",
@@ -158,7 +87,6 @@
     "EditCommand": "Edit command",
     "EditMacroTitle": "Edit macro",
     "NumberFormat": "Number format",
-    "RegisterCount": "Register count",
     "RunCommand": "Run command",
     "RunMacro": "Run macro",
     "SaveMacro": "Save macro",
@@ -166,19 +94,14 @@
     "StartAddress": "Start address",
     "StringEncoding": "String encoding:",
     "UseCommonSlaveId": "Use a single Slave ID for the whole macro",
-    "ClientDisconnected": "Client is disconnected.",
     "NoCommands": "Macro {0} contains no commands.",
     "UnknownModbusFunction": "An unknown Modbus function is selected",
-    "CommandErrorPrefix": "Error in the command \"{0}\".",
     "MacroErrorsHeader": "Errors occurred while executing macro \"{0}\".",
-    "ImportDialogTitle": "Select a file to import macros for the \"{0}\" mode.",
-    "FileTypeLabel": "Macros file",
-    "ExportDialogTitle": "Select a folder to export the macros file to.",
     "EmptyCommandMessage": "Select a command to edit",
     "SingleCommandName": "Single command",
-    "CommandErrorInMacro": "Error in the command \"{0}\".",
     "AdditionalSettingsErrors": "Errors in additional settings:",
-    "CommonSlaveIdNotSet": "Common Slave ID is not set."
+    "CommonSlaveIdNotSet": "Common Slave ID is not set.",
+    "CommandError": "Error in the command \"{0}\"."
   },
   "Main": {
     "Rx": "RX",
@@ -237,9 +160,7 @@
       "Normal": "Single",
       "Cycle": "Cyclic",
       "Files": "Files"
-    },
-    "AddFileDialogTitle": "Select a file to send.",
-    "FileTypeLabel": "File to send"
+    }
   },
   "Scanner": {
     "CurrentId": "Current ID:",
@@ -265,14 +186,10 @@
     "LanguageRequiresRestart": "The language change is applied immediately after selection.",
     "LogTimestamp": "Log timestamp",
     "Preset": "Preset:",
-    "ReadTimeout": "Read timeout",
     "RescanPorts": "Rescan ports",
     "Theme": "Theme",
     "ThemeDark": "Dark",
-    "ThemeLight": "Light",
-    "WriteTimeout": "Write timeout",
-    "AddExistingFileTitle": "Add an existing settings file",
-    "FileTypeLabel": "Settings file"
+    "ThemeLight": "Light"
   },
   "Status": {
     "Connected": "Connected",
@@ -282,17 +199,13 @@
     "StartSearch": "Start search",
     "StopSearch": "Stop search"
   },
-  "Mode": {
-    "NoProtocol": "No protocol"
-  },
+  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "Settings are not initialized.",
     "UnknownConnectionType": "Unknown connection type: {0}",
-    "UnknownConnectionTypeSimple": "Unknown connection type.",
     "UnknownInterfaceInSettings": "Unknown communication interface in the settings file.",
     "ClientDisconnected": "Client is disconnected.",
     "ModbusTypeNotSet": "Modbus protocol type is not set.",
-    "TooManyRegistersToRead": "Wait, how many registers do you want to read? :)",
     "SpecifyDataToWrite": "Specify data to write.",
     "ModeNotSelected": "Mode is not selected.",
     "InvalidMacrosFileName": "Invalid macros file name.\nExpected name \"{0}\".",
@@ -363,7 +276,6 @@
     "FileAlreadyExistsInDirectory": "File named \"{0}\" already exists in directory \"{1}\".",
     "FileNotExists": "File \"{0}\" does not exist.",
     "DownloadLinkGetFailed": "Failed to get download link for the new application version.",
-    "LogTimeHeader": "Time",
     "Modbus": {
       "Function": {
         "ReadCoilStatus": {
@@ -417,39 +329,10 @@
       "PduBuildErrorUnsupportedFunction": "Error while building PDU.\nUnsupported function code: {0}"
     }
   },
-  "Confirm": {
-    "StopPollingAndDisconnect": "A register poll is currently running.\n\nAre you sure you want to stop the poll and disconnect?",
-    "StopPollingAndSwitchNoProtocol": "A register poll is currently running.\n\nAre you sure you want to stop the poll and switch to \"No protocol\" mode?",
-    "StopPollingAndExitMonitoring": "A register poll is currently running.\n\nAre you sure you want to stop the poll and exit monitoring mode?",
-    "CloseChartWhileMonitoring": "Modbus register polling is still running.\n\nAre you sure you want to close the chart window and lose all displayed data?",
-    "DeleteAllFiles": "Do you really want to delete all files?",
-    "DeletePresetFile": "Do you really want to delete the file {0}?",
-    "DeleteCommand": "Do you really want to delete the command \"{0}\"?",
-    "DeleteFile": "Do you really want to delete the file \"{0}\"?",
-    "DeleteMacro": "Do you really want to delete the macro \"{0}\"?",
-    "ImportMacrosWarning": "Attention!!!\n\nImporting the macros file for the \"{0}\" mode will delete old macros without the option to recover. Continue?"
-  },
-  "Warning": {
-    "NoRegistersForChart": "No registers are selected to display on the chart.",
-    "NoRegistersForLog": "No registers are selected to write to the log.",
-    "CloseMacrosToStartPoll": "Close the macros window before starting register polling.",
-    "NoRegistersToPoll": "No registers specified for polling.",
-    "WrongPeriod": "Are you sure the period is correct? :)",
-    "SpecifySlaveId": "Specify the Slave ID.",
-    "SpecifyModbusAddress": "Specify the Modbus register address.",
-    "SpecifyReadRegisterCount": "Specify the number of registers to read.",
-    "WriteFieldTypeNotSelected": "Modbus write field type is not selected.",
-    "PauseNotSet": "Pause value is not set.",
-    "SpecifyMacroName": "Specify the macro name.",
-    "UnknownModbusTypeMultiline": "Unknown Modbus protocol type:\n{0}",
-    "CannotDeleteLastFile": "Cannot delete the only file.\nTry modifying it instead."
-  },
   "Validation": {
     "ErrorsHeader": "Validation errors:",
     "SlaveIdNotSet": "SlaveID is not set.",
     "AddressNotSet": "Address is not set.",
-    "SpecifyReadRegisterCountShort": "Specify the number of registers to read.",
-    "TooManyRegisters": "Wait, how many registers do you want to read? :)",
     "EnterValueShort": "Enter a value",
     "FieldCannotBeEmpty": "Field cannot be empty.",
     "HexRangeByte": "Only hexadecimal numbers are allowed. Range: 0x00 to 0xFF.",
@@ -459,13 +342,12 @@
     "DecRangeDWord": "Only decimal numbers are allowed. Range: 0 to 2^32.",
     "DecRangeFloat": "Only decimal numbers are allowed. Range: ±1.5 × 10^−45 to ±3.4 × 10^38.",
     "BinRangeWord": "Only binary numbers are allowed. Range: 0000 0000 0000 0000 to 1111 1111 1111 1111.",
-    "InvalidIpShort": "Invalid IP address",
-    "InvalidIpFull": "Invalid IP address",
     "EnterFormula": "Enter a formula",
     "WriteFieldLabel": "Data write field",
     "WriteFieldLabelNumbered": "Data write field №{0}",
     "EnterSendData": "Enter data to send.",
-    "ItemFieldLabel": "Item {0} - {1}"
+    "ItemFieldLabel": "Item {0} - {1}",
+    "InvalidIp": "Invalid IP address"
   },
   "Monitoring": {
     "ForAddress": "For address \"{0}\"",
@@ -476,20 +358,134 @@
   "SerialPort": {
     "PortNotFound": "{0} is not found"
   },
-  "MessageBox": {
-    "Close": "Close",
-    "ErrorReport": "Error report",
-    "View": "View",
-    "CopyToClipboard": "Copy to clipboard",
-    "CopyToFile": "Copy to file",
-    "Ok": "OK",
-    "Yes": "Yes",
-    "No": "No",
-    "ErrorReportSelectFolder": "Select folder to save the error report file.",
-    "ErrorReportFileName": "Error report {0:yyyyMMdd_HHmmss}.txt"
-  },
   "CoreBase": {
     "WindowOwnerNotSet": "Window owner is not set.",
     "UnsupportedOsType": "Unsupported OS type."
+  },
+  "Message": {
+    "Error": {
+      "CheckUpdates": "Update check error:",
+      "CopyEmail": "Error copying author email:",
+      "CopySourceLink": "Error copying source code URL:",
+      "ThemeSwitchDark": "Could not switch to the dark theme.",
+      "ThemeSwitchLight": "Could not switch to the light theme.",
+      "OpenSettingsWindow": "Error in the \"Settings\" window.",
+      "OpenAboutWindow": "Error in the \"About\" window.",
+      "OpenUserManual": "Error opening the user manual.",
+      "OpenVideoPage": "Error opening the videos page.",
+      "OpenMacrosWindow": "Error opening the macros window.",
+      "AppDownloadLink": "Error navigating to the application download link:",
+      "PresetSelection": "Preset selection error.",
+      "CopyRequest": "Error copying the request to the clipboard.",
+      "CopyResponse": "Error copying the response to the clipboard.",
+      "RemoveSelectedRegisters": "Error removing the selected registers.",
+      "OpenChartWindow": "Error opening the chart window.",
+      "StartLogging": "Error starting logging.",
+      "StopLogging": "Error stopping logging.",
+      "OpenLogFolder": "Error opening the logs folder.",
+      "FormatChange": "Format change error.",
+      "Monitoring": "Monitoring error.",
+      "ReadAttempt": "An error occurred during the read attempt:",
+      "WriteAttempt": "An error occurred during the write attempt:",
+      "MacrosImport": "Error importing macros.",
+      "MacrosExport": "Error exporting the macro.",
+      "MacrosCreate": "Error creating the macro.",
+      "FixMacroErrors": "Fix the errors in the macro.{0}{1}",
+      "MacrosSave": "Error saving the macro.",
+      "MacrosRun": "Error running the macro.",
+      "AddCommand": "Error adding a command.",
+      "FormulaChange": "Formula change error.",
+      "AsyncReadError": "An error occurred during async read.\n\nData reception has stopped.",
+      "ClearData": "Data clear error.",
+      "SwitchMonitoringMode": "Error switching to monitoring mode.",
+      "SerialPortPageUpdate": "Error refreshing values on the SerialPort page.",
+      "AddExistingSettingsFile": "Error adding an existing file.",
+      "DeleteSettingsFile": "Error deleting the settings file.",
+      "SaveSettingsFile": "Error saving the settings file.",
+      "SelectAllRegisters": "Error selecting all registers.",
+      "AddRegister": "Error adding a register.",
+      "EthernetPageUpdate": "Error refreshing values on the Ethernet page.",
+      "Donate": "Error :(",
+      "AddFile": "Error adding the file.",
+      "RemoveAllFiles": "Error deleting all files.",
+      "RunCommand": "Error running the command \"{0}\".",
+      "EditCommand": "Error editing the command \"{0}\".",
+      "RemoveCommand": "Error removing the command \"{0}\".",
+      "SendFile": "Error sending the file \"{0}\".",
+      "RemoveFile": "Error removing the file \"{0}\".",
+      "CyclicSendCommand": "Error sending command during cyclic polling.",
+      "EditMacro": "Error editing the macro \"{0}\".",
+      "RemoveMacro": "Error removing the macro \"{0}\".",
+      "SendData": "Error sending data.",
+      "CopyRegisterBinary": "Error copying data from the register at address {0} to the clipboard."
+    },
+    "Info": {
+      "AppUpToDate": "You are using the latest version of the application!",
+      "NewVersionAvailable": "A new application version is available - {0}\nOpen the download page?",
+      "MacrosImportSuccess": "The macros file for the \"{0}\" mode has been imported successfully!",
+      "MacrosExportSuccess": "Export completed successfully!\n\nFile path:\n{0}",
+      "MacroSettingsSaved": "Macro settings have been saved!",
+      "SettingsSaved": "Settings have been saved successfully!",
+      "PollingStopped": "Polling stopped."
+    },
+    "Warning": {
+      "NoRegistersForChart": "No registers are selected to display on the chart.",
+      "NoRegistersForLog": "No registers are selected to write to the log.",
+      "CloseMacrosToStartPoll": "Close the macros window before starting register polling.",
+      "NoRegistersToPoll": "No registers specified for polling.",
+      "WrongPeriod": "Are you sure the period is correct? :)",
+      "SpecifySlaveId": "Specify the Slave ID.",
+      "SpecifyModbusAddress": "Specify the Modbus register address.",
+      "SpecifyReadRegisterCount": "Specify the number of registers to read.",
+      "TooManyRegistersToRead": "Wait, how many registers do you want to read? :)",
+      "WriteFieldTypeNotSelected": "Modbus write field type is not selected.",
+      "PauseNotSet": "Pause value is not set.",
+      "SpecifyMacroName": "Specify the macro name.",
+      "UnknownModbusTypeMultiline": "Unknown Modbus protocol type:\n{0}",
+      "CannotDeleteLastFile": "Cannot delete the only file.\nTry modifying it instead.",
+      "UnknownConnectionTypeSimple": "Unknown connection type."
+    },
+    "Confirm": {
+      "StopPollingAndDisconnect": "A register poll is currently running.\n\nAre you sure you want to stop the poll and disconnect?",
+      "StopPollingAndSwitchNoProtocol": "A register poll is currently running.\n\nAre you sure you want to stop the poll and switch to \"No protocol\" mode?",
+      "StopPollingAndExitMonitoring": "A register poll is currently running.\n\nAre you sure you want to stop the poll and exit monitoring mode?",
+      "CloseChartWhileMonitoring": "Modbus register polling is still running.\n\nAre you sure you want to close the chart window and lose all displayed data?",
+      "DeleteAllFiles": "Do you really want to delete all files?",
+      "DeletePresetFile": "Do you really want to delete the file {0}?",
+      "DeleteCommand": "Do you really want to delete the command \"{0}\"?",
+      "DeleteFile": "Do you really want to delete the file \"{0}\"?",
+      "DeleteMacro": "Do you really want to delete the macro \"{0}\"?",
+      "ImportMacrosWarning": "Attention!!!\n\nImporting the macros file for the \"{0}\" mode will delete old macros without the option to recover. Continue?"
+    }
+  },
+  "Dialog": {
+    "NoProtocol": {
+      "AddFile": {
+        "Title": "Select a file to send.",
+        "FilterLabel": "File to send"
+      }
+    },
+    "Macros": {
+      "ImportTitle": "Select a file to import macros for the \"{0}\" mode.",
+      "ExportTitle": "Select a folder to export the macros file to.",
+      "FileFilterLabel": "Macros file"
+    },
+    "Settings": {
+      "AddExistingFile": {
+        "Title": "Add an existing settings file",
+        "FilterLabel": "Settings file"
+      }
+    },
+    "MessageBox": {
+      "ErrorReport": "Error report",
+      "View": "View",
+      "CopyToClipboard": "Copy to clipboard",
+      "CopyToFile": "Copy to file",
+      "Ok": "OK",
+      "Yes": "Yes",
+      "No": "No",
+      "ErrorReportSelectFolder": "Select folder to save the error report file.",
+      "ErrorReportFileName": "Error report {0:yyyyMMdd_HHmmss}.txt"
+    }
   }
 }

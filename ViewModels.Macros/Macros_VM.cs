@@ -1,4 +1,4 @@
-﻿using Core.Models.Settings;
+using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
@@ -94,13 +94,13 @@ public class Macros_VM : ReactiveObject, IDisposable
         /****************************************************/
 
         Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
-        Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosImport") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.MacrosImport") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
-        Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosExport") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.MacrosExport") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
-        Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.MacrosCreate") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.MacrosCreate") + "\n\n" + error.Message, MessageType.Error, error));
 
         MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 
@@ -323,13 +323,13 @@ public class Macros_VM : ReactiveObject, IDisposable
         string modeName = GetModeName(workMode);
 
         if (await _messageBox.ShowYesNoDialog(
-            _localization.Get("Confirm.ImportMacrosWarning", modeName),
+            _localization.Get("Message.Confirm.ImportMacrosWarning", modeName),
             MessageType.Warning) != MessageBoxResult.Yes)
         {
             return;
         }
 
-        string? macrosFilePath = await _fileSystemService.GetFilePath(_localization.Get("Macros.ImportDialogTitle", modeName), _localization.Get("Macros.FileTypeLabel"), ["*.json"]);
+        string? macrosFilePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Macros.ImportTitle", modeName), _localization.Get("Dialog.Macros.FileFilterLabel"), ["*.json"]);
 
         if (macrosFilePath != null)
         {
@@ -375,13 +375,13 @@ public class Macros_VM : ReactiveObject, IDisposable
                 UpdateWorkspace(workMode);
             }
 
-            _messageBox.Show(_localization.Get("Info.MacrosImportSuccess", modeName), MessageType.Information);
+            _messageBox.Show(_localization.Get("Message.Info.MacrosImportSuccess", modeName), MessageType.Information);
         }
     }
 
     private async Task ExportMacros()
     {
-        string? outputFilePath = await _fileSystemService.GetFolderPath(_localization.Get("Macros.ExportDialogTitle"));
+        string? outputFilePath = await _fileSystemService.GetFolderPath(_localization.Get("Dialog.Macros.ExportTitle"));
 
         if (outputFilePath != null)
         {
@@ -391,7 +391,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
             _settingsModel.CopyFile(macrosFileName, outputFileName);
 
-            _messageBox.Show(_localization.Get("Info.MacrosExportSuccess", outputFileName), MessageType.Information);
+            _messageBox.Show(_localization.Get("Message.Info.MacrosExportSuccess", outputFileName), MessageType.Information);
         }
     }
 

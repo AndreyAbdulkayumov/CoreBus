@@ -54,10 +54,10 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
         Command_AddFile = ReactiveCommand.CreateFromTask(AddFileHandler);
-        Command_AddFile.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddFile") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_AddFile.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddFile") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_RemoveAllFiles = ReactiveCommand.CreateFromTask(RemoveAllFiles);
-        Command_RemoveAllFiles.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.RemoveAllFiles") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_RemoveAllFiles.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.RemoveAllFiles") + "\n\n" + error.Message, MessageType.Error, error));
 
         UpdateFileList();
     }
@@ -80,7 +80,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
 
     private async Task AddFileHandler()
     {
-        string? filePath = await _fileSystemService.GetFilePath(_localization.Get("NoProtocol.AddFileDialogTitle"), _localization.Get("NoProtocol.FileTypeLabel"), null);
+        string? filePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.NoProtocol.AddFile.Title"), _localization.Get("Dialog.NoProtocol.AddFile.FilterLabel"), null);
 
         if (string.IsNullOrEmpty(filePath))
             return;
@@ -100,7 +100,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
         if (Files.Count() == 0)
             return;
 
-        if (await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.DeleteAllFiles"), MessageType.Warning) == MessageBoxResult.Yes)
+        if (await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.DeleteAllFiles"), MessageType.Warning) == MessageBoxResult.Yes)
         {
             foreach (var file in Files)
             {

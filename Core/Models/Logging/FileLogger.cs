@@ -1,4 +1,4 @@
-using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.FileTypes;
 using Services.Interfaces;
 using System.Globalization;
 using System.Text;
@@ -55,7 +55,7 @@ public class FileLogger : IAsyncDisposable
             AutoFlush = true
         };
 
-        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? _localization.Get("Core.LogTimeHeader") + "\t" : string.Empty)}{columnNames}");
+        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? _localization.Get("Common.Time") + "\t" : string.Empty)}{columnNames}");
 
         _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token));
     }

@@ -55,16 +55,16 @@ public class SendFileItem_VM : ReactiveObject
         FileSize = GetFileSize();
 
         Command_SendFile = ReactiveCommand.CreateFromTask(async () => await sendFileHandler(id));
-        Command_SendFile.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.SendFile", FileName ?? string.Empty) + "\n\n" + error.Message, MessageType.Error, error));
+        Command_SendFile.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Message.Error.SendFile", FileName ?? string.Empty) + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_RemoveFile = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (await messageBox.ShowYesNoDialog(LocalizationProvider.Get("Confirm.DeleteFile", FileName ?? string.Empty), MessageType.Warning) == MessageBoxResult.Yes)
+            if (await messageBox.ShowYesNoDialog(LocalizationProvider.Get("Message.Confirm.DeleteFile", FileName ?? string.Empty), MessageType.Warning) == MessageBoxResult.Yes)
             {
                 removeFileHandler(id);
             }
         });
-        Command_RemoveFile.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Error.RemoveFile", FileName ?? string.Empty) + "\n\n" + error.Message, MessageType.Error, error));
+        Command_RemoveFile.ThrownExceptions.Subscribe(error => messageBox.Show(LocalizationProvider.Get("Message.Error.RemoveFile", FileName ?? string.Empty) + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     private string GetFileSize()

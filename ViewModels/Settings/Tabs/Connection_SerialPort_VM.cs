@@ -259,7 +259,7 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.SerialPortPageUpdate") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.SerialPortPageUpdate") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
