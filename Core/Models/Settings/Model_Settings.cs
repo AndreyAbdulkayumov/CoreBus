@@ -1,6 +1,6 @@
+using System.Globalization;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Settings;
 
@@ -206,19 +206,66 @@ public class Model_Settings
     }
 
     /// <summary>
-    /// Чтение из файла настроек приложения
+    /// Чтение настроек приложения из AppData.json. При первом запуске подставляется код языка по UI-локали.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Модель настроек приложения.</returns>
     private AppInfo ReadAppInfo()
     {
-        string filePath = DirectoryManager.FindOrCreateFile(
+        var appDataPath = Path.Combine(DirectoryManager.CommonFiles_Directory, FileName_AppData + FileExtension);
+        var defaults = AppInfo.GetDefault(FileName_DefaultPreset);
+
+        if (!File.Exists(appDataPath))
+        {
+            defaults.LanguageCode = ResolveLanguageCodeForFirstRun(_localization);
+        }
+
+        var path = DirectoryManager.FindOrCreateFile(
             DirectoryManager.CommonFiles_Directory,
             FileName_AppData,
             FileExtension,
-            AppInfo.GetDefault(FileName_DefaultPreset)
-            );
+            defaults);
 
-        return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
+        return FileIO.ReadOrCreateDefault(path, defaults);
+    }
+
+    /// <summary>
+    /// Возвращает код языка для записи в AppData при первом запуске (файла настроек ещё нет).
+    /// </summary>
+    /// <param name="localization"></param>
+    /// <returns>Код языка (<c>ru</c>, <c>en</c> и т.д.), как в ресурсах Localization/.</returns>
+    private static string ResolveLanguageCodeForFirstRun(ILocalizationService localization)
+    {
+        const string defaultLanguageCode = "en";
+
+        var languages = localization.AvailableLanguages;
+
+        if (languages.Count == 0)
+        {
+            return defaultLanguageCode;
+        }
+
+        // CurrentUICulture — язык интерфейса процесса; TwoLetterISOLanguageName совпадает с короткими кодами в JSON.
+        var tag = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+        foreach (var lang in languages)
+        {
+            if (string.Equals(lang.Code, tag, StringComparison.OrdinalIgnoreCase))
+            {
+                return lang.Code;
+            }
+        }
+
+        // Нет совпадения с UI-культурой — возвращаем en, если такой язык есть в приложении.
+        foreach (var lang in languages)
+        {
+            if (string.Equals(lang.Code, defaultLanguageCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return defaultLanguageCode;
+            }
+        }
+
+        // В сборке нет en — возвращаем первый загруженный язык, чтобы код всегда был валидным.
+        return languages[0].Code;
     }
 
     /// <summary>
