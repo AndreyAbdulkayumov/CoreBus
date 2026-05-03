@@ -658,7 +658,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_modbusMonitoring_VM.IsMonitoringRunning)
         {
-            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.StopPollingAndDisconnect"), MessageType.Warning);
+            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.StopPollingAndDisconnect"), MessageType.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -673,7 +673,7 @@ public class MainWindow_VM : ReactiveObject
     {
         if (_modbusMonitoring_VM.IsMonitoringRunning)
         {
-            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Confirm.StopPollingAndSwitchNoProtocol"), MessageType.Warning);
+            var result = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.StopPollingAndSwitchNoProtocol"), MessageType.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;
