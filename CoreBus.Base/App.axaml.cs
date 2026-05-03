@@ -124,20 +124,28 @@ public partial class App : Application
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
+        LocalizationInit();
+    }
+
+    private void LocalizationInit()
+    {
+        var localization = _serviceProvider.GetRequiredService<ILocalizationService>();
+
         // Прокидываем экземпляр в глобальную точку, чтобы XAML-расширение {l:Loc …}
         // могло к нему обращаться без DI (MarkupExtension работает вне ServiceProvider).
-        var localization = _serviceProvider.GetRequiredService<ILocalizationService>();
         Localizer.Instance = localization;
+
         // Глобальный провайдер для кода, куда нельзя прокинуть сервис через DI
         // (static-хелперы, исключения, абстрактные базовые классы).
-        global::Localization.Interfaces.LocalizationProvider.Instance = localization;
+        LocalizationProvider.Instance = localization;
 
         // Применяем сохранённый язык (если файл настроек уже прочитан моделью).
         // Fallback — русский, если его нет — первый доступный язык из папки Localization/.
         var settingsModel = _serviceProvider.GetRequiredService<Model_Settings>();
+
         var preferredCode = settingsModel.AppData?.LanguageCode ?? "ru";
-        if (!localization.TrySetLanguage(preferredCode)
-            && localization.AvailableLanguages.Count > 0)
+
+        if (!localization.TrySetLanguage(preferredCode) && localization.AvailableLanguages.Count > 0)
         {
             _ = localization.TrySetLanguage(localization.AvailableLanguages[0].Code);
         }
