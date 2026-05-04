@@ -73,8 +73,7 @@
     "ReadTimeoutField": "पढ़ने का टाइमआउट",
     "WriteTimeoutField": "लिखने का टाइमआउट",
     "RegisterCount": "रजिस्टरों की संख्या",
-    "NoDataToSend": "भेजने के लिए डेटा निर्दिष्ट नहीं है।",
-    "AttentionHeader": "ध्यान दें!!!"
+    "NoDataToSend": "भेजने के लिए डेटा निर्दिष्ट नहीं है।"
   },
   "Macros": {
     "AddCommand": "कमांड जोड़ें",
@@ -169,9 +168,7 @@
     "SearchPdu": "खोज अनुरोध PDU",
     "Title": "Modbus स्कैनर",
     "ReadTimeoutPrefix": "पढ़ने का टाइमआउट ",
-    "MsSuffix": " मि.से.",
-    "NoDeviceResponded": "किसी डिवाइस ने उत्तर नहीं दिया।\nअनुरोधों के बीच विराम बढ़ाने\nया PDU में फ़ंक्शन टेम्पलेट बदलने की कोशिश करें।",
-    "UnknownModbusType": "अज्ञात Modbus प्रोटोकॉल प्रकार: {0}"
+    "NoDeviceResponded": "किसी डिवाइस ने उत्तर नहीं दिया।\nअनुरोधों के बीच विराम बढ़ाने\nया PDU में फ़ंक्शन टेम्पलेट बदलने की कोशिश करें।"
   },
   "Service": {
     "ClearData": "डेटा साफ़ करें",
@@ -183,7 +180,6 @@
     "Connection": "कनेक्शन",
     "FloatFormat": "float संख्या लेखन प्रारूप",
     "Language": "इंटरफ़ेस भाषा",
-    "LanguageRequiresRestart": "भाषा परिवर्तन चयन के तुरंत बाद लागू होगा।",
     "LogTimestamp": "लॉग में समय मोहर",
     "Preset": "प्रीसेट:",
     "RescanPorts": "पोर्ट फिर से खोजें",

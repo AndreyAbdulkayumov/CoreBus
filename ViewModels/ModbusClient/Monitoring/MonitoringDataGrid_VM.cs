@@ -92,7 +92,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
             HasSelectedItems = AllRowSelected;
         });
-        Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show(_localization.Get("Error.SelectAllRegisters") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_SelectAllRows.ThrownExceptions.Subscribe(error => messageBox.Show(_localization.Get("Message.Error.SelectAllRegisters") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
@@ -105,7 +105,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
             AllRowSelected = false;
         });
-        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
 
         // Действия после запуска приложения
 

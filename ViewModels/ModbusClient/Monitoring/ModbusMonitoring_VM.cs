@@ -255,7 +255,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_RemoveSelectedItems = ReactiveCommand.Create(_monitoringDataGrid_VM.RemoveSelectedItems);
-        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.RemoveSelectedRegisters") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_RemoveSelectedItems.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.RemoveSelectedRegisters") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenChart = ReactiveCommand.Create(() =>
         {
@@ -267,7 +267,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
             {
-                _messageBox.Show(_localization.Get("Warning.NoRegistersForChart"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.NoRegistersForChart"), MessageType.Warning);
                 return;
             }
 
@@ -275,16 +275,16 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             InitChartAxes();
         });
-        Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenChartWindow") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenChart.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenChartWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_StartLogging = ReactiveCommand.Create(StartLogging);
-        Command_StartLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.StartLogging") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_StartLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.StartLogging") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_StopLogging = ReactiveCommand.CreateFromTask(StopLogging);
-        Command_StopLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.StopLogging") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_StopLogging.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.StopLogging") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenLogFolder = ReactiveCommand.CreateFromTask(async () => await _fileSystemService.OpenFolder(_settingsModel.LogFolderPath));
-        Command_OpenLogFolder.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenLogFolder") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenLogFolder.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenLogFolder") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -312,7 +312,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
                 catch (Exception error)
                 {
-                    _messageBox.Show(_localization.Get("Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
+                    _messageBox.Show(_localization.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
 
@@ -440,7 +440,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         if (!IsMonitoringRunning)
             return;
 
-        _messageBox.Show(_localization.Get("Error.Monitoring") + "\n\n" + e.Message, MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Message.Error.Monitoring") + "\n\n" + e.Message, MessageType.Error, e);
 
         StopPolling();
     }
@@ -470,7 +470,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
         if (!_monitoringDataGrid_VM.GetItemsForChartAndLog().Any())
         {
-            _messageBox.Show(_localization.Get("Warning.NoRegistersForLog"), MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.NoRegistersForLog"), MessageType.Warning);
             ResetLogFlags();
             return;
         }
@@ -527,13 +527,13 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
         {
             if (_openChildWindowService.MacrosWindowIsOpen)
             {
-                _messageBox.Show(_localization.Get("Warning.CloseMacrosToStartPoll"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.CloseMacrosToStartPoll"), MessageType.Warning);
                 return;
             }
 
             if (_monitoringDataGrid_VM.IsEmpty)
             {
-                _messageBox.Show(_localization.Get("Warning.NoRegistersToPoll"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.NoRegistersToPoll"), MessageType.Warning);
                 return;
             }
 
@@ -547,7 +547,7 @@ public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldI
 
             if (_selectedPeriod == 0)
             {
-                _messageBox.Show(_localization.Get("Warning.WrongPeriod"), MessageType.Warning);
+                _messageBox.Show(_localization.Get("Message.Warning.WrongPeriod"), MessageType.Warning);
                 return;
             }
 

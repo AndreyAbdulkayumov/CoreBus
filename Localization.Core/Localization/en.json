@@ -73,8 +73,7 @@
     "ReadTimeoutField": "Read timeout",
     "WriteTimeoutField": "Write timeout",
     "RegisterCount": "Register count",
-    "NoDataToSend": "No data to send.",
-    "AttentionHeader": "Attention!!!"
+    "NoDataToSend": "No data to send."
   },
   "Macros": {
     "AddCommand": "Add command",
@@ -169,9 +168,7 @@
     "SearchPdu": "Search request PDU",
     "Title": "Modbus scanner",
     "ReadTimeoutPrefix": "Read timeout ",
-    "MsSuffix": " ms.",
-    "NoDeviceResponded": "No device responded.\nYou may want to increase the pause between requests\nor change the function template in the PDU.",
-    "UnknownModbusType": "Unknown Modbus protocol type: {0}"
+    "NoDeviceResponded": "No device responded.\nYou may want to increase the pause between requests\nor change the function template in the PDU."
   },
   "Service": {
     "ClearData": "Clear data",
@@ -183,7 +180,6 @@
     "Connection": "Connection",
     "FloatFormat": "Float number format",
     "Language": "Interface language",
-    "LanguageRequiresRestart": "The language change is applied immediately after selection.",
     "LogTimestamp": "Log timestamp",
     "Preset": "Preset:",
     "RescanPorts": "Rescan ports",

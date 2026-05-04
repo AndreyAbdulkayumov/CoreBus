@@ -239,7 +239,7 @@ public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
                 Formula = newFormula;
             }
         });
-        Command_FormulaChange.ThrownExceptions.Subscribe(error => _messageBox.Show(LocalizationProvider.Get("Error.FormulaChange") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_FormulaChange.ThrownExceptions.Subscribe(error => _messageBox.Show(LocalizationProvider.Get("Message.Error.FormulaChange") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(e => e.Alias)
             .Subscribe(alias =>

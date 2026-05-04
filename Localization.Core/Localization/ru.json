@@ -73,8 +73,7 @@
     "ReadTimeoutField": "Таймаут чтения",
     "WriteTimeoutField": "Таймаут записи",
     "RegisterCount": "Кол-во регистров",
-    "NoDataToSend": "Не заданы данные для отправки.",
-    "AttentionHeader": "Внимание!!!"
+    "NoDataToSend": "Не заданы данные для отправки."
   },
   "Macros": {
     "AddCommand": "Добавить команду",
@@ -169,9 +168,7 @@
     "SearchPdu": "PDU поискового запроса",
     "Title": "Modbus сканер",
     "ReadTimeoutPrefix": "Таймаут чтения ",
-    "MsSuffix": " мс.",
-    "NoDeviceResponded": "Ни одно устройство не ответило.\nВозможно стоит повысить значение паузы между запросами\nили поменять шаблон функции в PDU.",
-    "UnknownModbusType": "Задан неизвестный тип Modbus протокола: {0}"
+    "NoDeviceResponded": "Ни одно устройство не ответило.\nВозможно стоит повысить значение паузы между запросами\nили поменять шаблон функции в PDU."
   },
   "Service": {
     "ClearData": "Очистить данные",
@@ -183,7 +180,6 @@
     "Connection": "Подключение",
     "FloatFormat": "Формат записи числа типа float",
     "Language": "Язык интерфейса",
-    "LanguageRequiresRestart": "Изменение языка применится сразу после выбора.",
     "LogTimestamp": "Метка времени в логах",
     "Preset": "Пресет:",
     "RescanPorts": "Искать порты заново",

@@ -73,8 +73,7 @@
     "ReadTimeoutField": "读超时",
     "WriteTimeoutField": "写超时",
     "RegisterCount": "寄存器数量",
-    "NoDataToSend": "未指定要发送的数据。",
-    "AttentionHeader": "注意！！！"
+    "NoDataToSend": "未指定要发送的数据。"
   },
   "Macros": {
     "AddCommand": "添加命令",
@@ -169,9 +168,7 @@
     "SearchPdu": "搜索请求 PDU",
     "Title": "Modbus 扫描器",
     "ReadTimeoutPrefix": "读超时 ",
-    "MsSuffix": " 毫秒",
-    "NoDeviceResponded": "没有设备应答。\n可尝试增大请求间隔\n或修改 PDU 中的功能模板。",
-    "UnknownModbusType": "未知的 Modbus 协议类型：{0}"
+    "NoDeviceResponded": "没有设备应答。\n可尝试增大请求间隔\n或修改 PDU 中的功能模板。"
   },
   "Service": {
     "ClearData": "清除数据",
@@ -183,7 +180,6 @@
     "Connection": "连接",
     "FloatFormat": "浮点数写入格式",
     "Language": "界面语言",
-    "LanguageRequiresRestart": "更改语言后将在选择后立即生效。",
     "LogTimestamp": "日志中的时间戳",
     "Preset": "预设：",
     "RescanPorts": "重新扫描端口",

@@ -208,7 +208,7 @@ public class IPClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Error.SendData") + "\n\n" + error.Message + "\n\n" +
+            throw new Exception(_localization.Get("Message.Error.SendData") + "\n\n" + error.Message + "\n\n" +
                 _localization.Get("Core.WriteTimeoutPrefix") +
                 (_stream.WriteTimeout == Timeout.Infinite ?
                 _localization.Get("Core.TimeoutInfinite") : _stream.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")));

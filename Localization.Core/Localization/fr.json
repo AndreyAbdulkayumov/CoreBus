@@ -73,8 +73,7 @@
     "ReadTimeoutField": "Délai d'attente lecture",
     "WriteTimeoutField": "Délai d'attente écriture",
     "RegisterCount": "Nombre de registres",
-    "NoDataToSend": "Aucune donnée à envoyer n'est définie.",
-    "AttentionHeader": "Attention !!!"
+    "NoDataToSend": "Aucune donnée à envoyer n'est définie."
   },
   "Macros": {
     "AddCommand": "Ajouter une commande",
@@ -169,9 +168,7 @@
     "SearchPdu": "PDU de la requête de recherche",
     "Title": "Scanner Modbus",
     "ReadTimeoutPrefix": "Délai d'attente lecture ",
-    "MsSuffix": " ms",
-    "NoDeviceResponded": "Aucun appareil n'a répondu.\nEssayez d'augmenter la pause entre les requêtes\nou de modifier le modèle de fonction dans la PDU.",
-    "UnknownModbusType": "Type de protocole Modbus inconnu : {0}"
+    "NoDeviceResponded": "Aucun appareil n'a répondu.\nEssayez d'augmenter la pause entre les requêtes\nou de modifier le modèle de fonction dans la PDU."
   },
   "Service": {
     "ClearData": "Effacer les données",
@@ -183,7 +180,6 @@
     "Connection": "Connexion",
     "FloatFormat": "Format d'écriture des nombres float",
     "Language": "Langue de l'interface",
-    "LanguageRequiresRestart": "Le changement de langue s'applique immédiatement après la sélection.",
     "LogTimestamp": "Horodatage dans les journaux",
     "Preset": "Préréglage :",
     "RescanPorts": "Rechercher à nouveau les ports",

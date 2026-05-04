@@ -252,16 +252,16 @@ public class MainWindow_VM : ReactiveObject
             .Subscribe(SwitchToPreset);
 
         Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
-        Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenSettingsWindow") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenSettingsWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.About());
-        Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenAboutWindow") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenAboutWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
-        Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenUserManual") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenUserManual") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_OpenVideoPage = ReactiveCommand.Create(_appUpdateSystemModel.GoToVideoPage);
-        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenVideoPage") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenVideoPage.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenVideoPage") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Connect = ReactiveCommand.Create(ConnectHandler);
         Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
@@ -276,10 +276,10 @@ public class MainWindow_VM : ReactiveObject
         Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
         Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
-        Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.OpenMacrosWindow") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenMacrosWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
-        Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Error.AppDownloadLink") + "\n\n" + error.Message, MessageType.Error, error));
+        Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AppDownloadLink") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
         {
@@ -435,7 +435,7 @@ public class MainWindow_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(_localization.Get("Error.PresetSelection") + "\n\n" + error.Message, MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.PresetSelection") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
