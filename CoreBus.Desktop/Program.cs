@@ -23,6 +23,8 @@ class Program
             .WithInterFont()
             .With(new FontManagerOptions
             {
+                // Дополнительные fallback-шрифты для языков, где у базового Inter может не хватать глифов.
+                // На основной шрифт UI (латиница/кириллица) это не влияет.
                 FontFallbacks =
                 [
                     new FontFallback
