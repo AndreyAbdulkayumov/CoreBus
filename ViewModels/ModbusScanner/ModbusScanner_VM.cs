@@ -232,7 +232,6 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
             if (SearchInProcess)
             {
                 await StopPolling();
-
                 return;
             }
 

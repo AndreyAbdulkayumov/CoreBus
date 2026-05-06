@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CoreBus.Base.Views;
 using Services.Interfaces;
@@ -74,11 +74,18 @@ public class FileSystemService : IFileSystemService
 
     public void OpenUserManual()
     {
+        string manualFileName = 
+            string.Equals(_localization.CurrentLanguage.Code, "ru", StringComparison.OrdinalIgnoreCase)
+                ? "UserManual_ru.pdf"
+                : "UserManual_en.pdf";
+
+        string manualPath = Path.Combine("Documentation", manualFileName);
+
         if (OperatingSystem.IsWindows())
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = Path.Combine("Documentation", "UserManual.pdf"),
+                FileName = manualPath,
                 UseShellExecute = true,
             });
 
@@ -90,7 +97,7 @@ public class FileSystemService : IFileSystemService
             Process.Start(new ProcessStartInfo
             {
                 FileName = "xdg-open",
-                Arguments = Path.Combine("Documentation", "UserManual.pdf"),
+                Arguments = manualPath,
                 UseShellExecute = false,
             });
 

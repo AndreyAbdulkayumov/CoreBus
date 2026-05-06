@@ -91,7 +91,6 @@
     "SaveMacro": "मैक्रो सहेजें",
     "SelectedMode": "चयनित मोड:",
     "StartAddress": "प्रारंभिक पता",
-    "StringEncoding": "स्ट्रिंग एन्कोडिंग:",
     "UseCommonSlaveId": "पूरे मैक्रो में एकल Slave ID उपयोग करें",
     "NoCommands": "मैक्रो {0} में कोई कमांड नहीं है।",
     "UnknownModbusFunction": "अज्ञात Modbus फ़ंक्शन चुना गया है",

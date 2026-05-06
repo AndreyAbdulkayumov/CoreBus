@@ -91,7 +91,6 @@
     "SaveMacro": "保存宏",
     "SelectedMode": "所选模式：",
     "StartAddress": "起始地址",
-    "StringEncoding": "字符串编码：",
     "UseCommonSlaveId": "在整个宏中使用统一从站地址",
     "NoCommands": "宏 {0} 不包含任何命令。",
     "UnknownModbusFunction": "选择了未知的 Modbus 功能",

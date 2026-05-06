@@ -118,7 +118,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Documentation\UserManual.pdf">
+    <None Update="Documentation\UserManual_en.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Documentation\UserManual_ru.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

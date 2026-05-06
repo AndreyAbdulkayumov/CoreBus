@@ -61,7 +61,7 @@
 							Margin="20,0,0,0"
 							HorizontalAlignment="Left">
 
-					<TextBlock Text="{l:Loc Macros.StringEncoding}"
+					<TextBlock Text="{l:Loc NoProtocol.Encoding}"
 							   VerticalAlignment="Center"/>
 
 					<ComboBox Width="100"

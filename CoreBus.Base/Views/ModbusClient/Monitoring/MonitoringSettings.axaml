@@ -37,13 +37,14 @@
 			    BorderThickness="2"
 			    CornerRadius="4"
 			    Margin="10,10,5,10"
-				Padding="11">
+				Padding="0,11,0,11">
 
 			<StackPanel Orientation="Vertical" Spacing="10"
 			            HorizontalAlignment="Center">
 
 				<Button Content="{l:Loc Common.Chart}"
 						Command="{Binding Command_OpenChart}"
+						MinWidth="60"
 						HorizontalAlignment="Center"/>
 
 				<Button Classes="RemoveRowsButton"

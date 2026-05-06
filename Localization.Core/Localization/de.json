@@ -91,7 +91,6 @@
     "SaveMacro": "Makro speichern",
     "SelectedMode": "Ausgewählter Modus:",
     "StartAddress": "Startadresse",
-    "StringEncoding": "Zeichenkettenkodierung:",
     "UseCommonSlaveId": "Einheitliche Slave-ID im gesamten Makro verwenden",
     "NoCommands": "Makro {0} enthält keine Befehle.",
     "UnknownModbusFunction": "Unbekannte Modbus-Funktion ausgewählt",
@@ -128,7 +127,7 @@
     "NeedTwoRegisters": "Zur Umwandlung in eine Zahl sind mindestens 2 Modbus-Register erforderlich",
     "OpenLogFolder": "Protokollordner öffnen",
     "PollFunction": "Abfragefunktion",
-    "RecordingStart": "Aufzeichnungsbeginn:",
+    "RecordingStart": "Startzeit:",
     "RecordingStartsWithPoll": "Aufzeichnung beginnt mit dem Start der Abfrage",
     "Scanner": "Scanner",
     "TypedValue": "Typisierter Wert",
@@ -137,7 +136,7 @@
     "ForceSingleCoilHint": "\n\nIn Funktion {0} wird der boolesche Datentyp verwendet.\n\nTrue entspricht 0xFF00\nFalse entspricht 0x0000",
     "TimestampNone": "Keine",
     "TimestampTimeOnly": "Nur Uhrzeit",
-    "TimestampDateTime": "Datum und Uhrzeit"
+    "TimestampDateTime": "Datum / Zeit"
   },
   "NoProtocol": {
     "AddExistingFile": "Vorhandene Datei hinzufügen",

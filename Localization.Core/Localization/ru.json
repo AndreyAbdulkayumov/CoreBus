@@ -91,7 +91,6 @@
     "SaveMacro": "Сохранить макрос",
     "SelectedMode": "Выбранный режим:",
     "StartAddress": "Начальный адрес",
-    "StringEncoding": "Кодировка строки:",
     "UseCommonSlaveId": "Использовать единый Slave ID во всем макросе",
     "NoCommands": "Макрос {0} не содержит команд.",
     "UnknownModbusFunction": "Выбранна неизвестная Modbus функция",

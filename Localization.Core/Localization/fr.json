@@ -72,7 +72,7 @@
     "WriteVerb": "Écrire",
     "ReadTimeoutField": "Délai d'attente lecture",
     "WriteTimeoutField": "Délai d'attente écriture",
-    "RegisterCount": "Nombre de registres",
+    "RegisterCount": "Nb. registres",
     "NoDataToSend": "Aucune donnée à envoyer n'est définie."
   },
   "Macros": {
@@ -85,13 +85,12 @@
     "DeleteCommand": "Supprimer la commande",
     "EditCommand": "Modifier la commande",
     "EditMacroTitle": "Modification de la macro",
-    "NumberFormat": "Format numérique",
+    "NumberFormat": "Format num.",
     "RunCommand": "Exécuter la commande",
     "RunMacro": "Exécuter la macro",
     "SaveMacro": "Enregistrer la macro",
     "SelectedMode": "Mode sélectionné :",
     "StartAddress": "Adresse de départ",
-    "StringEncoding": "Encodage de la chaîne :",
     "UseCommonSlaveId": "Utiliser un Slave ID unique dans toute la macro",
     "NoCommands": "La macro {0} ne contient aucune commande.",
     "UnknownModbusFunction": "Fonction Modbus inconnue sélectionnée",
@@ -113,7 +112,7 @@
     "AddRegister": "Ajouter un registre",
     "Alias": "Alias",
     "BinaryView": "Vue binaire",
-    "ChartLog": "Graphique / Journal",
+    "ChartLog": "Graph. / Jrnl.",
     "ConvertedValue": "Valeur convertie",
     "CopyRequest": "Copier la requête dans le presse-papiers",
     "CopyResponse": "Copier la réponse dans le presse-papiers",
@@ -127,9 +126,9 @@
     "Logging": "Journalisation",
     "NeedTwoRegisters": "Au moins 2 registres Modbus sont nécessaires pour convertir en nombre",
     "OpenLogFolder": "Ouvrir le dossier des journaux",
-    "PollFunction": "Fonction d'interrogation",
-    "RecordingStart": "Début d'enregistrement :",
-    "RecordingStartsWithPoll": "L'enregistrement commencera au démarrage de l'interrogation",
+    "PollFunction": "Fct. interrogation",
+    "RecordingStart": "Début enreg. :",
+    "RecordingStartsWithPoll": "Record dès interrogation",
     "Scanner": "Scanner",
     "TypedValue": "Valeur typée",
     "ErrorViewData": "Erreur Modbus.\nCode : {0}",
@@ -171,7 +170,7 @@
     "NoDeviceResponded": "Aucun appareil n'a répondu.\nEssayez d'augmenter la pause entre les requêtes\nou de modifier le modèle de fonction dans la PDU."
   },
   "Service": {
-    "ClearData": "Effacer les données",
+    "ClearData": "Eff. données",
     "Protocol": "Protocole :"
   },
   "Settings": {
@@ -190,10 +189,10 @@
   "Status": {
     "Connected": "Connecté",
     "Disconnected": "Déconnecté",
-    "StartPolling": "Démarrer l'interrogation",
-    "StopPolling": "Arrêter l'interrogation",
-    "StartSearch": "Démarrer la recherche",
-    "StopSearch": "Arrêter la recherche"
+    "StartPolling": "Dém. interr.",
+    "StopPolling": "Arr. interr.",
+    "StartSearch": "Dém. recherche",
+    "StopSearch": "Arr. recherche"
   },
   "Mode": {},
   "Exception": {
@@ -279,15 +278,15 @@
           "Number": "0x01 (lecture)"
         },
         "ReadDiscreteInputs": {
-          "Name": "0x02 Lecture des entrées discrètes",
+          "Name": "0x02 Lect. entrées discrètes",
           "Number": "0x02 (lecture)"
         },
         "ReadHoldingRegisters": {
-          "Name": "0x03 Lecture des registres de maintien",
+          "Name": "0x03 Lect. reg. maint.",
           "Number": "0x03 (lecture)"
         },
         "ReadInputRegisters": {
-          "Name": "0x04 Lecture des registres d'entrée",
+          "Name": "0x04 Lect. reg. entrée",
           "Number": "0x04 (lecture)"
         },
         "ForceSingleCoil": {
