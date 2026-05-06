@@ -1,6 +1,7 @@
 using System;
 
 using Avalonia;
+using Avalonia.Media;
 using ReactiveUI.Avalonia;
 using CoreBus.Base;
 
@@ -20,6 +21,20 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            .With(new FontManagerOptions
+            {
+                FontFallbacks =
+                [
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansDevanagari-Medium.ttf#Noto Sans Devanagari Medium"),
+                    },
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansSC-Regular.otf#Noto Sans SC Regular"),
+                    },
+                ],
+            })
             .LogToTrace()
             .UseReactiveUI(builder => { });
 }

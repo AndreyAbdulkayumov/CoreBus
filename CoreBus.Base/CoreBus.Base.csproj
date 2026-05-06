@@ -11,6 +11,8 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="Fonts\NotoSansDevanagari-Medium.ttf" />
+    <None Remove="Fonts\NotoSansSC-Regular.otf" />
     <None Remove="Resources\MainLogo.ico" />
   </ItemGroup>
 
@@ -43,6 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Fonts\NotoSansDevanagari-Medium.ttf" />
+    <AvaloniaResource Include="Fonts\NotoSansSC-Regular.otf" />
     <AvaloniaResource Include="Resources\MainLogo.ico" />
   </ItemGroup>
 
@@ -125,7 +129,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+	         
   <!--
     Файлы локализации хранятся в проекте Localization.Core (папка Localization/).
     В runtime-выход (папка Localization/ рядом с exe) они копируются из CoreBus.Desktop.csproj.
