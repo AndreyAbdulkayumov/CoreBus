@@ -1,5 +1,4 @@
 using System;
-
 using Avalonia;
 using Avalonia.Media;
 using ReactiveUI.Avalonia;
@@ -29,7 +28,7 @@ class Program
                 [
                     new FontFallback
                     {
-                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansDevanagari-Medium.ttf#Noto Sans Devanagari Medium"),
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansDevanagari-Regular.ttf#Noto Sans Devanagari Regular"),
                     },
                     new FontFallback
                     {
