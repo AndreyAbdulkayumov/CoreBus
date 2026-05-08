@@ -62,6 +62,12 @@ public class Model_NoProtocol
 
     public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
     {
+        if (_client != null)
+        {
+            _client.DataReceived -= Client_DataReceived;
+            _client.ErrorInReadThread -= Client_ErrorInReadThread;
+        }        
+
         _client = null;
     }
 
