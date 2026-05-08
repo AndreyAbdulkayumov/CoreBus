@@ -11,17 +11,19 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="Fonts\NotoSansDevanagari-Regular.ttf" />
+    <None Remove="Fonts\NotoSansSC-Regular.otf" />
     <None Remove="Resources\MainLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.13" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.13" />
+    <PackageReference Include="Avalonia" Version="11.3.14" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.14" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.14" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.13" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.14" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.1.58" />
   </ItemGroup>
@@ -29,13 +31,22 @@
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj" />
+    <ProjectReference Include="..\Localization.Avalonia\Localization.Avalonia.csproj" />
+    <ProjectReference Include="..\Localization.Core\Localization.Core.csproj" />
+    <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
+    <ProjectReference Include="..\MessageBox.Avalonia\MessageBox.Avalonia.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels.Macros\ViewModels.Macros.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Localization.Interfaces" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Fonts\NotoSansDevanagari-Regular.ttf" />
+    <AvaloniaResource Include="Fonts\NotoSansSC-Regular.otf" />
     <AvaloniaResource Include="Resources\MainLogo.ico" />
   </ItemGroup>
 
@@ -111,8 +122,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Documentation\UserManual.pdf">
+    <None Update="Documentation\UserManual_en.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Documentation\UserManual_ru.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+	         
+  <!--
+    Файлы локализации хранятся в проекте Localization.Core (папка Localization/).
+    В runtime-выход (папка Localization/ рядом с exe) они копируются из CoreBus.Desktop.csproj.
+  -->
 </Project>

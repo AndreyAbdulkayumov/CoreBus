@@ -1,4 +1,5 @@
 using NCalc;
+using Services.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace Core.Models;
@@ -19,7 +20,7 @@ public static class MathFormula
         
         catch (Exception error)
         {
-            throw new Exception($"Заданная формула: {formula}\nx = {xValue}\n\n{error.Message}", error);
+            throw new Exception(LocalizationProvider.Get("Core.FormulaSolveError", formula ?? string.Empty, xValue) + "\n\n" + error.Message, error);
         }
 
         return Convert.ToDouble(result);
@@ -88,51 +89,44 @@ public static class MathFormula
 
         if (!AllowedCharsPattern.IsMatch(trimmed))
         {
-            errorMessage = "Разрешены только:\n" +
-                    "• Цифры: 0-9\n" +
-                    "• Операторы: +, -, *, /\n" +
-                    "• Скобки: (, )\n" +
-                    "• Десятичная точка: .\n" +
-                    "• Переменная: x (латиница)\n" +
-                    "• Функции: pow, sqrt, abs, cos, sin, tan, acos, asin, atan, exp, log\n\n" +
-                    "Примеры: 3.14, 2+3*(x-1), sin(x), sqrt(x+1)";
+            errorMessage = LocalizationProvider.Get("Core.FormulaAllowedChars");
 
             return false;
         }
 
         if (MultipleOperatorsPattern.IsMatch(trimmed))
         {
-            errorMessage = "Запрещены множественные операторы: *-, +*, //, +- и т.д.";
+            errorMessage = LocalizationProvider.Get("Core.FormulaMultipleOperators");
             return false;
         }
             
         if (InvalidStartPattern.IsMatch(trimmed))
         {
-            errorMessage = "Формула не может начинаться с +, *, /, )";
+            errorMessage = LocalizationProvider.Get("Core.FormulaInvalidStart");
             return false;
         }
 
         if (InvalidEndPattern.IsMatch(trimmed))
         {
-            errorMessage = "Формула не может заканчиваться оператором +, -, *, /, (";
+            errorMessage = LocalizationProvider.Get("Core.FormulaInvalidEnd");
             return false;
         }
 
         if (!AllBracketClosed(formula))
         {
-            errorMessage = "Не совпадает количество открытых и закрытых скобок";
+            errorMessage = LocalizationProvider.Get("Core.FormulaBracketMismatch");
             return false;
         }
 
         if (MissingOperatorBrackets.IsMatch(trimmed))
         {
-            errorMessage = "У цифры перед или после скобки не хватает оператора";
+            errorMessage = LocalizationProvider.Get("Core.FormulaMissingOperatorNearBracket");
             return false;
         }
 
         if (!CanParsed(formula))
         {
-            errorMessage = "Формула содержит ошибки.\nДробные числа записываются через точку: 5.12";
+            errorMessage = LocalizationProvider.Get("Core.FormulaParseError");
             return false;
         }
 

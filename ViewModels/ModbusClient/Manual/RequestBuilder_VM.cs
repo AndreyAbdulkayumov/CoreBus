@@ -152,6 +152,8 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     private byte _selectedSlaveID = 0;
     private ushort _selectedAddress = 0;
     private ushort _selectedNumberOfRegisters = 1;
+    private byte _selectedReadFunctionNumber = Function.ReadInputRegisters.Number;
+    private byte _selectedWriteFunctionNumber = Function.PresetSingleRegister.Number;
 
     private readonly IWriteField_VM WriteField_MultipleCoils_VM;
     private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
@@ -159,14 +161,18 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
     private readonly IMessageBoxMainWindow _messageBox;
+    private readonly ILocalizationService _localization;
     private readonly ConnectedHost _connectedHostModel;
     private readonly Model_Settings _settingsModel;
 
-    public RequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
+    public RequestBuilder_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel, ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+
+        _localization.LanguageChanged += (_, _) => RefreshLocalizedFunctionLists();
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -187,19 +193,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         SelectedNumberFormat_Hex = true;
 
-        foreach (ModbusReadFunction element in Function.AllReadFunctions)
-        {
-            ReadFunctions.Add(element.DisplayedName);
-        }
-
-        SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
-
-        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
-        {
-            WriteFunctions.Add(element.DisplayedName);
-        }
-
-        SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+        RefreshLocalizedFunctionLists();
 
         /****************************************************/
         //
@@ -208,10 +202,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         /****************************************************/
 
         Command_Read = ReactiveCommand.Create(ReadButtonHandler);
-        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке чтения: \n\n{error.Message}", MessageType.Error, error));
+        Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ReadAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_Write = ReactiveCommand.Create(WriteButtonHandler);
-        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке записи:\n\n{error.Message}", MessageType.Error, error));
+        Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.WriteAttempt") + "\n\n" + error.Message, MessageType.Error, error));
 
         this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
             .Subscribe(values =>
@@ -225,6 +219,9 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             .WhereNotNull()
             .Subscribe(x =>
             {
+                _selectedWriteFunctionNumber = Function.AllWriteFunctions
+                    .FirstOrDefault(f => f.DisplayedName == x)?.Number ?? _selectedWriteFunctionNumber;
+
                 if (x == Function.ForceMultipleCoils.DisplayedName)
                 {
                     CurrentWriteFieldViewModel = WriteField_MultipleCoils_VM;
@@ -244,6 +241,14 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
                 {
                     CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
                 }
+            });
+
+        this.WhenAnyValue(x => x.SelectedReadFunction)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                _selectedReadFunctionNumber = Function.AllReadFunctions
+                    .FirstOrDefault(f => f.DisplayedName == x)?.Number ?? _selectedReadFunctionNumber;
             });
     }
 
@@ -265,23 +270,57 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
         UI_IsEnable = false;
     }
 
+    private void RefreshLocalizedFunctionLists()
+    {
+        byte selectedReadFunctionNumber =
+            Function.AllReadFunctions.FirstOrDefault(f => f.DisplayedName == SelectedReadFunction)?.Number
+            ?? _selectedReadFunctionNumber;
+
+        byte selectedWriteFunctionNumber =
+            Function.AllWriteFunctions.FirstOrDefault(f => f.DisplayedName == SelectedWriteFunction)?.Number
+            ?? _selectedWriteFunctionNumber;
+
+        ReadFunctions.Clear();
+
+        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        {
+            ReadFunctions.Add(element.DisplayedName);
+        }
+
+        WriteFunctions.Clear();
+
+        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+        {
+            WriteFunctions.Add(element.DisplayedName);
+        }
+
+        SelectedReadFunction =
+            Function.AllReadFunctions.First(f => f.Number == selectedReadFunctionNumber).DisplayedName;
+
+        SelectedWriteFunction =
+            Function.AllWriteFunctions.First(f => f.Number == selectedWriteFunctionNumber).DisplayedName;
+
+        _selectedReadFunctionNumber = selectedReadFunctionNumber;
+        _selectedWriteFunctionNumber = selectedWriteFunctionNumber;
+    }
+
     private void ReadButtonHandler()
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(NumberOfRegisters))
         {
-            _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyReadRegisterCount"), MessageType.Warning);
             return;
         }
 
@@ -293,7 +332,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+        ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
         MessageBus.Current.SendMessage(
             new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
@@ -318,7 +357,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -329,19 +368,19 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(SlaveID))
         {
-            _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifySlaveId"), MessageType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(Address))
         {
-            _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.SpecifyModbusAddress"), MessageType.Warning);
             return;
         }
 
         if (CurrentWriteFieldViewModel == null)
         {
-            _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.WriteFieldTypeNotSelected"), MessageType.Warning);
             return;
         }
 
@@ -353,7 +392,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
+        ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.Number == _selectedWriteFunctionNumber);
 
         WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
 
@@ -390,7 +429,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (message.Length > 0)
         {
-            message.Insert(0, "Ошибки валидации:\n\n");
+            message.Insert(0, _localization.Get("Validation.ErrorsHeader") + "\n\n");
             return message.ToString().TrimEnd('\r', '\n');
         }
 
@@ -442,7 +481,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         catch (Exception error)
         {
-            _messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
+            _messageBox.Show(_localization.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
         }
     }
 
@@ -456,10 +495,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
                 return "Slave ID";
 
             case nameof(Address):
-                return "Адрес";
+                return _localization.Get("Common.Address");
 
             case nameof(NumberOfRegisters):
-                return "Кол-во регистров";
+                return _localization.Get("Common.RegisterCount");
 
             default:
                 return fieldName;

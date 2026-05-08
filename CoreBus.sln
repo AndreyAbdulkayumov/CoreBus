@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBus.Base", "CoreBus.Bas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBus.Desktop", "CoreBus.Desktop\CoreBus.Desktop.csproj", "{0E6F2A26-CB2A-40EF-80DA-C1CAE44899CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox.AvaloniaUI", "MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj", "{B7EF3178-3901-4C0D-B430-F394E65DD3F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox.Avalonia", "MessageBox.Avalonia\MessageBox.Avalonia.csproj", "{B7EF3178-3901-4C0D-B430-F394E65DD3F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppDesign", "AppDesign\AppDesign.csproj", "{734A305C-6E39-4DCF-A814-8F3BD77F22A0}"
 EndProject
@@ -24,6 +24,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModels.Macros", "ViewModels.Macros\ViewModels.Macros.csproj", "{91040797-0319-4846-851C-7E4ACD4F15CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBusTypes", "MessageBusTypes\MessageBusTypes.csproj", "{58DE0A02-CD55-48C4-986F-52D000E3704C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localization.Interfaces", "Localization.Interfaces\Localization.Interfaces.csproj", "{A1F5D963-2F43-4D15-B45C-8A4E27B1C901}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localization.Core", "Localization.Core\Localization.Core.csproj", "{B2E6E0A4-1C6A-44B9-9B0B-1F752E1327A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localization.Avalonia", "Localization.Avalonia\Localization.Avalonia.csproj", "{C3A1D7F2-8F27-4D17-94D4-6D3E2B8C5A10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +81,18 @@ Global
 		{58DE0A02-CD55-48C4-986F-52D000E3704C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58DE0A02-CD55-48C4-986F-52D000E3704C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58DE0A02-CD55-48C4-986F-52D000E3704C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1F5D963-2F43-4D15-B45C-8A4E27B1C901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1F5D963-2F43-4D15-B45C-8A4E27B1C901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1F5D963-2F43-4D15-B45C-8A4E27B1C901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1F5D963-2F43-4D15-B45C-8A4E27B1C901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2E6E0A4-1C6A-44B9-9B0B-1F752E1327A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2E6E0A4-1C6A-44B9-9B0B-1F752E1327A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2E6E0A4-1C6A-44B9-9B0B-1F752E1327A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2E6E0A4-1C6A-44B9-9B0B-1F752E1327A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3A1D7F2-8F27-4D17-94D4-6D3E2B8C5A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A1D7F2-8F27-4D17-94D4-6D3E2B8C5A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3A1D7F2-8F27-4D17-94D4-6D3E2B8C5A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A1D7F2-8F27-4D17-94D4-6D3E2B8C5A10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

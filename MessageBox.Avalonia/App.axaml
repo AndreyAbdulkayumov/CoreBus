@@ -1,0 +1,12 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:MaterialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia" 
+             x:Class="MessageBox.Avalonia.App"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+		<MaterialIcons:MaterialIconStyles />
+    </Application.Styles>
+</Application>

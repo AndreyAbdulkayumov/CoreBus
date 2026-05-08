@@ -5,6 +5,7 @@ using System.Reactive;
 using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataItems;
@@ -57,7 +58,7 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
             .Select((f, index) => new { Field = f, Index = index + 1 })
             .Where(item => item.Field.HasErrors)
             .SelectMany(item =>
-                item.Field.ActualErrors.Select(element => $"[Поле записи данных №{item.Index}]\n{item.Field.GetFullErrorMessage(element.Key)}")
+                item.Field.ActualErrors.Select(element => $"[{LocalizationProvider.Get("Validation.WriteFieldLabelNumbered", item.Index)}]\n{item.Field.GetFullErrorMessage(element.Key)}")
             )
     );
 

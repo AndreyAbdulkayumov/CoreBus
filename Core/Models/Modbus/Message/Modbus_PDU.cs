@@ -1,10 +1,11 @@
-﻿using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.DataTypes;
+using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
 public static class Modbus_PDU
 {
-    public static byte[] Create(ModbusFunction function, MessageData data)
+    public static byte[] Create(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
         WriteTypeMessage? dataForWrite = data as WriteTypeMessage;
         ReadTypeMessage? dataForRead = data as ReadTypeMessage;
@@ -31,8 +32,7 @@ public static class Modbus_PDU
 
         else
         {
-            throw new Exception("Ошибка при формировании PDU.\n" +
-                "Неподдерживаемый код функции: " + function.Number);
+            throw new Exception(localization.Get("Core.Modbus.PduBuildErrorUnsupportedFunction", function.Number));
         }
     }
 

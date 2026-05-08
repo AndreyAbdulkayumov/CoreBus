@@ -1,5 +1,6 @@
-﻿using Core.Clients.DataTypes;
+using Core.Clients.DataTypes;
 using Core.Models.NoProtocol.DataTypes;
+using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models.NoProtocol;
@@ -36,10 +37,14 @@ public class Model_NoProtocol
 
     private bool _time_IsUsed = false;
     private int _timeIndex;
+    
+    private readonly ILocalizationService _localization;
 
 
-    public Model_NoProtocol()
+    public Model_NoProtocol(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        
         CycleModeTimer = new System.Timers.Timer(IntervalDefault);
         CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
     }
@@ -57,6 +62,12 @@ public class Model_NoProtocol
 
     public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
     {
+        if (_client != null)
+        {
+            _client.DataReceived -= Client_DataReceived;
+            _client.ErrorInReadThread -= Client_ErrorInReadThread;
+        }        
+
         _client = null;
     }
 
@@ -98,12 +109,12 @@ public class Model_NoProtocol
     {
         if (_client == null)
         {
-            throw new Exception("Клиент не инициализирован.");
+            throw new Exception(_localization.Get("Core.ClientNotInitialized"));
         }
 
         if (bytes == null || bytes.Length == 0)
         {
-            throw new Exception("Буфер для отправления пуст. Введите отправляемое значение.");
+            throw new Exception(_localization.Get("Core.SendBufferEmpty"));
         }
 
         await _client.Send(bytes, bytes.Length);
@@ -194,7 +205,7 @@ public class Model_NoProtocol
         {
             if (_cycleModeInfo == null)
             {
-                throw new Exception("Нет данных для отправки.");
+                throw new Exception(_localization.Get("Common.NoDataToSend"));
             }
 
             await SendBytes(_cycleModeInfo.MessageBytes);

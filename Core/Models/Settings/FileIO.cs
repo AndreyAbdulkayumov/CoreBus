@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using Services.Interfaces;
 
 namespace Core.Models.Settings;
 
@@ -29,7 +30,7 @@ internal static class FileIO
 
         if (jsonTypeInfo == null)
         {
-            throw new Exception($"Не удалось найти тип {typeof(T)} в объявлении контекста сериализации.");
+            throw new Exception(LocalizationProvider.Get("Core.SerializationTypeNotFound", typeof(T)));
         }
 
         JsonSerializer.Serialize(stream, data, jsonTypeInfo);
@@ -41,7 +42,7 @@ internal static class FileIO
 
         if (!File.Exists(correctFilePath))
         {
-            throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + correctFilePath);
+            throw new Exception(LocalizationProvider.Get("Core.SettingsFileNotExistsPath", correctFilePath));
         }
 
         T? data;
@@ -90,7 +91,7 @@ internal static class FileIO
     {
         if (File.Exists(destFileName))
         {
-            throw new Exception($"Файл с именем \"{Path.GetFileName(destFileName)}\" уже существует в директории \"{Path.GetDirectoryName(destFileName)}\".");
+            throw new Exception(LocalizationProvider.Get("Core.FileAlreadyExistsInDirectory", Path.GetFileName(destFileName), Path.GetDirectoryName(destFileName) ?? string.Empty));
         }
 
         File.Copy(GetCorrectFilePath(sourceFileName), destFileName);
@@ -100,7 +101,7 @@ internal static class FileIO
     {
         if (!File.Exists(fileName))
         {
-            throw new Exception($"Файла \"{fileName}\" не существует.");
+            throw new Exception(LocalizationProvider.Get("Core.FileNotExists", fileName));
         }
 
         File.Delete(fileName);

@@ -7,6 +7,8 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using CoreBus.Base.Views;
 using CoreBus.Base.Services;
+using Localization.Core;
+using Localization.Avalonia;
 using ViewModels;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
@@ -116,9 +118,41 @@ public partial class App : Application
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()
-            .AddSingleton<IOpenChildWindowService, OpenChildWindowService>();
+            .AddSingleton<IOpenChildWindowService, OpenChildWindowService>()
+            // Локализация
+            .AddSingleton<ILocalizationService, LocalizationService>();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        LocalizationInit();
+    }
+
+    private void LocalizationInit()
+    {
+        var localization = _serviceProvider.GetRequiredService<ILocalizationService>();
+
+        // Прокидываем экземпляр в глобальную точку, чтобы XAML-расширение {l:Loc …}
+        // могло к нему обращаться без DI (MarkupExtension работает вне ServiceProvider).
+        Localizer.Instance = localization;
+
+        // Глобальный провайдер для кода, куда нельзя прокинуть сервис через DI
+        // (static-хелперы, исключения, абстрактные базовые классы).
+        LocalizationProvider.Instance = localization;
+
+        // Применяем сохранённый язык
+        var settingsModel = _serviceProvider.GetRequiredService<Model_Settings>();
+
+        var preferredCode = settingsModel.AppData?.LanguageCode;
+
+        if (string.IsNullOrWhiteSpace(preferredCode))
+        {
+            preferredCode = localization.GetLanguageCodeFromCurrentCulture();
+        }
+
+        if (!localization.TrySetLanguage(preferredCode) && localization.AvailableLanguages.Count > 0)
+        {
+            _ = localization.TrySetLanguage(localization.AvailableLanguages[0].Code);
+        }
     }
 
     public override void Initialize()

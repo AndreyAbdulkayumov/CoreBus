@@ -1,4 +1,5 @@
 ﻿using Core.Models.Modbus.DataTypes;
+using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -11,8 +12,8 @@ public abstract class ModbusMessage
 
     public abstract string ProtocolName { get; }
 
-    public abstract byte[] CreateMessage(ModbusFunction Function, MessageData Data);
-    public abstract ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray);
+    public abstract byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization);
+    public abstract ModbusResponse DecodingMessage(ModbusFunction function, byte[] sourceArray, ILocalizationService localization);
 
     //public abstract void DecodingClientMessage(int FunctionNumber, byte[] SourceArray);
 
@@ -27,7 +28,7 @@ public abstract class ModbusMessage
         ASCII
     }
 
-    protected void CheckErrorCode(TypeOfModbus modbusType, ref ModbusResponse decoding, byte[] massive)
+    protected void CheckErrorCode(TypeOfModbus modbusType, ref ModbusResponse decoding, byte[] massive, ILocalizationService localization)
     {
         // Согласно документации на протокол Modbus:
         // Если значение в поле команды больше 0x80, то это ошибка.
@@ -55,7 +56,7 @@ public abstract class ModbusMessage
                 decoding.Data[0] = massive[2];
             }
 
-            GetModbusException(decoding.Data[0], (byte)functionCode);
+            GetModbusException(decoding.Data[0], (byte)functionCode, localization);
         }
     }
 
@@ -78,64 +79,52 @@ public abstract class ModbusMessage
         return sourceArray;
     }
 
-    private void GetModbusException(byte errorCode, byte functionCode)
+    private void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
     {
         switch (errorCode)
         {
             case 1:
                 throw new ModbusException(functionCode, errorCode,
-                    "Принятый код функции не может быть обработан.");
+                    localization.Get("Core.Modbus.ExceptionCode1"));
 
             case 2:
                 throw new ModbusException(functionCode, errorCode,
-                    "Адрес данных, указанный в запросе, недоступен.");
+                    localization.Get("Core.Modbus.ExceptionCode2"));
 
             case 3:
                 throw new ModbusException(functionCode, errorCode,
-                    "Значение, содержащееся в поле данных запроса, " +
-                    "является недопустимой величиной.");
+                    localization.Get("Core.Modbus.ExceptionCode3"));
 
             case 4:
                 throw new ModbusException(functionCode, errorCode,
-                    "Невосстанавливаемая ошибка имела место, " +
-                    "пока ведомое устройство пыталось выполнить затребованное действие.");
+                    localization.Get("Core.Modbus.ExceptionCode4"));
 
             case 5:
                 throw new ModbusException(functionCode, errorCode,
-                    "Ведомое устройство приняло запрос и обрабатывает его, " +
-                    "но это требует много времени. " +
-                    "Этот ответ предохраняет ведущее устройство от генерации ошибки тайм-аута.");
+                    localization.Get("Core.Modbus.ExceptionCode5"));
 
             case 6:
                 throw new ModbusException(functionCode, errorCode,
-                    "Ведомое устройство занято обработкой команды. " +
-                    "Ведущее устройство должно повторить сообщение позже, когда ведомое освободится.");
+                    localization.Get("Core.Modbus.ExceptionCode6"));
 
             case 7:
                 throw new ModbusException(functionCode, errorCode,
-                    "Ведомое устройство не может выполнить программную функцию, заданную в запросе. " +
-                    "Этот код возвращается для неуспешного программного запроса, " +
-                    "использующего функции с номерами 13 или 14. " +
-                    "Ведущее устройство должно запросить диагностическую информацию " +
-                    "или информацию об ошибках от ведомого.");
+                    localization.Get("Core.Modbus.ExceptionCode7"));
 
             case 8:
                 throw new ModbusException(functionCode, errorCode,
-                    "Ведомое устройство при чтении расширенной памяти обнаружило ошибку контроля четности. " +
-                    "Master может повторить запрос позже, " +
-                    "но обычно в таких случаях требуется ремонт оборудования.");
+                    localization.Get("Core.Modbus.ExceptionCode8"));
 
             case 10:
                 throw new ModbusException(functionCode, errorCode,
-                    "Шлюз неправильно настроен или перегружен запросами.");
+                    localization.Get("Core.Modbus.ExceptionCode10"));
 
             case 11:
                 throw new ModbusException(functionCode, errorCode,
-                    "Slave устройства нет в сети или от него нет ответа.");
+                    localization.Get("Core.Modbus.ExceptionCode11"));
 
             default:
-                throw new Exception("Код функции: " + functionCode.ToString() + "\n" +
-                    "Неизвестная ошибка Modbus (Код " + errorCode + ")");
+                throw new Exception(localization.Get("Core.Modbus.UnknownErrorWithCodes", functionCode, errorCode));
         }
     }
 }

@@ -1,0 +1,199 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:Converters="clr-namespace:MessageBox.Avalonia.Converters;assembly=MessageBox.Avalonia"
+		xmlns:ViewModels="clr-namespace:MessageBox.Avalonia.ViewModels;assembly=MessageBox.Avalonia"
+		xmlns:l="clr-namespace:Localization.Avalonia;assembly=Localization.Avalonia"
+        mc:Ignorable="d"
+		d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MessageBox.Avalonia.Views.MessageBoxWindow"
+		x:DataType="ViewModels:MessageBox_VM"
+		MinWidth="380" MaxWidth="530"
+		MinHeight="150" MaxHeight="500"
+		SizeToContent="WidthAndHeight"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None"
+		Background="Transparent"
+		KeyDown="Window_KeyDown">
+
+	<Window.Resources>
+		<Converters:MessageTypeToVisibilityConverter x:Key="MessageTypeToVisibilityConverter"/>
+	</Window.Resources>
+	
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		
+	</Window.Styles>
+
+	<Border Background="{DynamicResource App_Field_Color_Background}"
+			BorderBrush="{DynamicResource Window_Color_BorderBrush}"
+			BorderThickness="2">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="40"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0" 
+				  ClipToBounds="True">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+			    		PointerPressed="Chrome_PointerPressed"/>
+				
+				<TextBlock Text="{Binding Title, Mode=OneWay}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+				
+				<Button ToolTip.Tip="{l:Loc Common.Close}"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Grid Grid.Row="1" 
+				  Margin="20,20,0,20">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="10"/>
+					<ColumnDefinition Width="1*"/>
+				</Grid.ColumnDefinitions>
+				
+				<Grid Grid.Column="0">
+
+					<Icons:MaterialIcon Kind="Information"
+									    Foreground="{DynamicResource MessageBox_Icon_Color_Infomation}"
+									    Width="45" Height="45"
+										IsVisible="{Binding Type, 
+											Converter={StaticResource MessageTypeToVisibilityConverter}, 
+											ConverterParameter=Information}"
+										VerticalAlignment="Top"/>
+
+					<Icons:MaterialIcon Kind="Alert"
+										Foreground="{DynamicResource MessageBox_Icon_Color_Warning}"
+										Width="45" Height="45"
+										IsVisible="{Binding Type,
+											Converter={StaticResource MessageTypeToVisibilityConverter}, 
+											ConverterParameter=Warning}"
+										VerticalAlignment="Top"/>
+
+					<Icons:MaterialIcon Kind="CloseCircle"
+										Foreground="{DynamicResource MessageBox_Icon_Color_Error}"
+										Width="45" Height="45"
+										IsVisible="{Binding Type, 
+											Converter={StaticResource MessageTypeToVisibilityConverter},
+											ConverterParameter=Error}"
+										VerticalAlignment="Top"/>
+					
+				</Grid>
+				
+				<ScrollViewer Grid.Column="2">
+
+					<SelectableTextBlock Text="{Binding Content, Mode=OneWay}"
+										 Foreground="{DynamicResource WindowChrome_Color_Title}"
+										 SelectionBrush="#0099BC"
+										 TextWrapping="Wrap"
+										 Margin="10,10,20,10"
+										 VerticalAlignment="Center"/>
+
+				</ScrollViewer>
+				
+			</Grid>
+				
+			
+			<Border Grid.Row="2"
+				    Background="{DynamicResource WindowChrome_Color}">
+
+				<Grid>
+
+					<Menu IsVisible="{Binding ErrorReportIsVisible, Mode=OneWay}"
+						  Height="26"
+						  FontSize="12"
+						  Margin="10,0,0,0"
+						  HorizontalAlignment="Left" VerticalAlignment="Center">
+
+						<MenuItem Header="{l:Loc Dialog.MessageBox.ErrorReport}"
+								  Background="{DynamicResource Button_Color_Enabled_Background}"
+								  Foreground="{DynamicResource Button_Color_Enabled_Foreground}"
+								  CornerRadius="4">
+
+							<MenuItem Header="{l:Loc Dialog.MessageBox.View}"
+									  Foreground="Black"
+									  Command="{Binding Command_ViewError}"/>
+							
+							<MenuItem Header="{l:Loc Dialog.MessageBox.CopyToClipboard}"
+									  Foreground="Black"
+									  Command="{Binding Command_CopyErrorToClipboard}"/>
+							
+							<MenuItem Header="{l:Loc Dialog.MessageBox.CopyToFile}"
+									  Foreground="Black"
+									  Command="{Binding Command_CopyErrorToFile}"/>
+						
+						</MenuItem>
+
+						<!-- Да, это неправильно, но шо поделать -->
+						<Menu.Resources>
+
+							<SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="WhiteSmoke"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#D1EAF3"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="Black"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#D1EAF3"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="Black"/>
+							
+						</Menu.Resources>
+						
+					</Menu>
+
+					<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal"
+											HorizontalAlignment="Right"
+											Margin="10,0,10,0"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+
+							<DataTemplate>
+
+								<Button Content="{Binding Content, Mode=OneWay}"
+										Width="60" Height="26"
+										FontSize="12"
+										Margin="10,0,10,0"
+										HorizontalAlignment="Right" VerticalAlignment="Center"
+										Click="Button_Click"/>
+
+							</DataTemplate>
+
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
+					
+				</Grid>
+				
+			</Border>
+		
+		</Grid>
+
+	</Border>
+	
+</Window>

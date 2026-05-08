@@ -1,6 +1,6 @@
 using System;
-
 using Avalonia;
+using Avalonia.Media;
 using ReactiveUI.Avalonia;
 using CoreBus.Base;
 
@@ -20,6 +20,22 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            .With(new FontManagerOptions
+            {
+                // Дополнительные fallback-шрифты для языков, где у базового Inter может не хватать глифов.
+                // На основной шрифт UI (латиница/кириллица) это не влияет.
+                FontFallbacks =
+                [
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansDevanagari-Regular.ttf#Noto Sans Devanagari Regular"),
+                    },
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansSC-Regular.otf#Noto Sans SC Regular"),
+                    },
+                ],
+            })
             .LogToTrace()
             .UseReactiveUI(builder => { });
 }

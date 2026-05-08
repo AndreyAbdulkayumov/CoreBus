@@ -1,6 +1,7 @@
-﻿using System.IO.Ports;
+using System.IO.Ports;
 using Core.Clients.DataTypes;
 using Core.Models;
+using Services.Interfaces;
 
 namespace Core.Clients;
 
@@ -70,10 +71,14 @@ public class SerialPortClient : IConnection
 
     private Task? _readThread;
     private CancellationTokenSource? _readCancelSource;
+    
+    private readonly ILocalizationService _localization;
 
 
-    public SerialPortClient()
+    public SerialPortClient(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        
         Notifications = new NotificationSource(
             TX_ViewLatency_ms: 100,
             RX_ViewLatency_ms: 100,
@@ -122,7 +127,7 @@ public class SerialPortClient : IConnection
                 break;
 
             default:
-                throw new Exception("У клиента задан неизвестный режим чтения: " + mode.ToString());
+                throw new Exception(_localization.Get("Core.UnknownReadMode", mode.ToString()));
         }
     }
 
@@ -134,7 +139,7 @@ public class SerialPortClient : IConnection
         {
             if (portInfo == null)
             {
-                throw new Exception("Нет информации о настройках подключения по последовательному порту.");
+                throw new Exception(_localization.Get("Core.SerialSettingsMissing"));
             }
 
             if (string.IsNullOrEmpty(portInfo.Port) ||
@@ -144,11 +149,11 @@ public class SerialPortClient : IConnection
                 string.IsNullOrEmpty(portInfo.StopBits))
             {
                 throw new Exception(
-                    (string.IsNullOrEmpty(portInfo.Port) ? "Не задан порт.\n" : "") +
-                    (string.IsNullOrEmpty(portInfo.BaudRate) ? "Не задан BaudRate.\n" : "") +
-                    (string.IsNullOrEmpty(portInfo.Parity) ? "Не задан Parity.\n" : "") +
-                    (string.IsNullOrEmpty(portInfo.DataBits) ? "Не задан DataBits\n" : "") +
-                    (string.IsNullOrEmpty(portInfo.StopBits) ? "Не задан StopBits\n" : "")
+                    (string.IsNullOrEmpty(portInfo.Port) ? _localization.Get("ConnectionInfo.PortNotSet") + "\n" : "") +
+                    (string.IsNullOrEmpty(portInfo.BaudRate) ? _localization.Get("Core.BaudRateNotSet") + "\n" : "") +
+                    (string.IsNullOrEmpty(portInfo.Parity) ? _localization.Get("Core.ParityNotSet") + "\n" : "") +
+                    (string.IsNullOrEmpty(portInfo.DataBits) ? _localization.Get("Core.DataBitsNotSet") + "\n" : "") +
+                    (string.IsNullOrEmpty(portInfo.StopBits) ? _localization.Get("Core.StopBitsNotSet") + "\n" : "")
                     );
             }
 
@@ -156,8 +161,7 @@ public class SerialPortClient : IConnection
 
             if (int.TryParse(portInfo.BaudRate, out int BaudRate) == false)
             {
-                throw new Exception("Не удалось преобразовать значение BaudRate в целочисленное значение.\n" +
-                    "Полученное значение BaudRate: " + portInfo.BaudRate);
+                throw new Exception(_localization.Get("Core.BaudRateParseError", portInfo.BaudRate));
             }
 
             Parity selectedParity;
@@ -185,13 +189,12 @@ public class SerialPortClient : IConnection
                     break;
 
                 default:
-                    throw new Exception("Неправильно задано значение Parity.");
+                    throw new Exception(_localization.Get("Core.InvalidParity"));
             }
 
             if (int.TryParse(portInfo.DataBits, out int DataBits) == false)
             {
-                throw new Exception("Не удалось преобразовать значение DataBits в целочисленное значение.\n" +
-                    "Полученное значение DataBits: " + portInfo.DataBits);
+                throw new Exception(_localization.Get("Core.DataBitsParseError", portInfo.DataBits));
             }
 
             StopBits selectedStopBits;
@@ -211,7 +214,7 @@ public class SerialPortClient : IConnection
                     break;
 
                 default:
-                    throw new Exception("Неправильно задано значение StopBits");
+                    throw new Exception(_localization.Get("Core.InvalidStopBits"));
             }
 
             _deviceSerialPort.PortName = portInfo.Port;
@@ -229,12 +232,12 @@ public class SerialPortClient : IConnection
         {
             _deviceSerialPort?.Close();
 
-            string CommonMessage = "Не удалось подключиться к последовательному порту.\n\n";
+            string CommonMessage = _localization.Get("Core.SerialConnectErrorPrefix") + "\n\n";
 
             if (portInfo != null)
             {
                 throw new Exception(CommonMessage +
-                    "Данные подключения:" + "\n" +
+                    _localization.Get("Core.ConnectionDataHeader") + "\n" +
                     "Port: " + portInfo.Port + "\n" +
                     "BaudRate: " + portInfo.BaudRate + "\n" +
                     "Parity: " + portInfo.Parity + "\n" +
@@ -275,7 +278,7 @@ public class SerialPortClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception("Не удалось отключиться от СОМ порта.\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.SerialDisconnectError") + "\n\n" + error.Message);
         }
     }
 
@@ -304,10 +307,10 @@ public class SerialPortClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
-                "Таймаут передачи: " +
+            throw new Exception(_localization.Get("Message.Error.SendData") + "\n\n" + error.Message + "\n\n" +
+                _localization.Get("Core.WriteTimeoutPrefix") +
                 (_deviceSerialPort.WriteTimeout == Timeout.Infinite ?
-                "бесконечно" : _deviceSerialPort.WriteTimeout.ToString() + " мс."));
+                _localization.Get("Core.TimeoutInfinite") : _deviceSerialPort.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")));
         }
     }
 
@@ -376,8 +379,8 @@ public class SerialPortClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                "Таймаут приема: " + _deviceSerialPort.ReadTimeout + " мс.");
+            throw new Exception(_localization.Get("Core.ReceiveDataError") + "\n\n" + error.Message + "\n\n" +
+                _localization.Get("Core.ReadTimeoutMs", _deviceSerialPort.ReadTimeout));
         }
     }
 
@@ -386,7 +389,7 @@ public class SerialPortClient : IConnection
         try
         {
             if (currentStream == null)
-                throw new InvalidOperationException("Поток чтения не инициализирован.");
+                throw new InvalidOperationException(_localization.Get("Core.ReadStreamNotInitialized"));
 
             byte[] bufferRX = new byte[65536];
 

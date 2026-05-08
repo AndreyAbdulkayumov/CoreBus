@@ -1,4 +1,5 @@
 ﻿using Core.Models.Modbus.DataTypes;
+using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -6,9 +7,9 @@ public class ModbusRTU_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus RTU";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data)
+    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data);
+        byte[] PDU = Modbus_PDU.Create(function, data, localization);
 
         byte[] TX;
 
@@ -38,7 +39,7 @@ public class ModbusRTU_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray)
+    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
     {
         var decodingResponse = new ModbusResponse
         {
@@ -46,7 +47,7 @@ public class ModbusRTU_Message : ModbusMessage
             Command = sourceArray[1]
         };
 
-        CheckErrorCode(TypeOfModbus.RTU, ref decodingResponse, sourceArray);
+        CheckErrorCode(TypeOfModbus.RTU, ref decodingResponse, sourceArray, localization);
 
         if (currentFunction is ModbusReadFunction)
         {
@@ -54,9 +55,7 @@ public class ModbusRTU_Message : ModbusMessage
 
             if (decodingResponse.LengthOfData == 0)
             {
-                throw new Exception("Длина информационной части пакета равна 0.\n" +
-                    "Код функции: " + currentFunction.Number.ToString() + "\n" +
-                    "Возможно нарушение целостности пакета Modbus RTU.");
+                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartRtu", currentFunction.Number));
             }
 
             decodingResponse.Data = new byte[decodingResponse.LengthOfData];
@@ -82,7 +81,7 @@ public class ModbusRTU_Message : ModbusMessage
 
         else
         {
-            throw new Exception("Неподдерживаемый код Modbus команды (Код: " + currentFunction.Number + ")");
+            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
         }
 
         return decodingResponse;

@@ -13,6 +13,13 @@ namespace CoreBus.Base.Services;
 
 public class FileSystemService : IFileSystemService
 {
+    private readonly ILocalizationService _localization;
+
+    public FileSystemService(ILocalizationService localization)
+    {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+    }
+
     public async Task<string?> GetFilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string>? patterns)
     {
         // Get top level from the current control. Alternatively, you can use Window reference instead.
@@ -67,11 +74,18 @@ public class FileSystemService : IFileSystemService
 
     public void OpenUserManual()
     {
+        string manualFileName = 
+            string.Equals(_localization.CurrentLanguage.Code, "ru", StringComparison.OrdinalIgnoreCase)
+                ? "UserManual_ru.pdf"
+                : "UserManual_en.pdf";
+
+        string manualPath = Path.Combine("Documentation", manualFileName);
+
         if (OperatingSystem.IsWindows())
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = Path.Combine("Documentation", "UserManual.pdf"),
+                FileName = manualPath,
                 UseShellExecute = true,
             });
 
@@ -83,14 +97,14 @@ public class FileSystemService : IFileSystemService
             Process.Start(new ProcessStartInfo
             {
                 FileName = "xdg-open",
-                Arguments = Path.Combine("Documentation", "UserManual.pdf"),
+                Arguments = manualPath,
                 UseShellExecute = false,
             });
 
             return;
         }
 
-        throw new Exception("Неподдерживаемый тип ОС.");
+        throw new Exception(_localization.Get("CoreBase.UnsupportedOsType"));
     }
 
     public async Task OpenFolder(string folderPath)
@@ -104,7 +118,7 @@ public class FileSystemService : IFileSystemService
             bool successOpen = await topLevel.Launcher.LaunchDirectoryInfoAsync(dirInfo);
 
             if (!successOpen)
-                throw new Exception("Не удалось открыть папку с логами");
+                throw new Exception(_localization.Get("Message.Error.OpenLogFolder"));
         }
     }
 }

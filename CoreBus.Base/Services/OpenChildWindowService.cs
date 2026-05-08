@@ -41,10 +41,12 @@ public class OpenChildWindowService : IOpenChildWindowService
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
     
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILocalizationService _localization;
 
-    public OpenChildWindowService(IServiceProvider serviceProvider)
+    public OpenChildWindowService(IServiceProvider serviceProvider, ILocalizationService localization)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
     }
 
     public async Task Settings()
@@ -154,7 +156,7 @@ public class OpenChildWindowService : IOpenChildWindowService
 
             if (MainWindow.Instance == null)
             {
-                throw new Exception("Не задан владелец окна.");
+                throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
             MacrosWindowIsOpen = true;
@@ -199,7 +201,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         if (MainWindow.Instance == null)
         {
-            throw new Exception("Не задан владелец окна.");
+            throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
         }
 
         await using var scope = _serviceProvider.CreateAsyncScope();
@@ -247,7 +249,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         if (MainWindow.Instance == null)
         {
-            throw new Exception("Не задан владелец окна.");
+            throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
         }
 
         await using var scope = _serviceProvider.CreateAsyncScope();
@@ -294,7 +296,7 @@ public class OpenChildWindowService : IOpenChildWindowService
 
             if (MainWindow.Instance == null)
             {
-                throw new Exception("Не задан владелец окна.");
+                throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
             ChartWindowIsOpen = true;
@@ -339,8 +341,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 if (monitoringVM.IsMonitoringRunning)
                 {
                     var closeWindow = await chartMessageBox.ShowYesNoDialog(
-                        "Опрос Modbus регистров еще идет.\n\n" +
-                        "Вы действительно желайте закрыть окно графика и потерять все отображаемые данные?",
+                        _localization.Get("Message.Confirm.CloseChartWhileMonitoring"),
                         MessageType.Warning);
 
                     if (closeWindow != MessageBoxResult.No)
@@ -396,7 +397,7 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         if (owner == null)
         {
-            throw new Exception("Не задан владелец окна.");
+            throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
         }
 
         if (workspace == null)

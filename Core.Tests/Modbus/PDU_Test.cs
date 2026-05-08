@@ -1,10 +1,14 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Core.Tests.Infrastructure;
+using Services.Interfaces;
 
 namespace Core.Tests.Modbus;
 
 public class PDU_Test
 {
+    private readonly ILocalizationService _localization = new TestLocalizationService();
+
     [Fact]
     public void Test_ReadCoilStatus_PDU_Creation()
     {
@@ -115,7 +119,7 @@ public class PDU_Test
                 true
                 );
 
-        byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data);
+        byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data, _localization);
 
         byte[] AddressBytes = ModbusField.Get_Address(Address);
         byte[] NumberOfRegistersBytes = ModbusField.Get_NumberOfRegisters(NumberOfRegisters);
@@ -146,7 +150,7 @@ public class PDU_Test
             true
             );
 
-        byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data);
+        byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data, _localization);
 
         byte[] AddressBytes = ModbusField.Get_Address(Address);
         byte[] WriteDataBytes = ModbusField.Get_WriteData(WriteDataArray);
@@ -182,7 +186,7 @@ public class PDU_Test
             true
             );
 
-        byte[] bytesArray_Actual = Modbus_PDU.Create(selectedFunction, data);
+        byte[] bytesArray_Actual = Modbus_PDU.Create(selectedFunction, data, _localization);
 
         byte[] bytesArray_Expected = new byte[6 + writeBytes.Length];
 
@@ -215,7 +219,7 @@ public class PDU_Test
             true
             );
 
-        byte[] BytesArray_Actual = Modbus_PDU.Create(selectedFunction, Data);
+        byte[] BytesArray_Actual = Modbus_PDU.Create(selectedFunction, Data, _localization);
 
         byte[] AddressBytes = ModbusField.Get_Address(Address);
         byte[] NumberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)WriteData.Length);

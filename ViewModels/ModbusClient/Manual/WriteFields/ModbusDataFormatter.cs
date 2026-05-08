@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using Services.Interfaces;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Manual.WriteFields;
@@ -39,7 +40,7 @@ public abstract class ModbusDataFormatter : ValidatedDateInput, INotifyDataError
                 return Convert.ToString(number, 16).ToUpper();
 
             default:
-                throw new ArgumentException("Неподдерживаемый формат числа.");
+                throw new ArgumentException(LocalizationProvider.Get("Exception.UnsupportedNumberFormatSimple"));
         }
     }
 }

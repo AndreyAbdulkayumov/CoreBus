@@ -1,6 +1,7 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using Core.Clients.DataTypes;
 using Core.Models;
+using Services.Interfaces;
 
 namespace Core.Clients;
 
@@ -60,10 +61,14 @@ public class IPClient : IConnection
 
     private Task? _readThread;
     private CancellationTokenSource? _readCancelSource;
+    
+    private readonly ILocalizationService _localization;
 
 
-    public IPClient()
+    public IPClient(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        
         Notifications = new NotificationSource(
             TX_ViewLatency_ms: 100,
             RX_ViewLatency_ms: 100,
@@ -105,7 +110,7 @@ public class IPClient : IConnection
                 break;
 
             default:
-                throw new Exception("У клиента задан неизвестный режим чтения: " + mode.ToString());
+                throw new Exception(_localization.Get("Core.UnknownReadMode", mode.ToString()));
         }
     }
 
@@ -115,22 +120,21 @@ public class IPClient : IConnection
 
         if (socketInfo == null)
         {
-            throw new Exception("Нет информации о настройках подключения по Ethernet.");
+            throw new Exception(_localization.Get("Core.EthernetSettingsMissing"));
         }
 
         if (string.IsNullOrEmpty(socketInfo.IP) ||
             string.IsNullOrEmpty(socketInfo.Port))
         {
             throw new Exception(
-                (string.IsNullOrEmpty(socketInfo.IP) ? "IP-адрес не задан.\n" : "") +
-                (string.IsNullOrEmpty(socketInfo.Port) ? "Порт не задан." : "")
+                (string.IsNullOrEmpty(socketInfo.IP) ? _localization.Get("ConnectionInfo.IpAddressNotSet") + "\n" : "") +
+                (string.IsNullOrEmpty(socketInfo.Port) ? _localization.Get("ConnectionInfo.PortNotSet") : "")
                 );
         }
 
         if (int.TryParse(socketInfo.Port, out int Port) == false)
         {
-            throw new Exception("Не удалось преобразовать номер порта в целочисленное значение.\n" +
-                "Полученный номер порта: " + socketInfo.Port);
+            throw new Exception(_localization.Get("Core.PortParseError", socketInfo.Port));
         }
 
         _client = new TcpClient();
@@ -146,9 +150,7 @@ public class IPClient : IConnection
         {
             _client.Close();
 
-            throw new Exception("Не удалось подключиться к серверу.\n\n" +
-                "IP адрес: " + socketInfo.IP + "\n" +
-                "Порт: " + socketInfo.Port);
+            throw new Exception(_localization.Get("Core.ServerConnectError", socketInfo.IP, socketInfo.Port));
         }
 
         _stream = _client.GetStream();
@@ -206,10 +208,10 @@ public class IPClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
-                "Таймаут передачи: " +
+            throw new Exception(_localization.Get("Message.Error.SendData") + "\n\n" + error.Message + "\n\n" +
+                _localization.Get("Core.WriteTimeoutPrefix") +
                 (_stream.WriteTimeout == Timeout.Infinite ?
-                "бесконечно" : _stream.WriteTimeout.ToString() + " мс."));
+                _localization.Get("Core.TimeoutInfinite") : _stream.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")));
         }
     }
 
@@ -249,7 +251,7 @@ public class IPClient : IConnection
 
                     catch (OperationCanceledException)
                     {
-                        throw new Exception("Хост не ответил за указанный таймаут.");
+                        throw new Exception(_localization.Get("Core.HostNoResponseInTimeout"));
                     }
 
                     if (isFirstPackage)
@@ -277,10 +279,10 @@ public class IPClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                "Таймаут приема: " +
+            throw new Exception(_localization.Get("Core.ReceiveDataError") + "\n\n" + error.Message + "\n\n" +
+                _localization.Get("Core.ReadTimeoutPrefix") +
                 (_stream.ReadTimeout == Timeout.Infinite ?
-                "бесконечно" : _stream.ReadTimeout.ToString() + " мс."));
+                _localization.Get("Core.TimeoutInfinite") : _stream.ReadTimeout.ToString() + " " + _localization.Get("Common.Ms")));
         }
     }
 
@@ -289,7 +291,7 @@ public class IPClient : IConnection
         try
         {
             if (currentStream == null)
-                throw new InvalidOperationException("Поток чтения не инициализирован.");
+                throw new InvalidOperationException(_localization.Get("Core.ReadStreamNotInitialized"));
 
             byte[] bufferRX = new byte[currentStream.Socket.ReceiveBufferSize];
 

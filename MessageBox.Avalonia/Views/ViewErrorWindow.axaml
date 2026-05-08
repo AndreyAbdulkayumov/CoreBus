@@ -1,0 +1,98 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        x:Class="MessageBox.Avalonia.Views.ViewErrorWindow"
+        Title="Error report"
+		Height="500" Width="750"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None"
+		Background="Transparent"
+		KeyDown="Window_KeyDown">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
+
+	</Window.Styles>
+	
+	<Border Background="{DynamicResource App_Field_Color_Background}"
+			BorderBrush="{DynamicResource Window_Color_BorderBrush}"
+			BorderThickness="2">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0"
+				  ClipToBounds="True">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+			    		PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button x:Name="Button_Close"
+						ToolTip.Tip="Close"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Grid Grid.Row="1">
+
+				<ScrollViewer>
+
+					<SelectableTextBlock x:Name="TextBlock_ErrorReport"
+										 Margin="20"
+										 Foreground="{DynamicResource WindowChrome_Color_Title}"
+										 SelectionBrush="#0099BC"
+										 TextWrapping="Wrap"/>
+
+				</ScrollViewer>
+
+				<Border Background="Transparent"
+						Width="20" Height="20"
+						HorizontalAlignment="Right" VerticalAlignment="Bottom"
+						PointerPressed="ResizeIcon_PointerPressed">
+
+					<Border.Styles>
+						<Style Selector="Border">
+							<Style Selector="^:pointerover">
+								<Setter Property="Cursor" Value="BottomRightCorner"/>
+							</Style>
+						</Style>
+					</Border.Styles>
+
+					<Icons:MaterialIcon Kind="ResizeBottomRight"
+										Foreground="{DynamicResource ResizeGrip_Color_Foreground}"
+										Margin="0,0,10,10"
+										Width="30" Height="30"/>
+
+				</Border>
+				
+			</Grid>
+			
+
+		</Grid>
+
+	</Border>			
+	
+</Window>

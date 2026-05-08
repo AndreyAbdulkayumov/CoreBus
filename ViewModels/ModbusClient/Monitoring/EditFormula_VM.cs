@@ -1,5 +1,6 @@
 using Core.Models;
 using ReactiveUI;
+using Services.Interfaces;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
@@ -53,10 +54,22 @@ public class EditFormula_VM : ValidatedDateInput
 
     private bool _saved;
 
+    private readonly ILocalizationService _localization;
 
-    public EditFormula_VM()
+    public EditFormula_VM(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
         ErrorsChanged += EditFormula_VM_ErrorsChanged;
+
+        _localization.LanguageChanged += (_, _) => UpdateLocalizedStrings();
+    }
+
+    private bool _isEditable;
+
+    private void UpdateLocalizedStrings()
+    {
+        WindowTitle = _isEditable ? _localization.Get("Monitoring.EditFormulaTitle") : _localization.Get("Monitoring.ViewFormulaTitle");
     }
 
     private void EditFormula_VM_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
@@ -66,7 +79,8 @@ public class EditFormula_VM : ValidatedDateInput
 
     public void InitWindow(string description, string? formula, bool isEnable)
     {
-        WindowTitle = isEnable ? "Редактирование формулы" : "Просмотр формулы";
+        _isEditable = isEnable;
+        WindowTitle = isEnable ? _localization.Get("Monitoring.EditFormulaTitle") : _localization.Get("Monitoring.ViewFormulaTitle");
         Description = description;
         Formula = formula;
         UI_IsEnable = isEnable;
@@ -93,7 +107,7 @@ public class EditFormula_VM : ValidatedDateInput
 
         if (string.IsNullOrEmpty(value))
         {
-            return new ValidateMessage("Введите формулу");
+            return new ValidateMessage(_localization.Get("Validation.EnterFormula"));
         }
 
         if (!MathFormula.IsValid(value, out string errorMessage))

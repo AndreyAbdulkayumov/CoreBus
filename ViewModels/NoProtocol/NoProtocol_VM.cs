@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+using Core.Clients;
 using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.NoProtocol;
@@ -10,12 +10,21 @@ using MessageBusTypes.Macros;
 using MessageBusTypes.NoProtocol;
 using ReactiveUI;
 using Services.Interfaces;
-using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using ViewModels.Helpers;
 
 namespace ViewModels.NoProtocol;
+
+public enum SendModeType
+{
+    Normal,
+    Cycle,
+    Files
+}
+
+public record SendModeItem(SendModeType Value, string Display);
 
 public class NoProtocol_VM : ReactiveObject
 {
@@ -37,39 +46,35 @@ public class NoProtocol_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
     }
 
-    private const string SendMode_Normal = "Одиночная";
-    private const string SendMode_Cycle = "Цикличная";
-    private const string SendMode_Files = "Файлы";
+    public IEnumerable<SendModeItem> AllSendModes =>
+        [
+            new SendModeItem(SendModeType.Normal, _localization.Get("NoProtocol.SendMode.Normal")),
+            new SendModeItem(SendModeType.Cycle, _localization.Get("NoProtocol.SendMode.Cycle")),
+            new SendModeItem(SendModeType.Files, _localization.Get("NoProtocol.SendMode.Files"))
+        ];
 
-    private string _selectedSendMode = SendMode_Normal;
+    private SendModeItem? _selectedSendMode;
 
-    public string SelectedSendMode
+    public SendModeItem? SelectedSendMode
     {
         get => _selectedSendMode;
         set => this.RaiseAndSetIfChanged(ref _selectedSendMode, value);
     }
 
-    private ObservableCollection<string> _allSendModes = new ObservableCollection<string>()
-    {
-        SendMode_Normal, SendMode_Cycle, SendMode_Files
-    };
-
-    public ObservableCollection<string> AllSendModes
-    {
-        get => _allSendModes;
-    }
-
-    private const string InterfaceType_Default = "не определен";
+    private const string InterfaceType_Default = "Common.Undefined";
     private const string InterfaceType_SerialPort = "Serial Port";
     private const string InterfaceType_Ethernet = "Ethernet";
 
-    private string _interfaceType = InterfaceType_Default;
+    private string _interfaceTypeKey = InterfaceType_Default;
 
-    public string InterfaceType
-    {
-        get => _interfaceType;
-        set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
-    }
+    /// <summary>
+    /// Локализованный тип интерфейса: либо "Serial Port"/"Ethernet" (как есть),
+    /// либо значение по ключу локализации (для "не определен" / "undefined").
+    /// </summary>
+    public string InterfaceType =>
+        _interfaceTypeKey == InterfaceType_SerialPort || _interfaceTypeKey == InterfaceType_Ethernet
+            ? _interfaceTypeKey
+            : _localization[_interfaceTypeKey];
 
     private string? _selectedEncoding;
 
@@ -129,10 +134,12 @@ public class NoProtocol_VM : ReactiveObject
     private readonly NoProtocol_Mode_Normal_VM _normalMode_VM;
     private readonly NoProtocol_Mode_Cycle_VM _cycleMode_VM;
     private readonly NoProtocol_Mode_Files_VM _filesMode_VM;
+    private readonly ILocalizationService _localization;
 
     public NoProtocol_VM(IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel,
-        NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM, NoProtocol_Mode_Files_VM filesMode_VM)
+        NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM, NoProtocol_Mode_Files_VM filesMode_VM,
+        ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
@@ -140,6 +147,21 @@ public class NoProtocol_VM : ReactiveObject
         _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
         _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
         _filesMode_VM = filesMode_VM ?? throw new ArgumentNullException(nameof(filesMode_VM));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
+        _localization.LanguageChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(InterfaceType));
+
+            // Перерисовать список при смене языка и сохранить текущий выбор
+            var currentModeKey = SelectedSendMode?.Value;
+            this.RaisePropertyChanged(nameof(AllSendModes));
+
+            if (currentModeKey.HasValue)
+            {
+                SelectedSendMode = AllSendModes.FirstOrDefault(mode => mode.Value == currentModeKey);
+            }
+        };
 
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -161,27 +183,30 @@ public class NoProtocol_VM : ReactiveObject
 
         Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
+        SelectedSendMode = AllSendModes.FirstOrDefault(mode => mode.Value == SendModeType.Normal);
+
         this.WhenAnyValue(x => x.SelectedSendMode)
-            .Subscribe(_ =>
+            .Where(mode => mode is not null)
+            .Subscribe(mode =>
             {
-                if (SelectedSendMode != SendMode_Cycle)
+                if (mode!.Value != SendModeType.Cycle)
                 {
                     _cycleMode_VM.StopPolling();
                 }
 
-                EncodingIsVisible = SelectedSendMode != SendMode_Files;
+                EncodingIsVisible = mode.Value != SendModeType.Files;
 
-                switch (SelectedSendMode)
+                switch (mode.Value)
                 {
-                    case SendMode_Normal:
+                    case SendModeType.Normal:
                         CurrentModeViewModel = _normalMode_VM;
                         break;
 
-                    case SendMode_Cycle:
+                    case SendModeType.Cycle:
                         CurrentModeViewModel = _cycleMode_VM;
                         break;
 
-                    case SendMode_Files:
+                    case SendModeType.Files:
                         CurrentModeViewModel = _filesMode_VM;
                         break;
                 }
@@ -223,13 +248,13 @@ public class NoProtocol_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            SendMacrosActionResponse(macros, false, "Клиент отключен.", MessageType.Error);
+            SendMacrosActionResponse(macros, false, _localization.Get("Exception.ClientDisconnected"), MessageType.Error);
             return;
         }
 
         if (macros.Commands == null || macros.Commands.Count == 0)
         {
-            SendMacrosActionResponse(macros, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+            SendMacrosActionResponse(macros, false, _localization.Get("Macros.NoCommands", macros.MacrosName ?? string.Empty), MessageType.Warning);
             return;
         }
 
@@ -261,13 +286,13 @@ public class NoProtocol_VM : ReactiveObject
 
             catch (Exception error)
             {
-                errorMessages.Add($"Ошибка в команде \"{currentCommand?.Name}\".\n\n{error.Message}");
+                errorMessages.Add(_localization.Get("Macros.CommandError", currentCommand?.Name ?? string.Empty) + "\n\n" + error.Message);
             }
         }
 
         if (errorMessages.Any())
         {
-            errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
+            errorMessages.Insert(0, _localization.Get("Macros.MacroErrorsHeader", macros.MacrosName ?? string.Empty));
 
             SendMacrosActionResponse(macros, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
         }
@@ -277,7 +302,7 @@ public class NoProtocol_VM : ReactiveObject
     {
         if (string.IsNullOrEmpty(message))
         {
-            throw new Exception("Не заданы данные для отправки.");
+            throw new Exception(LocalizationProvider.Get("Common.NoDataToSend"));
         }
 
         var buffer = new List<byte>(
@@ -303,26 +328,28 @@ public class NoProtocol_VM : ReactiveObject
     {
         if (e is IPClient)
         {
-            InterfaceType = InterfaceType_Ethernet;
+            _interfaceTypeKey = InterfaceType_Ethernet;
         }
 
         else if (e is SerialPortClient)
         {
-            InterfaceType = InterfaceType_SerialPort;
+            _interfaceTypeKey = InterfaceType_SerialPort;
         }
 
         else
         {
-            _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Warning);
+            _messageBox.Show(_localization.Get("Message.Warning.UnknownConnectionTypeSimple"), MessageType.Warning);
             return;
         }
 
+        this.RaisePropertyChanged(nameof(InterfaceType));
         UI_IsEnable = true;
     }
 
     private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
     {
-        InterfaceType = InterfaceType_Default;
+        _interfaceTypeKey = InterfaceType_Default;
+        this.RaisePropertyChanged(nameof(InterfaceType));
 
         UI_IsEnable = false;
     }
@@ -369,6 +396,6 @@ public class NoProtocol_VM : ReactiveObject
 
     private void NoProtocol_Model_ErrorInReadThread(object? sender, Exception e)
     {
-        _messageBox.Show($"Возникла ошибка при асинхронном чтении.\n\nПрием данных прекращен.\n\n{e.Message}", MessageType.Error, e);
+        _messageBox.Show(_localization.Get("Message.Error.AsyncReadError") + "\n\n" + e.Message, MessageType.Error, e);
     }
 }

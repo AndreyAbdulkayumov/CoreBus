@@ -30,12 +30,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.14" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.2" ExcludeAssets="all" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\CoreBus.Base\CoreBus.Base.csproj" />
+	</ItemGroup>
+
+	<!-- Файлы локализации -->
+	<ItemGroup>
+		<Content Include="..\Localization.Core\Localization\*.json"
+				 Link="Localization\%(Filename)%(Extension)">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 </Project>

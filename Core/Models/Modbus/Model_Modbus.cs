@@ -1,6 +1,7 @@
 using Core.Clients.DataTypes;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Services.Interfaces;
 
 namespace Core.Models.Modbus;
 
@@ -18,9 +19,13 @@ public class Model_Modbus
     private Func<Task>? _monitoringAction;
 
     private readonly SemaphoreSlim _monitoringSemaphore = new SemaphoreSlim(1, 1);
+    
+    private readonly ILocalizationService _localization;
 
-    public Model_Modbus()
+    public Model_Modbus(ILocalizationService localization)
     {
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+
         _monitoringTimer = new System.Timers.Timer(IntervalDefault);
         _monitoringTimer.Elapsed += MonitoringTimer_Elapsed;
     }
@@ -58,10 +63,10 @@ public class Model_Modbus
         {
             if (_device == null)
             {
-                throw new Exception("Хост не инициализирован.");
+                throw new Exception(_localization.Get("Core.HostNotInitialized"));
             }
 
-            TX = message.CreateMessage(writeFunction, dataForWrite);
+            TX = message.CreateMessage(writeFunction, dataForWrite, _localization);
             
             TX_Info = await _device.Send(TX, TX.Length);
 
@@ -71,7 +76,7 @@ public class Model_Modbus
             {
                 RX = RX_Info.ResponseBytes;
 
-                ModbusResponse Data = message.DecodingMessage(writeFunction, RX);
+                ModbusResponse Data = message.DecodingMessage(writeFunction, RX, _localization);
             }
 
             else
@@ -93,12 +98,13 @@ public class Model_Modbus
 
         catch (TimeoutException)
         {
-            string errorMessage = "Хост не ответил.";
+            string errorMessage = _localization.Get("Core.HostNoResponse");
 
             if (_device != null)
             {
-                errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
-                    "Таймаут чтения: " + _device.ReadTimeout + " мс.";
+                errorMessage += "\n\n" +
+                    _localization.Get("Core.WriteTimeoutMs", _device.WriteTimeout) + "\n" +
+                    _localization.Get("Core.ReadTimeoutMs", _device.ReadTimeout);
             }
 
             throw new TimeoutException(errorMessage,
@@ -177,10 +183,10 @@ public class Model_Modbus
         {
             if (_device == null)
             {
-                throw new Exception("Хост не инициализирован.");
+                throw new Exception(_localization.Get("Core.HostNotInitialized"));
             }
 
-            TX = message.CreateMessage(readFunction, dataForRead);
+            TX = message.CreateMessage(readFunction, dataForRead, _localization);
 
             TX_Info = await _device.Send(TX, TX.Length);
 
@@ -190,7 +196,7 @@ public class Model_Modbus
             {
                 RX = RX_Info.ResponseBytes;
 
-                ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX);
+                ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX, _localization);
 
                 result.ReadedData = DeviceResponse.Data;
             }
@@ -214,12 +220,13 @@ public class Model_Modbus
 
         catch (TimeoutException)
         {
-            string errorMessage = "Хост не ответил.";
+            string errorMessage = _localization.Get("Core.HostNoResponse");
 
             if (_device != null)
             {
-                errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
-                    "Таймаут чтения: " + _device.ReadTimeout + " мс.";
+                errorMessage += "\n\n" +
+                    _localization.Get("Core.WriteTimeoutMs", _device.WriteTimeout) + "\n" +
+                    _localization.Get("Core.ReadTimeoutMs", _device.ReadTimeout);
             }
 
             throw new TimeoutException(errorMessage,
