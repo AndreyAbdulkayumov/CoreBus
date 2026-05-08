@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Localization.Core;
@@ -70,6 +71,39 @@ public sealed class LocalizationService : ILocalizationService
         {
             return template;
         }
+    }
+
+    public string GetLanguageCodeFromCurrentCulture()
+    {
+        const string defaultLanguageCode = "en";
+
+        if (AvailableLanguages.Count == 0)
+        {
+            return defaultLanguageCode;
+        }
+
+        // CurrentUICulture — язык интерфейса процесса; TwoLetterISOLanguageName совпадает с короткими кодами в JSON.
+        var tag = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+        foreach (var lang in AvailableLanguages)
+        {
+            if (string.Equals(lang.Code, tag, StringComparison.OrdinalIgnoreCase))
+            {
+                return lang.Code;
+            }
+        }
+
+        // Нет совпадения с UI-культурой — возвращаем en, если такой язык есть в приложении.
+        foreach (var lang in AvailableLanguages)
+        {
+            if (string.Equals(lang.Code, defaultLanguageCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return defaultLanguageCode;
+            }
+        }
+
+        // В сборке нет en — возвращаем первый загруженный язык, чтобы код всегда был валидным.
+        return AvailableLanguages[0].Code;
     }
 
     private void LoadAll()

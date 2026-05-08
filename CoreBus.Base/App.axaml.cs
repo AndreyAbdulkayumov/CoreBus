@@ -139,11 +139,15 @@ public partial class App : Application
         // (static-хелперы, исключения, абстрактные базовые классы).
         LocalizationProvider.Instance = localization;
 
-        // Применяем сохранённый язык (если файл настроек уже прочитан моделью).
-        // Fallback — русский, если его нет — первый доступный язык из папки Localization/.
+        // Применяем сохранённый язык
         var settingsModel = _serviceProvider.GetRequiredService<Model_Settings>();
 
-        var preferredCode = settingsModel.AppData?.LanguageCode ?? "ru";
+        var preferredCode = settingsModel.AppData?.LanguageCode;
+
+        if (string.IsNullOrWhiteSpace(preferredCode))
+        {
+            preferredCode = localization.GetLanguageCodeFromCurrentCulture();
+        }
 
         if (!localization.TrySetLanguage(preferredCode) && localization.AvailableLanguages.Count > 0)
         {

@@ -216,7 +216,7 @@ public class Model_Settings
 
         if (!File.Exists(appDataPath))
         {
-            defaults.LanguageCode = ResolveLanguageCodeForFirstRun(_localization);
+            defaults.LanguageCode = _localization.GetLanguageCodeFromCurrentCulture();
         }
 
         var path = DirectoryManager.FindOrCreateFile(
@@ -226,46 +226,6 @@ public class Model_Settings
             defaults);
 
         return FileIO.ReadOrCreateDefault(path, defaults);
-    }
-
-    /// <summary>
-    /// Возвращает код языка для записи в AppData при первом запуске (файла настроек ещё нет).
-    /// </summary>
-    /// <param name="localization"></param>
-    /// <returns>Код языка (<c>ru</c>, <c>en</c> и т.д.), как в ресурсах Localization/.</returns>
-    private static string ResolveLanguageCodeForFirstRun(ILocalizationService localization)
-    {
-        const string defaultLanguageCode = "en";
-
-        var languages = localization.AvailableLanguages;
-
-        if (languages.Count == 0)
-        {
-            return defaultLanguageCode;
-        }
-
-        // CurrentUICulture — язык интерфейса процесса; TwoLetterISOLanguageName совпадает с короткими кодами в JSON.
-        var tag = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-
-        foreach (var lang in languages)
-        {
-            if (string.Equals(lang.Code, tag, StringComparison.OrdinalIgnoreCase))
-            {
-                return lang.Code;
-            }
-        }
-
-        // Нет совпадения с UI-культурой — возвращаем en, если такой язык есть в приложении.
-        foreach (var lang in languages)
-        {
-            if (string.Equals(lang.Code, defaultLanguageCode, StringComparison.OrdinalIgnoreCase))
-            {
-                return defaultLanguageCode;
-            }
-        }
-
-        // В сборке нет en — возвращаем первый загруженный язык, чтобы код всегда был валидным.
-        return languages[0].Code;
     }
 
     /// <summary>
