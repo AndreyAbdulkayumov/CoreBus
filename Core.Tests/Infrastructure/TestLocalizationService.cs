@@ -36,4 +36,9 @@ internal sealed class TestLocalizationService : ILocalizationService
     {
         return true;
     }
+
+    public string GetLanguageCodeFromCurrentCulture()
+    {
+        return DefaultLanguage.Code;
+    }
 }
