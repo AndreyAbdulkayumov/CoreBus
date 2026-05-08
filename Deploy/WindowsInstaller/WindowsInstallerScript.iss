@@ -67,8 +67,14 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english";           MessagesFile: "compiler:Default.isl"
+Name: "russian";           MessagesFile: "compiler:Languages\Russian.isl"
+Name: "german";            MessagesFile: "compiler:Languages\German.isl"
+Name: "spanish";           MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "french";            MessagesFile: "compiler:Languages\French.isl"
+Name: "chinesesimplified"; MessagesFile: "ChineseSimplified.isl"
+; Неофициальный перевод (как и все с расширением .islu). Вызывает предупреждения. Оставляем это на совести создателей перевода.
+Name: "hindi";             MessagesFile: "Hindi.islu"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -80,6 +86,7 @@ Source: "{#PublishDirectory}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreve
 ; Служебные файлы
 Source: "{#PublishDirectory}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion
 Source: "{#PublishDirectory}\Documentation\*"; DestDir: "{app}\Documentation"; Flags: ignoreversion
+Source: "{#PublishDirectory}\Localization\*"; DestDir: "{app}\Localization"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
