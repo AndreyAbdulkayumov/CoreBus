@@ -4,7 +4,7 @@
     <!-- == PACKAGE SPECIFIC SECTION == -->
     <id>corebus</id>
 	
-    <version>3.4.0</version>
+    <version>3.5.0</version>
     <!-- ============================== -->
 
     <!-- == SOFTWARE SPECIFIC SECTION == -->
@@ -69,9 +69,11 @@
 
 		7. Presets with user settings.
 
-		8. User manual.
+		8. User manual (Russian, English).
+		
+		9. Multi-language interface support: Russian, English, Hindi, Chinese (Simplified), German, Spanish, French.
 
-		9. Cross-platform: Windows, Linux.
+		10. Cross-platform: Windows, Linux.
 	</description>
 	
     <releaseNotes>
