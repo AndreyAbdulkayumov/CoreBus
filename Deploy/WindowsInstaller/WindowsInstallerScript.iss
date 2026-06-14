@@ -75,6 +75,8 @@ Name: "french";            MessagesFile: "compiler:Languages\French.isl"
 Name: "chinesesimplified"; MessagesFile: "ChineseSimplified.isl"
 ; Неофициальный перевод (как и все с расширением .islu). Вызывает предупреждения. Оставляем это на совести создателей перевода.
 Name: "hindi";             MessagesFile: "Hindi.islu"
+Name: "korean";            MessagesFile: "compiler:Languages\Korean.isl"
+Name: "portuguese";        MessagesFile: "compiler:Languages\Portuguese.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
