@@ -282,11 +282,11 @@
           "Number": "0x02 (leitura)"
         },
         "ReadHoldingRegisters": {
-          "Name": "0x03 Leitura de registos de retenção",
+          "Name": "0x03 Leit. reg. retenção",
           "Number": "0x03 (leitura)"
         },
         "ReadInputRegisters": {
-          "Name": "0x04 Leitura de registos de entrada",
+          "Name": "0x04 Leit. reg. entrada",
           "Number": "0x04 (leitura)"
         },
         "ForceSingleCoil": {
