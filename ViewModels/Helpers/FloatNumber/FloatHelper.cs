@@ -1,5 +1,4 @@
 ﻿using Core.Models.Settings.FileTypes;
-using Services.Interfaces;
 
 namespace ViewModels.Helpers.FloatNumber;
 
@@ -16,7 +15,10 @@ public static class FloatHelper
 
     public static float GetFloatNumberFromBytes(byte[] bytes, FloatNumberFormat floatFormat)
     {
-        return BitConverter.ToSingle(GetFormattedBytes(bytes, floatFormat), 0);
+        byte[] reversed = (byte[])bytes.Clone();
+        Array.Reverse(reversed); // байты из Modbus-регистров в little-endian порядок float (симметрично GetBytesFromFloatNumber)
+
+        return BitConverter.ToSingle(GetFormattedBytes(reversed, floatFormat), 0);
     }
 
     public static FloatNumberFormat GetFloatNumberFormatOrDefault(string? formatName)

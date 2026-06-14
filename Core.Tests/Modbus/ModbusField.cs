@@ -65,7 +65,7 @@ public static class ModbusField
             }
         }
 
-        if (result.Count == 0 || temp != 0)
+        if (result.Count * 8 < bitArray.Length)
         {
             result.Add(temp);
         }

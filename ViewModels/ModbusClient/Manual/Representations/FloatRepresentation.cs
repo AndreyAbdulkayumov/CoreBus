@@ -31,8 +31,6 @@ internal static class FloatRepresentation
         {
             Array.Copy(bytes, i * FloatNumberBytesSize, temp, 0, FloatNumberBytesSize);
 
-            Array.Reverse(temp); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
-
             items.Add(new FloatRepresentation_ItemData()
             {
                 Address = $"0x{(data.Address + (i * 2)).ToString("X4")}",

@@ -166,8 +166,6 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
             {
                 byte[] temp = data.WriteBuffer.Take(new Range(byteCounter, byteCounter + 4)).ToArray();
 
-                Array.Reverse(temp); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
-
                 floatValue = FloatHelper.GetFloatNumberFromBytes(temp, floatFormat);
 
                 WriteDataCollection.Add(new MultipleRegisters_Item(

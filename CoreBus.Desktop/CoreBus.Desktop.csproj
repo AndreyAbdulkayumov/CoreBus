@@ -30,9 +30,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.14" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.2" ExcludeAssets="all" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.17" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4" ExcludeAssets="all" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -41,8 +41,7 @@
 
 	<!-- Файлы локализации -->
 	<ItemGroup>
-		<Content Include="..\Localization.Core\Localization\*.json"
-				 Link="Localization\%(Filename)%(Extension)">
+		<Content Include="..\Localization.Core\Localization\*.json" Link="Localization\%(Filename)%(Extension)">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
