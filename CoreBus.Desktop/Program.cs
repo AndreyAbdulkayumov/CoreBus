@@ -34,6 +34,10 @@ class Program
                     {
                         FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansSC-Regular.otf#Noto Sans SC Regular"),
                     },
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansKR-Regular.otf#Noto Sans KR Regular"),
+                    },
                 ],
             })
             .LogToTrace()

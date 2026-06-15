@@ -6,10 +6,11 @@
 
 Основной шрифт UI — Inter (подключается в `CoreBus.Desktop/Program.cs` через `WithInterFont()`). Он покрывает латиницу и кириллицу, но не содержит китайских иероглифов и деванагари.
 
-Без явных fallback-шрифтов эти символы рисовались бы системным шрифтом, который может отсутствовать в конкретной ОС. Чтобы локализации `zh` и `hi` точно были и выглядели везде одинаково, в проект добавлены:
+Без явных fallback-шрифтов эти символы рисовались бы системным шрифтом, который может отсутствовать в конкретной ОС. Чтобы локализации `zh`, `ko` и `hi` точно были и выглядели везде одинаково, в проект добавлены:
 
 - `NotoSansSC-Regular.otf` — упрощённый китайский.
 - `NotoSansDevanagari-Regular.ttf` — хинди.
+- `NotoSansKR-Regular` - корейский.
 
 ## Как это работает
 
@@ -18,6 +19,7 @@
 ```xml
 <AvaloniaResource Include="Fonts\NotoSansSC-Regular.otf" />
 <AvaloniaResource Include="Fonts\NotoSansDevanagari-Regular.ttf" />
+<AvaloniaResource Include="Fonts\NotoSansKR-Regular.otf" />
 ```
 
 И регистрируются как fallbacks в `CoreBus.Desktop/Program.cs`:
@@ -34,6 +36,10 @@
         new FontFallback
         {
             FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansSC-Regular.otf#Noto Sans SC Regular"),
+        },
+        new FontFallback
+        {
+            FontFamily = new FontFamily("avares://CoreBus.Base/Fonts/NotoSansKR-Regular.otf#Noto Sans KR Regular"),
         },
     ],
 })

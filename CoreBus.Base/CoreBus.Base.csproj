@@ -12,6 +12,7 @@
   
   <ItemGroup>
     <None Remove="Fonts\NotoSansDevanagari-Regular.ttf" />
+    <None Remove="Fonts\NotoSansKR-Regular.otf" />
     <None Remove="Fonts\NotoSansSC-Regular.otf" />
     <None Remove="Resources\MainLogo.ico" />
   </ItemGroup>
@@ -46,6 +47,7 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Fonts\NotoSansDevanagari-Regular.ttf" />
+    <AvaloniaResource Include="Fonts\NotoSansKR-Regular.otf" />
     <AvaloniaResource Include="Fonts\NotoSansSC-Regular.otf" />
     <AvaloniaResource Include="Resources\MainLogo.ico" />
   </ItemGroup>
