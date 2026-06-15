@@ -4,7 +4,7 @@
     <!-- == PACKAGE SPECIFIC SECTION == -->
     <id>corebus</id>
 	
-    <version>3.5.0</version>
+    <version>3.5.1</version>
     <!-- ============================== -->
 
     <!-- == SOFTWARE SPECIFIC SECTION == -->
@@ -71,7 +71,7 @@
 
 		8. User manual (Russian, English).
 		
-		9. Multi-language interface support: Russian, English, Hindi, Chinese (Simplified), German, Spanish, French.
+		9. Multi-language interface support: Russian, English, Hindi, Chinese (Simplified), German, Spanish, French, Korean, Portuguese.
 
 		10. Cross-platform: Windows, Linux.
 	</description>

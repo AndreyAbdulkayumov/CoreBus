@@ -6,15 +6,15 @@ Package can be verified like this:
 
 1. Go to
 
-   url: https://sourceforge.net/projects/corebus/files/CoreBus_3.5.0_win_x64_installer.exe/download
+   url: https://sourceforge.net/projects/corebus/files/CoreBus_3.5.1_win_x64_installer.exe/download
 
    to download the installer.
 
 2. You can get a SHA256 checksum using cmd.
 
-   certutil -hashfile CoreBus_3.5.0_win_x64_installer.exe sha256
+   certutil -hashfile CoreBus_3.5.1_win_x64_installer.exe sha256
 
-   checksum: c3c47175ebc51cfcdcaad2fa439ce7001742639d5183bc2f10c9eb5fcf324de6
+   checksum: e379ae7a92e3b4c711c0308c84cf28134b773c157cd05cb8f059b878b6c194f3
 
 
 File 'LICENSE.md' is obtained from 
