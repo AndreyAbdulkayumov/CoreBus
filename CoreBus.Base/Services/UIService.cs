@@ -1,6 +1,5 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Threading;
 using System;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using CoreBus.Base.Views;
 using Services.Interfaces;
 using System.Reflection;
+using Avalonia.Input.Platform;
 
 namespace CoreBus.Base.Services;
 

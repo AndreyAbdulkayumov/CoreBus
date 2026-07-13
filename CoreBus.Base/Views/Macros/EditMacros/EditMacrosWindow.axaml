@@ -16,8 +16,7 @@
 		CanResize="False"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
-		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None">
+		WindowDecorations="BorderOnly">
 
 	<Window.Styles>
 

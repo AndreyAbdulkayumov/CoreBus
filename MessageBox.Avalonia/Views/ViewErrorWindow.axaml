@@ -9,8 +9,7 @@
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
-		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None"
+		WindowDecorations="BorderOnly"
 		Background="Transparent"
 		KeyDown="Window_KeyDown">
 
