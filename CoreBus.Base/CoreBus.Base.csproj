@@ -22,7 +22,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.3" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.1.59" />
   </ItemGroup>
