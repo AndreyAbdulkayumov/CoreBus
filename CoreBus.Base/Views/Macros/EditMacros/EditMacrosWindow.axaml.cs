@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using System;
 
 namespace CoreBus.Base.Views.Macros.EditMacros;
 
@@ -11,6 +12,12 @@ public partial class EditMacrosWindow : Window
     public EditMacrosWindow()
     {
         InitializeComponent();
+
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
 
         Instance = this;
     }

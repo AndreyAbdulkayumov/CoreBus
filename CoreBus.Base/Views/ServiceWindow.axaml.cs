@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using System;
 
 namespace CoreBus.Base.Views;
 
@@ -12,7 +13,13 @@ public partial class ServiceWindow : Window
     {
         InitializeComponent();
 
-        TextBlock_Description.Text = "������� ��� �����";
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
+
+        TextBlock_Description.Text = "Введите имя файла";
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

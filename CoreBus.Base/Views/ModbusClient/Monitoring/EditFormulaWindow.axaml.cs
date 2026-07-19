@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using System;
 using ViewModels.ModbusClient.Monitoring;
 
 namespace CoreBus.Base.Views.ModbusClient.Monitoring;
@@ -10,6 +11,12 @@ public partial class EditFormulaWindow : Window
     public EditFormulaWindow()
     {
         InitializeComponent();
+
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

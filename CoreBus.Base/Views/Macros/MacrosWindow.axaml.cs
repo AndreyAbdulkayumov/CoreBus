@@ -16,6 +16,12 @@ public partial class MacrosWindow : Window
     {
         InitializeComponent();
 
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
+
         Instance = this;
         Workspace = this.FindControl<Grid>("Grid_Workspace") ?? throw new ArgumentNullException(nameof(Workspace));
 

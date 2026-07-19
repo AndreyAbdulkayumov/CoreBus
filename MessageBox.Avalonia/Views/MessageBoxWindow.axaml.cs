@@ -19,6 +19,12 @@ public partial class MessageBoxWindow : Window
     public MessageBoxWindow()
     {
         InitializeComponent();
+
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
     }
 
     public void SetDataContext(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, ILocalizationService localization, Exception? error = null)
