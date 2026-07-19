@@ -16,8 +16,7 @@
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
-		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly"
+		WindowDecorations="BorderOnly"
 		DataContextChanged="Window_DataContextChanged">
 
 	<Window.Styles>

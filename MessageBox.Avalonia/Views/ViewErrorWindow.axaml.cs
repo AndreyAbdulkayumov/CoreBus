@@ -12,6 +12,12 @@ public partial class ViewErrorWindow : Window
     public ViewErrorWindow()
     {
         InitializeComponent();
+
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
     }
 
     public ViewErrorWindow(ILocalizationService localization)
@@ -19,6 +25,12 @@ public partial class ViewErrorWindow : Window
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         InitializeComponent();
+
+        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
+        if (OperatingSystem.IsLinux())
+        {
+            WindowDecorations = WindowDecorations.None;
+        }
 
         UpdateLocalization();
 

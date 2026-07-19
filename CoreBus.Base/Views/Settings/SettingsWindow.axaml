@@ -16,8 +16,7 @@
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
-		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None">
+		WindowDecorations="BorderOnly">
 
 	<Window.Styles>
 
@@ -72,7 +71,7 @@
 					</Grid.RowDefinitions>
 
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="200"/>
+						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="1*"/>
 					</Grid.ColumnDefinitions>
 
