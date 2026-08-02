@@ -1,6 +1,5 @@
-﻿using MessageBox.Core;
-using ReactiveUI;
-using Services.Interfaces;
+using MessageBox.Core;
+using ReactiveUI.Reactive;
 using System.Reactive;
 
 namespace ViewModels.ModbusClient.Manual.DataTypes;

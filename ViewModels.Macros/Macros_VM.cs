@@ -3,7 +3,7 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using MessageBusTypes.Macros;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;

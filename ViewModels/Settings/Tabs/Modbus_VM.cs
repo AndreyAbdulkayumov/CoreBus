@@ -1,5 +1,5 @@
 using Core.Models.Settings.FileTypes;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;

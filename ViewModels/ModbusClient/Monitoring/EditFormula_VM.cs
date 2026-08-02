@@ -1,6 +1,5 @@
 using Core.Models;
-using ReactiveUI;
-using Services.Interfaces;
+using ReactiveUI.Reactive;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;

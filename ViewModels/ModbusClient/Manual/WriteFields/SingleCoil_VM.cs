@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI.Reactive;
 using Core.Models.Settings.DataTypes;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;

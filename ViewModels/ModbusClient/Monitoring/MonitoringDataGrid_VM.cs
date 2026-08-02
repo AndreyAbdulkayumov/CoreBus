@@ -2,7 +2,7 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;

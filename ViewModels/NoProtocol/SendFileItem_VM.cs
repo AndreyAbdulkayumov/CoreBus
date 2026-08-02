@@ -1,5 +1,5 @@
-﻿using MessageBox.Core;
-using ReactiveUI;
+using MessageBox.Core;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Reactive;
 

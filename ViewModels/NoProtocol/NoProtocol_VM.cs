@@ -8,7 +8,7 @@ using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using MessageBusTypes.Macros;
 using MessageBusTypes.NoProtocol;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Reactive;
 using System.Reactive.Linq;

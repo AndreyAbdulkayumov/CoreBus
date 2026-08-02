@@ -1,8 +1,7 @@
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
-using Services.Interfaces;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.Validation;
 

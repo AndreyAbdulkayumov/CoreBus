@@ -1,6 +1,6 @@
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Globalization;
 using System.Text;

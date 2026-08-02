@@ -6,7 +6,7 @@ using MessageBox.Core;
 using MessageBusTypes.Macros;
 using MessageBusTypes.ModbusClient;
 using MessageBusTypes.NoProtocol;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;

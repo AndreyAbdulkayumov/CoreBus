@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI.Reactive;
 using DynamicData;
 using System.Collections.ObjectModel;
 using System.Reactive;
