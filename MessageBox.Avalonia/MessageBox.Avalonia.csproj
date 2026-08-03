@@ -13,7 +13,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.3" />
-    <PackageReference Include="ReactiveUI.Avalonia.Reactive" Version="12.1.0" />
+    <PackageReference Include="ReactiveUI.Avalonia.Reactive" Version="12.1.1" />
   </ItemGroup>
 
   <ItemGroup>
