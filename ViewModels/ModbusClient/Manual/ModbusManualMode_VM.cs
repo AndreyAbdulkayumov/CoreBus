@@ -9,7 +9,7 @@ using DynamicData;
 using MessageBox.Core;
 using MessageBusTypes.Macros;
 using MessageBusTypes.ModbusClient;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;

@@ -4,7 +4,7 @@ using Core.Models.Settings.FileTypes;
 using DynamicData;
 using MessageBox.Core;
 using MessageBusTypes.Chart;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Data;

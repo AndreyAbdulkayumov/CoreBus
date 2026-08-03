@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Reactive;
 
 namespace ViewModels.ModbusClient.Manual.WriteFields.DataItems;

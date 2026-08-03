@@ -1,7 +1,7 @@
-﻿using Core.Models.AppUpdateSystem;
+using Core.Models.AppUpdateSystem;
 using Core.Models.AppUpdateSystem.DataTypes;
 using MessageBox.Core;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Reactive;
 

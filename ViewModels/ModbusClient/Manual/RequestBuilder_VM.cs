@@ -4,7 +4,7 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
 using MessageBox.Core;
 using MessageBusTypes.ModbusClient;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;

@@ -1,7 +1,7 @@
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
 using MessageBusTypes.Chart;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using ViewModels.Chart.DataTypes;
 
 namespace ViewModels.Chart;

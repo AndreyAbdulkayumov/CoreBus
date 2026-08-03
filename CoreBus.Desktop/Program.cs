@@ -1,7 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.Media;
-using ReactiveUI.Avalonia;
+using ReactiveUI.Avalonia.Reactive;
 using CoreBus.Base;
 
 namespace CoreBus.Desktop;

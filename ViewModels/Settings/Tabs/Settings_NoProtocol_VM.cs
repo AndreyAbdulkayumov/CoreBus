@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Collections.ObjectModel;
 using ViewModels.Helpers;
 

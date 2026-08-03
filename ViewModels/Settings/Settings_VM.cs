@@ -1,8 +1,8 @@
-﻿using System.Text;
+using System.Text;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;

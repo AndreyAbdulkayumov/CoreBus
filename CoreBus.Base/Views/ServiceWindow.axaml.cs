@@ -19,7 +19,7 @@ public partial class ServiceWindow : Window
             WindowDecorations = WindowDecorations.None;
         }
 
-        TextBlock_Description.Text = "Введите имя файла";
+        TextBlock_Description.Text = LocalizationProvider.Get("Common.EnterFileName");
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

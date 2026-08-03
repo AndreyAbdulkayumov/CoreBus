@@ -1,4 +1,4 @@
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Reactive;
 using MessageBox.Core;
 using Core.Models;

@@ -1,8 +1,7 @@
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Core.Models.Settings.DataTypes;
-using Services.Interfaces;
 using ViewModels.Validation;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
@@ -110,6 +109,12 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
         }
 
         _selectedDataFormat = format;
+
+        if (HasValidationErrors)
+        {
+            ValidateInput(nameof(ViewData), ViewData);
+            return;
+        }
 
         ViewData = ConvertNumberToString(_data, DataFormat);
     }

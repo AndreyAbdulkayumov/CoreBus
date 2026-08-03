@@ -1,5 +1,5 @@
-﻿using Core.Models.Settings.DataTypes;
-using ReactiveUI;
+using Core.Models.Settings.DataTypes;
+using ReactiveUI.Reactive;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros;

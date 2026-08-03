@@ -1,4 +1,4 @@
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using MessageBox.Core;

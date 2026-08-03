@@ -1,4 +1,4 @@
-using ReactiveUI;
+using ReactiveUI.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
@@ -6,7 +6,6 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
-using Services.Interfaces;
 using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields;
