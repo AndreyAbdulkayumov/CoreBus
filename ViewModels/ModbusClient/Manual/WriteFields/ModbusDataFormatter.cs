@@ -1,6 +1,5 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Globalization;
-using Services.Interfaces;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Manual.WriteFields;

@@ -113,22 +113,18 @@ public class MultipleRegisters_Item : ModbusDataFormatter
         {
             case DataFormatName_dec:
                 DataFormat = NumberStyles.Number;
-                ViewData = ConvertNumberToString(_data, DataFormat);
                 break;
 
             case DataFormatName_hex:
                 DataFormat = NumberStyles.HexNumber;
-                ViewData = ConvertNumberToString(_data, DataFormat);
                 break;
 
             case DataFormatName_bin:
                 DataFormat = NumberStyles.BinaryNumber;
-                ViewData = ConvertNumberToString(_data, DataFormat);
                 break;
 
             case DataFormatName_float:
                 DataFormat = NumberStyles.Float;
-                ViewData = FloatData.ToString("F", CultureInfo.InvariantCulture);
                 break;
 
             default:
@@ -143,6 +139,20 @@ public class MultipleRegisters_Item : ModbusDataFormatter
         {
             RequestToUpdateAddresses?.Invoke(this, new RequestToUpdateAddressesArgs(Id, newFormat));
         }
+
+        if (HasErrors)
+        {
+            ValidateInput(nameof(ViewData), ViewData);
+            return;
+        }
+
+        if (DataFormat == NumberStyles.Float)
+        {
+            ViewData = FloatData.ToString("F", CultureInfo.InvariantCulture);
+            return;
+        }
+
+        ViewData = ConvertNumberToString(_data, DataFormat);
     }
 
     #region Валидация

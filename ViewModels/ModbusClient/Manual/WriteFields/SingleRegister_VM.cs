@@ -110,6 +110,12 @@ public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
 
         _selectedDataFormat = format;
 
+        if (HasValidationErrors)
+        {
+            ValidateInput(nameof(ViewData), ViewData);
+            return;
+        }
+
         ViewData = ConvertNumberToString(_data, DataFormat);
     }
 
