@@ -7,7 +7,7 @@ public class ModbusTCP_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus TCP";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
         byte[] PDU = Modbus_PDU.Create(function, data, localization);
 
@@ -39,7 +39,7 @@ public class ModbusTCP_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
         var decodingResponse = new ModbusResponse();
 

@@ -12,8 +12,8 @@ public abstract class ModbusMessage
 
     public abstract string ProtocolName { get; }
 
-    public abstract byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization);
-    public abstract ModbusResponse DecodingMessage(ModbusFunction function, byte[] sourceArray, ILocalizationService localization);
+    public abstract byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization);
+    public abstract ModbusResponse DecodingResponse(ModbusFunction function, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization);
 
     /***********************************************/
 

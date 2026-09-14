@@ -3,9 +3,9 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus.Create;
+namespace Core.Tests.Modbus.CreateRequest;
 
-public class ModbusRTU_CreateTest : BaseProtocolCreateTest
+public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 {
     protected override ModbusMessage GetModbusMessageInstance()
     {
