@@ -1,4 +1,4 @@
-﻿namespace Core.Tests.Modbus;
+﻿namespace Core.Tests.Modbus.Helpers;
 
 public static class ModbusField
 {

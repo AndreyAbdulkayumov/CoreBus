@@ -1,10 +1,11 @@
 ﻿using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus;
+namespace Core.Tests.Modbus.Create;
 
-public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
+public class ModbusASCII_CreateTest : BaseProtocolCreateTest
 {
     protected override ModbusMessage GetModbusMessageInstance()
     {
@@ -12,7 +13,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -33,7 +34,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -54,7 +55,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -75,7 +76,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -96,7 +97,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -117,7 +118,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -138,7 +139,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)
@@ -160,7 +161,7 @@ public class Protocol_ASCII_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus ASCII сообщение (ADU):
         // Начало:            : (0x3A)

@@ -1,9 +1,10 @@
 ﻿using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus;
+namespace Core.Tests.Modbus.Create;
 
-public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
+public class ModbusTCP_CreateTest : BaseProtocolCreateTest
 {
     protected override ModbusMessage GetModbusMessageInstance()
     {
@@ -11,7 +12,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadCoilStatus_CreatesCorrectMessage()
+    public void ReadCoilStatus_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -29,7 +30,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadDiscreteInputs_CreatesCorrectMessage()
+    public void ReadDiscreteInputs_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -47,7 +48,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_CreatesCorrectMessage()
+    public void ReadHoldingRegisters_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -65,7 +66,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadInputRegisters_CreatesCorrectMessage()
+    public void ReadInputRegisters_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -83,7 +84,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceSingleCoil_CreatesCorrectMessage()
+    public void ForceSingleCoil_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -101,7 +102,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetSingleRegister_CreatesCorrectMessage()
+    public void PresetSingleRegister_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -119,7 +120,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceMultipleCoils_CreatesCorrectMessage()
+    public void ForceMultipleCoils_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00
@@ -136,7 +137,7 @@ public class Protocol_TCP_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetMultipleRegisters_CreatesCorrectMessage()
+    public void PresetMultipleRegisters_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus TCP сообщение (Заголовок MBAP + PDU):
         // ID Транзакции:     00 00

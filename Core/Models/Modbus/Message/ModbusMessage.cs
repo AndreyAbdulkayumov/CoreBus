@@ -15,8 +15,6 @@ public abstract class ModbusMessage
     public abstract byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization);
     public abstract ModbusResponse DecodingMessage(ModbusFunction function, byte[] sourceArray, ILocalizationService localization);
 
-    //public abstract void DecodingClientMessage(int FunctionNumber, byte[] SourceArray);
-
     /***********************************************/
 
     protected ulong PackageNumber = 0;

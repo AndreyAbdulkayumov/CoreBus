@@ -1,9 +1,9 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
-using Services.Interfaces;
+using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus;
+namespace Core.Tests.Modbus.Create;
 
 public abstract class BaseProtocolCreateTest
 {

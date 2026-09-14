@@ -1,6 +1,7 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
+using Core.Tests.Modbus.Helpers;
 using Services.Interfaces;
 
 namespace Core.Tests.Modbus;
@@ -10,7 +11,7 @@ public class PDU_Test
     private readonly ILocalizationService _localization = new TestLocalizationService();
 
     [Fact]
-    public void Test_ReadCoilStatus_PDU_Creation()
+    public void ReadCoilStatus_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadCoilStatus,
@@ -20,7 +21,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ReadDiscreteInputs_PDU_Creation()
+    public void ReadDiscreteInputs_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadDiscreteInputs,
@@ -30,7 +31,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_PDU_Creation()
+    public void ReadHoldingRegisters_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
@@ -40,7 +41,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_PDU_Creation_ZeroRegisters()
+    public void ReadHoldingRegisters_PDU_Creation_ZeroRegisters()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
@@ -50,7 +51,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_PDU_Creation_MaxAddressZeroRegisters()
+    public void ReadHoldingRegisters_PDU_Creation_MaxAddressZeroRegisters()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadHoldingRegisters,
@@ -60,7 +61,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ReadInputRegisters_PDU_Creation()
+    public void ReadInputRegisters_PDU_Creation()
     {
         CheckReadFunction(
             SelectedFunction: Function.ReadInputRegisters,
@@ -70,7 +71,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ForceSingleCoil_PDU_Creation()
+    public void ForceSingleCoil_PDU_Creation()
     {
         CheckSingleWriteFunction(
             SelectedFunction: Function.ForceSingleCoil,
@@ -80,7 +81,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_PresetSingleRegister_PDU_Creation()
+    public void PresetSingleRegister_PDU_Creation()
     {
         CheckSingleWriteFunction(
             SelectedFunction: Function.PresetSingleRegister,
@@ -90,7 +91,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_ForceMultipleCoils_PDU_Creation()
+    public void ForceMultipleCoils_PDU_Creation()
     {
         CheckMultiplyWriteCoilsFunction(
             address: 79,
@@ -99,7 +100,7 @@ public class PDU_Test
     }
 
     [Fact]
-    public void Test_PresetMultipleRegisters_PDU_Creation()
+    public void PresetMultipleRegisters_PDU_Creation()
     {
         CheckMultiplyWriteRegistersFunction(
             Address: 79,
