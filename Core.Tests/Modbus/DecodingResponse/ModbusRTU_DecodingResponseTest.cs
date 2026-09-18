@@ -11,7 +11,47 @@ public class ModbusRTU_DecodingResponseTest
     private readonly ILocalizationService _localization = new TestLocalizationService();
     
     [Fact]
-    public void ReadFunction_Success()
+    public void WriteFunction_Success()
+    {
+        const byte slaveId = 1;
+        
+        var selectedFunction = Function.PresetSingleRegister;
+
+        var address = new byte[] { 0x00, 0x01 };
+        var data = new byte[] { 0x10, 0xFF };
+        
+        var message = new byte[] { slaveId, selectedFunction.Number }
+            .Concat(address)
+            .Concat(data)
+            .ToArray();
+        
+        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
+        
+        Assert.Equal(slaveId, result.SlaveID);
+        Assert.Equal(selectedFunction.Number, result.Command);
+    }
+    
+    [Fact]
+    public void PresetSingleRegister_ShortResponse_Throws()
+    {
+        const byte slaveId = 1;
+        
+        var selectedFunction = Function.PresetSingleRegister;
+
+        var address = new byte[] { 0x00, 0x01 };
+        
+        var data = new byte[] { 0x10 };
+        
+        var message = new byte[] { slaveId, selectedFunction.Number }
+            .Concat(address)
+            .Concat(data)
+            .ToArray();
+        
+        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+    }
+
+    [Fact]
+    public void ReadFunction_ReadCoilStatus_Success()
     {
         const byte slaveId = 1;
         
@@ -34,26 +74,43 @@ public class ModbusRTU_DecodingResponseTest
     }
     
     [Fact]
-    public void WriteFunction_Success()
+    public void ReadFunction_WrongDataLength_Throws()
     {
         const byte slaveId = 1;
-        
-        var selectedFunction = Function.PresetSingleRegister;
 
-        var address = new byte[] { 0x00, 0x01 };
-        var data = new byte[] { 0x10, 0xFF };
+        var selectedFunction = Function.ReadCoilStatus;
         
-        var message = new byte[] { slaveId, selectedFunction.Number }
-            .Concat(address)
+        const byte declaredByteCount = 4;
+        
+        var data = new byte[] { 0xFF };
+
+        var message = new byte[] { slaveId, selectedFunction.Number, declaredByteCount }
             .Concat(data)
             .ToArray();
-        
-        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
-        
-        Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
-    }
 
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+    }
+    
+    [Fact]
+    public void ReadFunction_ZeroDataLength_Throws()
+    {
+        const byte slaveId = 1;
+
+        var selectedFunction = Function.ReadCoilStatus;
+        
+        const byte declaredByteCount = 0;
+        
+        var data = new byte[] { 0xFF, 0x00 };
+
+        var message = new byte[] { slaveId, selectedFunction.Number, declaredByteCount }
+            .Concat(data)
+            .ToArray();
+
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+    }
+    
     [Fact]
     public void AnyFunction_ErrorCode_Throws()
     {
@@ -77,47 +134,42 @@ public class ModbusRTU_DecodingResponseTest
             Assert.IsType<ModbusException>(exception);
         }
     }
-
+    
     [Fact]
-    public void PresetSingleRegister_ShortResponse_Throws()
+    public void CheckSum_DisabledCRC_Success()
     {
         const byte slaveId = 1;
         
         var selectedFunction = Function.PresetSingleRegister;
 
         var address = new byte[] { 0x00, 0x01 };
-        
-        var data = new byte[] { 0x10 };
+        var data = new byte[] { 0x10, 0xFF };
         
         var message = new byte[] { slaveId, selectedFunction.Number }
             .Concat(address)
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+        var result = _modbusMessage.DecodingResponse(selectedFunction, message, false, _localization);
+        
+        Assert.Equal(slaveId, result.SlaveID);
+        Assert.Equal(selectedFunction.Number, result.Command);
     }
-
+    
     [Fact]
-    public void ReadFunction_MismatchedByteCount_Throws()
+    public void CheckSum_WrongCRC_Throws()
     {
-        const byte slaveId = 1;
+        const byte slaveId = 10;
+        var selectedFunction = Function.PresetSingleRegister;
 
-        var selectedFunction = Function.ReadCoilStatus;
-        
-        const byte declaredByteCount = 4;
-        
-        var data = new byte[] { 0xFF };
-
-        var message = new byte[] { slaveId, selectedFunction.Number, declaredByteCount }
-            .Concat(data)
-            .ToArray();
+        var message = new byte[] { slaveId, selectedFunction.Number, 0x00, 0x01, 0x10, 0xFF, 0x33, 0x12 };
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+            _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
     }
-
+    
     [Fact]
-    public void AnyFunction_ResponseWithoutCRC_WhenChecksumEnabled_Throws()
+    public void CheckSum_ResponseWithoutCRC_WhenChecksumEnabled_Throws()
     {
         const byte slaveId = 1;
         var selectedFunction = Function.PresetSingleRegister;
@@ -127,13 +179,13 @@ public class ModbusRTU_DecodingResponseTest
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
     }
-
-    private byte[] GetMessageWithCheckSum(byte[] data)
+    
+    private static byte[] GetMessageWithCheckSum(byte[] data)
     {
         var message = new byte[data.Length + 2];
         Array.Copy(data, message, data.Length);
 
-        byte[] crc = CheckSum.Calculate_CRC16(message);
+        var crc = CheckSum.Calculate_CRC16(message);
         message[^2] = crc[0];
         message[^1] = crc[1];
 
