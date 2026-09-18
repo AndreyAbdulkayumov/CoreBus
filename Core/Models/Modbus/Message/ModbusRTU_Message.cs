@@ -49,7 +49,9 @@ public class ModbusRTU_Message : ModbusMessage
 
         if (currentFunction is ModbusReadFunction)
         {
-            decodingResponse.LengthOfData = sourceArray[2];
+            const int lengthOfDataByteIndex = 2;
+            
+            decodingResponse.LengthOfData = sourceArray[lengthOfDataByteIndex];
 
             if (decodingResponse.LengthOfData == 0)
             {
@@ -61,8 +63,7 @@ public class ModbusRTU_Message : ModbusMessage
             // Согласно документации на протокол Modbus:
             // В ответном пакете Modbus RTU на команды чтения информационная часть начинается с четвертого байта.
             // Байт с количеством байт данных - третий.
-            
-            if (!CheckDataLength(sourceArray, 2, checkSumIsEnable))
+            if (!CheckReadedDataLength(sourceArray, lengthOfDataByteIndex, checkSumIsEnable))
                 throw new Exception(localization.Get("Core.Modbus.InvalidDataLength", ProtocolName, currentFunction.Number));
                 
             Array.Copy(sourceArray, 3, decodingResponse.Data, 0, decodingResponse.LengthOfData);
@@ -132,17 +133,5 @@ public class ModbusRTU_Message : ModbusMessage
         Array.Copy(message, message.Length - 2, checkSumFromMessage, 0, 2);
         
         return checkSumFromMessage.SequenceEqual(calculatedCheckSum);
-    }
-
-    private static bool CheckDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
-    {
-        if (message.Length <= dataLengthIndex)
-            return false;
-
-        var expectedDataLength = message[dataLengthIndex];
-
-        var actualDataLength = checkSumIsEnable ? message.Length - 5 : message.Length - 3;
-        
-        return expectedDataLength == actualDataLength;
     }
 }

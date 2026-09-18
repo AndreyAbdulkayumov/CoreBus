@@ -74,6 +74,22 @@ public abstract class ModbusMessage
         return sourceArray;
     }
 
+    protected static bool CheckReadedDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
+    {
+        if (message.Length <= dataLengthIndex)
+            return false;
+
+        var expectedDataLength = message[dataLengthIndex];
+
+        var serviceByteCount = dataLengthIndex + 1; // С учетом байта количества данных
+        
+        var actualDataLength = checkSumIsEnable 
+            ? message.Length - serviceByteCount - 2 // CRC16 и LRC8 занимают по два байта
+            : message.Length - serviceByteCount;
+        
+        return expectedDataLength == actualDataLength;
+    }
+    
     private static void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
     {
         switch (errorCode)
