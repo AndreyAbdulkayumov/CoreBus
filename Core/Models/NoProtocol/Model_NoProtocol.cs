@@ -1,6 +1,5 @@
 using Core.Clients.DataTypes;
 using Core.Models.NoProtocol.DataTypes;
-using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models.NoProtocol;

@@ -1,16 +1,16 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
-using Services.Interfaces;
+using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus;
+namespace Core.Tests.Modbus.CreateRequest;
 
-public abstract class BaseProtocolCreateTest
+public abstract class BaseProtocolCreateRequestTest
 {
     protected ModbusMessage Message;
     protected ILocalizationService Localization;
 
-    protected BaseProtocolCreateTest()
+    protected BaseProtocolCreateRequestTest()
     {
         Message = GetModbusMessageInstance();
         Localization = new TestLocalizationService();
@@ -37,7 +37,7 @@ public abstract class BaseProtocolCreateTest
     {
         MessageData Data = new ReadTypeMessage(slaveID, address, numberOfRegisters, checkSum_IsEnable);
 
-        byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data, Localization);
+        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
 
         byte[] BytesArray_Expected = CreateExpectedReadMessage(slaveID, selectedFunction, address, numberOfRegisters, checkSum_IsEnable);
 
@@ -52,7 +52,7 @@ public abstract class BaseProtocolCreateTest
 
         MessageData Data = new WriteTypeMessage(slaveID, address, bytes, 1, checkSum_IsEnable);
 
-        byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data, Localization);
+        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
 
         byte[] BytesArray_Expected = CreateExpectedSingleWriteMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 
@@ -67,7 +67,7 @@ public abstract class BaseProtocolCreateTest
 
         MessageData data = new WriteTypeMessage(slaveID, address, writeBytes, numberOfCoils, checkSum_IsEnable);
 
-        byte[] bytesArray_Actual = Message.CreateMessage(selectedFunction, data, Localization);
+        byte[] bytesArray_Actual = Message.CreateRequest(selectedFunction, data, Localization);
 
         byte[] bytesArray_Expected = CreateExpectedMultiplyWriteCoilsMessage(slaveID, selectedFunction, address, bitArray, checkSum_IsEnable);
 
@@ -82,7 +82,7 @@ public abstract class BaseProtocolCreateTest
 
         MessageData Data = new WriteTypeMessage(slaveID, address, bytes, writeData.Length, checkSum_IsEnable);
 
-        byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data, Localization);
+        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
 
         byte[] BytesArray_Expected = CreateExpectedMultiplyWriteRegistersMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 

@@ -1,7 +1,6 @@
 using Core.Clients.DataTypes;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus;
 
@@ -66,7 +65,7 @@ public class Model_Modbus
                 throw new Exception(_localization.Get("Core.HostNotInitialized"));
             }
 
-            TX = message.CreateMessage(writeFunction, dataForWrite, _localization);
+            TX = message.CreateRequest(writeFunction, dataForWrite, _localization);
             
             TX_Info = await _device.Send(TX, TX.Length);
 
@@ -75,8 +74,6 @@ public class Model_Modbus
             if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
             {
                 RX = RX_Info.ResponseBytes;
-
-                ModbusResponse Data = message.DecodingMessage(writeFunction, RX, _localization);
             }
 
             else
@@ -154,7 +151,7 @@ public class Model_Modbus
         return result;
     }
 
-    private byte[] GetOutputRX(byte[] RX, int length)
+    private static byte[] GetOutputRX(byte[] RX, int length)
     {
         var outputArray = new byte[length];
 
@@ -186,7 +183,7 @@ public class Model_Modbus
                 throw new Exception(_localization.Get("Core.HostNotInitialized"));
             }
 
-            TX = message.CreateMessage(readFunction, dataForRead, _localization);
+            TX = message.CreateRequest(readFunction, dataForRead, _localization);
 
             TX_Info = await _device.Send(TX, TX.Length);
 
@@ -196,9 +193,9 @@ public class Model_Modbus
             {
                 RX = RX_Info.ResponseBytes;
 
-                ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX, _localization);
+                var deviceResponse = message.DecodingResponse(readFunction, RX, dataForRead.CheckSum_IsEnable, _localization);
 
-                result.ReadedData = DeviceResponse.Data;
+                result.ReadedData = deviceResponse.Data;
             }
 
             else
@@ -220,7 +217,7 @@ public class Model_Modbus
 
         catch (TimeoutException)
         {
-            string errorMessage = _localization.Get("Core.HostNoResponse");
+            var errorMessage = _localization.Get("Core.HostNoResponse");
 
             if (_device != null)
             {
@@ -293,7 +290,7 @@ public class Model_Modbus
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        bool isAlreadyRunning = !_monitoringSemaphore.Wait(0);
+        var isAlreadyRunning = !_monitoringSemaphore.Wait(0);
 
         // Цикл опроса пропускается, если семафор уже был захвачен.
         if (isAlreadyRunning)

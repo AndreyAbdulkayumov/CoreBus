@@ -272,24 +272,24 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
     private void RefreshLocalizedFunctionLists()
     {
-        byte selectedReadFunctionNumber =
+        var selectedReadFunctionNumber =
             Function.AllReadFunctions.FirstOrDefault(f => f.DisplayedName == SelectedReadFunction)?.Number
             ?? _selectedReadFunctionNumber;
 
-        byte selectedWriteFunctionNumber =
+        var selectedWriteFunctionNumber =
             Function.AllWriteFunctions.FirstOrDefault(f => f.DisplayedName == SelectedWriteFunction)?.Number
             ?? _selectedWriteFunctionNumber;
 
         ReadFunctions.Clear();
 
-        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        foreach (var element in Function.AllReadFunctions)
         {
             ReadFunctions.Add(element.DisplayedName);
         }
 
         WriteFunctions.Clear();
 
-        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+        foreach (var element in Function.AllWriteFunctions)
         {
             WriteFunctions.Add(element.DisplayedName);
         }
@@ -324,7 +324,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        string? validationMessage = CheckReadFields();
+        var validationMessage = CheckReadFields();
 
         if (!string.IsNullOrEmpty(validationMessage))
         {
@@ -332,10 +332,10 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
+        var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
         MessageBus.Current.SendMessage(
-            new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+            new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, readFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
             );
     }
 
@@ -350,7 +350,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         // Проверка полей в основном контроле
 
-        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        foreach (var element in ActualErrors)
         {
             message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
         }
@@ -384,7 +384,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        string? validationMessage = CheckWriteFields();
+        var validationMessage = CheckWriteFields();
 
         if (!string.IsNullOrEmpty(validationMessage))
         {
@@ -392,9 +392,9 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
             return;
         }
 
-        ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.Number == _selectedWriteFunctionNumber);
+        var writeFunction = Function.AllWriteFunctions.Single(x => x.Number == _selectedWriteFunctionNumber);
 
-        WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
+        var modbusWriteData = CurrentWriteFieldViewModel.GetData();
 
         MessageBus.Current.SendMessage(
             new ModbusWriteMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
@@ -409,7 +409,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
         if (HasErrors)
         {
-            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            foreach (var element in ActualErrors)
             {
                 if (element.Key == nameof(NumberOfRegisters))
                 {
@@ -508,9 +508,7 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
     protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
     {
         if (string.IsNullOrEmpty(value))
-        {
             return null;
-        }
 
         switch (fieldName)
         {
@@ -522,53 +520,54 @@ public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
 
             case nameof(NumberOfRegisters):
                 return Check_NumberOfRegisters(value);
+            
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private ValidateMessage? Check_SlaveID(string value)
     {
-        if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
+        if (StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID)) 
+            return null;
+        
+        switch (_numberViewStyle)
         {
-            switch (_numberViewStyle)
-            {
-                case NumberStyles.Number:
-                    return AllErrorMessages[DecError_Byte];
+            case NumberStyles.Number:
+                return AllErrorMessages[DecError_Byte];
 
-                case NumberStyles.HexNumber:
-                    return AllErrorMessages[HexError_Byte];
-            }
+            case NumberStyles.HexNumber:
+                return AllErrorMessages[HexError_Byte];
+            
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private ValidateMessage? Check_Address(string value)
     {
-        if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
+        if (StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress)) 
+            return null;
+        
+        switch (_numberViewStyle)
         {
-            switch (_numberViewStyle)
-            {
-                case NumberStyles.Number:
-                    return AllErrorMessages[DecError_UInt16];
+            case NumberStyles.Number:
+                return AllErrorMessages[DecError_UInt16];
 
-                case NumberStyles.HexNumber:
-                    return AllErrorMessages[HexError_UInt16];
-            }
+            case NumberStyles.HexNumber:
+                return AllErrorMessages[HexError_UInt16];
+            
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private ValidateMessage? Check_NumberOfRegisters(string value)
     {
-        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
-        {
-            return AllErrorMessages[DecError_UInt16];
-        }
+        if (StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
+            return null;
 
-        return null;
+        return AllErrorMessages[DecError_UInt16];
     }
 
     #endregion Валидация

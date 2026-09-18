@@ -1,10 +1,11 @@
 ﻿using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
+using Core.Tests.Modbus.Helpers;
 
-namespace Core.Tests.Modbus;
+namespace Core.Tests.Modbus.CreateRequest;
 
-public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
+public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 {
     protected override ModbusMessage GetModbusMessageInstance()
     {
@@ -12,7 +13,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ReadCoilStatus_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     0E (14)
@@ -31,7 +32,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void ReadDiscreteInputs_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     63 (99)
@@ -50,7 +51,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ReadHoldingRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     9C (156)
@@ -69,7 +70,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void ReadInputRegisters_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     38 (56)
@@ -88,7 +89,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ForceSingleCoil_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     2D (45)
@@ -107,7 +108,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
+    public void PresetSingleRegister_WithCheckSumDisabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     48 (72)
@@ -126,7 +127,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void ForceMultipleCoils_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     0F (15)
@@ -146,7 +147,7 @@ public class Protocol_RTU_CreateTest : BaseProtocolCreateTest
     }
 
     [Fact]
-    public void Test_PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
+    public void PresetMultipleRegisters_WithCheckSumEnabled_CreatesCorrectMessage()
     {
         // Ожидаемое Modbus RTU сообщение (ADU):
         // ID Устройства:     F0 (240)

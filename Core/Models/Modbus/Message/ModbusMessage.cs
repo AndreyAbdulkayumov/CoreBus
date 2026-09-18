@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -12,10 +11,8 @@ public abstract class ModbusMessage
 
     public abstract string ProtocolName { get; }
 
-    public abstract byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization);
-    public abstract ModbusResponse DecodingMessage(ModbusFunction function, byte[] sourceArray, ILocalizationService localization);
-
-    //public abstract void DecodingClientMessage(int FunctionNumber, byte[] SourceArray);
+    public abstract byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization);
+    public abstract ModbusResponse DecodingResponse(ModbusFunction function, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization);
 
     /***********************************************/
 
@@ -36,7 +33,7 @@ public abstract class ModbusMessage
 
         if (decoding.Command > 0x80)
         {
-            int functionCode = decoding.Command - 0x80;
+            var functionCode = decoding.Command - 0x80;
 
             decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
 
@@ -60,18 +57,16 @@ public abstract class ModbusMessage
         }
     }
 
-    protected byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
+    protected static byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
     {
         if (sourceArray.Length < 2)
         {
             return sourceArray;
         }
 
-        byte temp;
-
-        for (int i = 0; i < sourceArray.Length; i += 2)
+        for (var i = 0; i < sourceArray.Length; i += 2)
         {
-            temp = sourceArray[i];
+            var temp = sourceArray[i];
             sourceArray[i] = sourceArray[i + 1];
             sourceArray[i + 1] = temp;
         }
@@ -79,7 +74,23 @@ public abstract class ModbusMessage
         return sourceArray;
     }
 
-    private void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
+    protected static bool CheckReadedDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
+    {
+        if (message.Length <= dataLengthIndex)
+            return false;
+
+        var expectedDataLength = message[dataLengthIndex];
+
+        var serviceByteCount = dataLengthIndex + 1; // С учетом байта количества данных
+        
+        var actualDataLength = checkSumIsEnable 
+            ? message.Length - serviceByteCount - 2 // CRC16 и LRC8 занимают по два байта
+            : message.Length - serviceByteCount;
+        
+        return expectedDataLength == actualDataLength;
+    }
+    
+    private static void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
     {
         switch (errorCode)
         {

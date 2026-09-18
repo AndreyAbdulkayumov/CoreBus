@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models.Modbus.Message;
@@ -8,31 +7,23 @@ public class ModbusASCII_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus ASCII";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data, localization);
+        var PDU = Modbus_PDU.Create(function, data, localization);
 
         // В этом массиве содержится SlaveID + PDU
-        byte[] mainPart = new byte[1 + PDU.Length];
+        var mainPart = new byte[1 + PDU.Length];
 
         // Slave ID
         mainPart[0] = data.SlaveID;
 
         Array.Copy(PDU, 0, mainPart, 1, PDU.Length);
 
-        byte[] mainPart_ASCII = ConvertArrayToASCII(mainPart);
+        var mainPart_ASCII = ConvertArrayToASCII(mainPart);
 
-        byte[] TX;
-
-        if (data.CheckSum_IsEnable)
-        {
-            TX = new byte[5 + mainPart_ASCII.Length];
-        }
-
-        else
-        {
-            TX = new byte[3 + mainPart_ASCII.Length];
-        }
+        var TX = data.CheckSum_IsEnable 
+            ? new byte[5 + mainPart_ASCII.Length]
+            : new byte[3 + mainPart_ASCII.Length];
 
         // Символ начала кадра (префикс)
         TX[0] = 0x3A;
@@ -42,7 +33,8 @@ public class ModbusASCII_Message : ModbusMessage
         // LRC8
         if (data.CheckSum_IsEnable)
         {
-            byte[] LRC8 = CheckSum.Calculate_LRC8(mainPart);
+            var LRC8 = CheckSum.Calculate_LRC8(mainPart);
+            
             TX[TX.Length - 4] = LRC8[0];
             TX[TX.Length - 3] = LRC8[1];
         }
@@ -54,11 +46,11 @@ public class ModbusASCII_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
-        int sizeOfArray = 0;
+        var sizeOfArray = 0;
 
-        for (int i = 0; i < sourceArray.Length; i++)
+        for (var i = 0; i < sourceArray.Length; i++)
         {
             if (i + 1 <= sourceArray.Length)
             {
@@ -77,15 +69,15 @@ public class ModbusASCII_Message : ModbusMessage
             }
         }
 
-        byte[] splitArray = new byte[sizeOfArray];
+        var splitArray = new byte[sizeOfArray];
 
         Array.Copy(sourceArray, 0, splitArray, 0, sizeOfArray);
 
-        byte[] mainPart = new byte[splitArray.Length - 5];
+        var mainPart = new byte[splitArray.Length - 5];
 
         Array.Copy(splitArray, 1, mainPart, 0, mainPart.Length);
 
-        byte[] convertedArray = ConvertArrayToBytes(mainPart);
+        var convertedArray = ConvertArrayToBytes(mainPart);
 
         var decodingResponse = new ModbusResponse
         {
@@ -136,11 +128,11 @@ public class ModbusASCII_Message : ModbusMessage
     public static byte[] ConvertArrayToASCII(byte[] arrayBytes)
     {
         // В Modbus ASCII один байт представлен двумя ASCII символами
-        char[] ASCII_Array = new char[arrayBytes.Length * 2];
+        var ASCII_Array = new char[arrayBytes.Length * 2];
 
         string element;
 
-        for (int i = 0; i < arrayBytes.Length; i++)
+        for (var i = 0; i < arrayBytes.Length; i++)
         {
             element = arrayBytes[i].ToString("X2");  // Представление двух разрядов числа в шестнацатеричном виде
 
@@ -153,17 +145,17 @@ public class ModbusASCII_Message : ModbusMessage
 
     public static byte[] ConvertArrayToBytes(byte[] array)
     {
-        char[] arrayChars = Encoding.ASCII.GetChars(array);
+        var arrayChars = Encoding.ASCII.GetChars(array);
 
-        string[] arrayJoinChars = new string[arrayChars.Length / 2];
+        var arrayJoinChars = new string[arrayChars.Length / 2];
 
         // В Modbus ASCII один байт представлен двумя ASCII символами
-        for (int i = 0; i < arrayJoinChars.Length; i++)
+        for (var i = 0; i < arrayJoinChars.Length; i++)
         {
             arrayJoinChars[i] = string.Concat(arrayChars[i * 2], arrayChars[i * 2 + 1]);
         }
 
-        byte[] arrayBytes = arrayJoinChars.Where(x => x != null)
+        var arrayBytes = arrayJoinChars.Where(x => x != null)
             .Select(x => byte.Parse(x, System.Globalization.NumberStyles.HexNumber)).ToArray();
 
         return arrayBytes;
