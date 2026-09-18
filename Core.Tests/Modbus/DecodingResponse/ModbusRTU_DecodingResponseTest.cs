@@ -32,25 +32,6 @@ public class ModbusRTU_DecodingResponseTest
     }
     
     [Fact]
-    public void PresetSingleRegister_ShortResponse_Throws()
-    {
-        const byte slaveId = 1;
-        
-        var selectedFunction = Function.PresetSingleRegister;
-
-        var address = new byte[] { 0x00, 0x01 };
-        
-        var data = new byte[] { 0x10 };
-        
-        var message = new byte[] { slaveId, selectedFunction.Number }
-            .Concat(address)
-            .Concat(data)
-            .ToArray();
-        
-        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
-    }
-
-    [Fact]
     public void ReadFunction_ReadCoilStatus_Success()
     {
         const byte slaveId = 1;
@@ -133,6 +114,43 @@ public class ModbusRTU_DecodingResponseTest
         
             Assert.IsType<ModbusException>(exception);
         }
+    }
+    
+    [Fact]
+    public void ShortResponse_PresetSingleRegister_Throws()
+    {
+        const byte slaveId = 3;
+        
+        var selectedFunction = Function.PresetSingleRegister;
+
+        var address = new byte[] { 0x00, 0x01 };
+        
+        var data = new byte[] { 0x10 };
+        
+        var message = new byte[] { slaveId, selectedFunction.Number }
+            .Concat(address)
+            .Concat(data)
+            .ToArray();
+        
+        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+    }
+
+    [Fact]
+    public void ShortResponse_ReadHoldingRegisters_Throws()
+    {
+        const byte slaveId = 7;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x10 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var message = new byte[] { slaveId, selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
     }
     
     [Fact]

@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -9,19 +8,11 @@ public class ModbusRTU_Message : ModbusMessage
 
     public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data, localization);
+        var PDU = Modbus_PDU.Create(function, data, localization);
 
-        byte[] TX;
-
-        if (data.CheckSum_IsEnable)
-        {
-            TX = new byte[3 + PDU.Length];
-        }
-
-        else
-        {
-            TX = new byte[1 + PDU.Length];
-        }
+        var TX = data.CheckSum_IsEnable 
+            ? new byte[3 + PDU.Length] 
+            : new byte[1 + PDU.Length];
 
         // Slave ID
         TX[0] = data.SlaveID;
@@ -31,7 +22,8 @@ public class ModbusRTU_Message : ModbusMessage
         // CRC16
         if (data.CheckSum_IsEnable)
         {
-            byte[] CRC16 = CheckSum.Calculate_CRC16(TX, data.Polynom);
+            var CRC16 = CheckSum.Calculate_CRC16(TX, data.Polynom);
+            
             TX[TX.Length - 2] = CRC16[0];  // Предпоследний элемент
             TX[TX.Length - 1] = CRC16[1];  // Последний элемент
         }
@@ -96,7 +88,7 @@ public class ModbusRTU_Message : ModbusMessage
         return decodingResponse;
     }
 
-    private bool CheckMinimalSize(ModbusFunction function, byte[] data, bool checkSumIsEnable, ILocalizationService localization)
+    private static bool CheckMinimalSize(ModbusFunction function, byte[] data, bool checkSumIsEnable, ILocalizationService localization)
     {
         var crcSize = checkSumIsEnable ? 2 : 0;
 
@@ -129,7 +121,7 @@ public class ModbusRTU_Message : ModbusMessage
         throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", function.Number));
     }
 
-    private bool ValidateCheckSum(byte[] message)
+    private static bool ValidateCheckSum(byte[] message)
     {
         if (message.Length < 2)
             return false;
@@ -142,7 +134,7 @@ public class ModbusRTU_Message : ModbusMessage
         return checkSumFromMessage.SequenceEqual(calculatedCheckSum);
     }
 
-    private bool CheckDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
+    private static bool CheckDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
     {
         if (message.Length <= dataLengthIndex)
             return false;

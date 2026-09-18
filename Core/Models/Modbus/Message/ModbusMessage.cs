@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -34,7 +33,7 @@ public abstract class ModbusMessage
 
         if (decoding.Command > 0x80)
         {
-            int functionCode = decoding.Command - 0x80;
+            var functionCode = decoding.Command - 0x80;
 
             decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
 
@@ -58,18 +57,16 @@ public abstract class ModbusMessage
         }
     }
 
-    protected byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
+    protected static byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
     {
         if (sourceArray.Length < 2)
         {
             return sourceArray;
         }
 
-        byte temp;
-
-        for (int i = 0; i < sourceArray.Length; i += 2)
+        for (var i = 0; i < sourceArray.Length; i += 2)
         {
-            temp = sourceArray[i];
+            var temp = sourceArray[i];
             sourceArray[i] = sourceArray[i + 1];
             sourceArray[i + 1] = temp;
         }
@@ -77,7 +74,7 @@ public abstract class ModbusMessage
         return sourceArray;
     }
 
-    private void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
+    private static void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
     {
         switch (errorCode)
         {

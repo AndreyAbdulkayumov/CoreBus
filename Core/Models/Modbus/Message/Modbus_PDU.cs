@@ -1,5 +1,4 @@
 using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -7,8 +6,8 @@ public static class Modbus_PDU
 {
     public static byte[] Create(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        WriteTypeMessage? dataForWrite = data as WriteTypeMessage;
-        ReadTypeMessage? dataForRead = data as ReadTypeMessage;
+        var dataForWrite = data as WriteTypeMessage;
+        var dataForRead = data as ReadTypeMessage;
 
         if (dataForRead != null && function.Number >= 1 && function.Number <= 4)
         {
@@ -38,10 +37,10 @@ public static class Modbus_PDU
 
     private static byte[] Create_Read(ModbusFunction readFunction, ReadTypeMessage data)
     {
-        byte[] PDU = new byte[5];
+        var PDU = new byte[5];
 
-        byte[] addressArray = BitConverter.GetBytes(data.Address);
-        byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
+        var addressArray = BitConverter.GetBytes(data.Address);
+        var numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
 
         // Function number
         PDU[0] = readFunction.Number;
@@ -57,9 +56,9 @@ public static class Modbus_PDU
 
     private static byte[] Create_Write(ModbusFunction writeFunction, WriteTypeMessage data)
     {
-        byte[] PDU = new byte[5];
+        var PDU = new byte[5];
 
-        byte[] addressArray = BitConverter.GetBytes(data.Address);
+        var addressArray = BitConverter.GetBytes(data.Address);
 
         // Function number
         PDU[0] = writeFunction.Number;
@@ -75,11 +74,11 @@ public static class Modbus_PDU
 
     private static byte[] Create_WriteMultipleCoils(ModbusFunction writeFunction, WriteTypeMessage data)
     {
-        int offsetPDU = 6;
-        byte[] PDU = new byte[offsetPDU + data.WriteData.Length];
+        var offsetPDU = 6;
+        var PDU = new byte[offsetPDU + data.WriteData.Length];
 
-        byte[] addressArray = BitConverter.GetBytes(data.Address);
-        byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
+        var addressArray = BitConverter.GetBytes(data.Address);
+        var numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
 
         // Function number
         PDU[0] = writeFunction.Number;
@@ -92,7 +91,7 @@ public static class Modbus_PDU
         // Amount of byte next
         PDU[5] = (byte)data.WriteData.Length;
         // Data
-        for (int i = 0; i < data.WriteData.Length; i++)
+        for (var i = 0; i < data.WriteData.Length; i++)
         {
             PDU[i + offsetPDU] = data.WriteData[i];
         }
@@ -102,11 +101,11 @@ public static class Modbus_PDU
 
     private static byte[] Create_WriteMultipleRegisters(ModbusFunction writeFunction, WriteTypeMessage data)
     {
-        int offsetPDU = 6;
-        byte[] PDU = new byte[offsetPDU + data.WriteData.Length];
+        var offsetPDU = 6;
+        var PDU = new byte[offsetPDU + data.WriteData.Length];
 
-        byte[] addressArray = BitConverter.GetBytes(data.Address);
-        byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
+        var addressArray = BitConverter.GetBytes(data.Address);
+        var numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
 
         // Function number
         PDU[0] = writeFunction.Number;
@@ -119,12 +118,10 @@ public static class Modbus_PDU
         // Amount of byte next
         PDU[5] = (byte)data.WriteData.Length;
 
-        byte temp;
-
         // Data
-        for (int i = 0; i < data.WriteData.Length; i += 2)
+        for (var i = 0; i < data.WriteData.Length; i += 2)
         {
-            temp = data.WriteData[i];
+            var temp = data.WriteData[i];
             PDU[i + offsetPDU] = data.WriteData[i + 1];
             PDU[i + offsetPDU + 1] = temp;
         }

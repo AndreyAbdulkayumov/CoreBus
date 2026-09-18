@@ -1,7 +1,6 @@
 using Core.Clients.DataTypes;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus;
 
@@ -152,7 +151,7 @@ public class Model_Modbus
         return result;
     }
 
-    private byte[] GetOutputRX(byte[] RX, int length)
+    private static byte[] GetOutputRX(byte[] RX, int length)
     {
         var outputArray = new byte[length];
 
@@ -218,7 +217,7 @@ public class Model_Modbus
 
         catch (TimeoutException)
         {
-            string errorMessage = _localization.Get("Core.HostNoResponse");
+            var errorMessage = _localization.Get("Core.HostNoResponse");
 
             if (_device != null)
             {
@@ -291,7 +290,7 @@ public class Model_Modbus
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        bool isAlreadyRunning = !_monitoringSemaphore.Wait(0);
+        var isAlreadyRunning = !_monitoringSemaphore.Wait(0);
 
         // Цикл опроса пропускается, если семафор уже был захвачен.
         if (isAlreadyRunning)

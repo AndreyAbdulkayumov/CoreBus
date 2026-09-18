@@ -49,13 +49,13 @@ public static class MathFormula
         if (string.IsNullOrWhiteSpace(formula))
             return formula;
 
-        string trimmed = formula.Trim();
+        var trimmed = formula.Trim();
 
         // 1. Вставка * перед x: 2x → 2*x, )x → )*x
-        string step1 = InsertMulBeforeX.Replace(trimmed, "$1*$2");
+        var step1 = InsertMulBeforeX.Replace(trimmed, "$1*$2");
 
         // 2. Вставка * после x: x2 → x*2, x( → x*( 
-        string normalized = InsertMulAfterX.Replace(step1, "$1*$2");
+        var normalized = InsertMulAfterX.Replace(step1, "$1*$2");
 
         return normalized;
     }
@@ -135,7 +135,7 @@ public static class MathFormula
 
     private static bool AllBracketClosed(string formula)
     {
-        int depth = 0;
+        var depth = 0;
 
         foreach (char symbol in formula)
         {

@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -9,16 +8,14 @@ public class ModbusTCP_Message : ModbusMessage
 
     public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data, localization);
+        var PDU = Modbus_PDU.Create(function, data, localization);
 
-        byte[] TX;
+        var TX = new byte[7 + PDU.Length];
 
-        TX = new byte[7 + PDU.Length];
-
-        byte[] packageNumberArray = BitConverter.GetBytes(PackageNumber);
+        var packageNumberArray = BitConverter.GetBytes(PackageNumber);
 
         // 1 байт SlaveID + байты PDU
-        byte[] SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
+        var SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
 
         PackageNumber++;
 
@@ -43,7 +40,7 @@ public class ModbusTCP_Message : ModbusMessage
     {
         var decodingResponse = new ModbusResponse();
 
-        byte[] temp = new byte[2];
+        var temp = new byte[2];
 
         temp[0] = sourceArray[1];
         temp[1] = sourceArray[0];
