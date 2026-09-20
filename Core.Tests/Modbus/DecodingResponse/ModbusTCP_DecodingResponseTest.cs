@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus.DataTypes;
+﻿using System.Buffers.Binary;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
 
@@ -10,18 +11,24 @@ public class ModbusTCP_DecodingResponseTest
     private readonly ILocalizationService _localization = new TestLocalizationService();
 
     [Fact]
-    public void WriteFunction_Success()
+    public void WriteSingleFunction_Success()
     {
         const byte slaveId = 1;
 
         var selectedFunction = Function.PresetSingleRegister;
 
-        var address = new byte[] { 0x00, 0x01 };
-        var data = new byte[] { 0x10, 0xFF };
+        const ushort address = 1;
+        const ushort data = 0x10FF;
 
+        var addressBytes = new byte[2];
+        var dataBytes = new byte[2];
+
+        BinaryPrimitives.WriteUInt16BigEndian(addressBytes, address);
+        BinaryPrimitives.WriteUInt16BigEndian(dataBytes, data);
+        
         var pdu = new byte[] { selectedFunction.Number }
-            .Concat(address)
-            .Concat(data)
+            .Concat(addressBytes)
+            .Concat(dataBytes)
             .ToArray();
 
         var result = _modbusMessage.DecodingResponse(
@@ -30,9 +37,57 @@ public class ModbusTCP_DecodingResponseTest
             false,
             _localization);
 
-        Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
         Assert.Equal(0, result.ProtocolID);
+        Assert.Equal(slaveId, result.SlaveID);
+        
+        Assert.IsType<PduResponseWriteSingle>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseWriteSingle;
+        
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(address, resultPdu.Address);
+        Assert.Equal(data, resultPdu.Data);
+    }
+    
+    [Fact]
+    public void WriteMultipleFunction_Success()
+    {
+        const byte slaveId = 10;
+
+        var selectedFunction = Function.PresetMultipleRegisters;
+
+        const ushort address = 43;
+        const ushort registerCount = 7;
+
+        var addressBytes = new byte[2];
+        var registerCountBytes = new byte[2];
+
+        BinaryPrimitives.WriteUInt16BigEndian(addressBytes, address);
+        BinaryPrimitives.WriteUInt16BigEndian(registerCountBytes, registerCount);
+        
+        var pdu = new byte[] { selectedFunction.Number }
+            .Concat(addressBytes)
+            .Concat(registerCountBytes)
+            .ToArray();
+
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction,
+            CreateTcpMessage(slaveId, pdu),
+            false,
+            _localization);
+
+        Assert.Equal(0, result.ProtocolID);
+        Assert.Equal(slaveId, result.SlaveID);
+        
+        Assert.IsType<PduResponseWriteMultiple>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseWriteMultiple;
+        
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(address, resultPdu.Address);
+        Assert.Equal(registerCount, resultPdu.RegisterCount);
     }
 
     [Fact]
@@ -55,12 +110,18 @@ public class ModbusTCP_DecodingResponseTest
             CreateTcpMessage(slaveId, pdu),
             false,
             _localization);
-
-        Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
-        Assert.Equal(dataByteCount, result.LengthOfData);
-        Assert.Equal(data, result.Data);
+        
         Assert.Equal(0, result.ProtocolID);
+        Assert.Equal(slaveId, result.SlaveID);
+        
+        Assert.IsType<PduResponseRead>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseRead;
+
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(dataByteCount, resultPdu.Data.Length);
+        Assert.Equal(data, resultPdu.Data);
     }
 
     [Fact]
@@ -95,7 +156,6 @@ public class ModbusTCP_DecodingResponseTest
 
         const byte declaredByteCount = 0;
 
-        // Дополнительные байты нужны, чтобы пройти CheckMinimalSize и дойти до EmptyDataPartTcp
         var data = new byte[] { 0xFF, 0x00 };
 
         var pdu = new byte[] { selectedFunction.Number, declaredByteCount }
@@ -163,7 +223,7 @@ public class ModbusTCP_DecodingResponseTest
     }
 
     [Fact]
-    public void ShortResponse_ReadHoldingRegisters_Throws()
+    public void OddDataByteCount_ReadHoldingRegisters_Throws()
     {
         const byte slaveId = 7;
 

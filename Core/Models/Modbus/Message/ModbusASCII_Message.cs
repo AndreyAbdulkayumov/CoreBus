@@ -35,18 +35,58 @@ public class ModbusASCII_Message : ModbusMessage
         {
             var LRC8 = CheckSum.Calculate_LRC8(mainPart);
             
-            TX[TX.Length - 4] = LRC8[0];
-            TX[TX.Length - 3] = LRC8[1];
+            TX[^4] = LRC8[0];
+            TX[^3] = LRC8[1];
         }
 
         // Символы конца кадра
-        TX[TX.Length - 2] = 0x0D;  // Предпоследний элемент
-        TX[TX.Length - 1] = 0x0A;  // Последний элемент
+        TX[^2] = 0x0D;  // Предпоследний элемент
+        TX[^1] = 0x0A;  // Последний элемент
 
         return TX;
     }
 
     public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
+    {
+        if (!CheckStartAndEndMessage(sourceArray, localization))
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+     
+        if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
+            throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
+        
+        var convertedArray = GetBytesArrayFromCharArray(sourceArray);
+
+        var pduArraySize = checkSumIsEnable ? convertedArray.Length - 3 : convertedArray.Length - 1;
+        
+        var pduArray = new byte[pduArraySize];
+        
+        Array.Copy(convertedArray, 1, pduArray, 0, pduArray.Length);
+        
+        return new ModbusResponse
+        {
+            SlaveID = convertedArray[0],
+            PDU = DecodingPduResponse(pduArray, localization)
+        };
+    }
+
+    private static bool CheckStartAndEndMessage(byte[] message, ILocalizationService localization)
+    {
+        return message[0] == 0x3A &&    // Начало сообщения символ ':' (0x3A)
+               message[^2] == 0x0D &&   // Предпоследний элемент символ 'CR' (0x0D)
+               message[^1] == 0x0A;     // Предпоследний элемент символ 'LF' (0x0A)
+    }
+
+    private static bool ValidateCheckSum(byte[] message)
+    {
+        if (message.Length < 2)
+            return false;
+        
+        // TODO: тут будет проверка
+
+        return true;
+    }
+    
+    private static byte[] GetBytesArrayFromCharArray(byte[] sourceArray)
     {
         var sizeOfArray = 0;
 
@@ -77,64 +117,17 @@ public class ModbusASCII_Message : ModbusMessage
 
         Array.Copy(splitArray, 1, mainPart, 0, mainPart.Length);
 
-        var convertedArray = ConvertArrayToBytes(mainPart);
-
-        var decodingResponse = new ModbusResponse
-        {
-            SlaveID = convertedArray[0],
-            Command = convertedArray[1]
-        };
-
-        CheckErrorCode(TypeOfModbus.ASCII, ref decodingResponse, convertedArray, localization);
-
-        if (currentFunction is ModbusReadFunction)
-        {
-            decodingResponse.LengthOfData = convertedArray[2];
-
-            if (decodingResponse.LengthOfData == 0)
-            {
-                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartAscii", currentFunction.Number));
-            }
-
-            decodingResponse.Data = new byte[decodingResponse.LengthOfData];
-
-            // Согласно документации на протокол Modbus:
-            // В ответном пакете Modbus ASCII на команды чтения
-            // информационная часть начинается с 3 байта.
-
-            Array.Copy(convertedArray, 3, decodingResponse.Data, 0, decodingResponse.LengthOfData);
-
-            // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
-            if (currentFunction != Function.ReadCoilStatus &&
-                currentFunction != Function.ReadDiscreteInputs)
-            {
-                decodingResponse.Data = ReverseLowAndHighBytesInWords(decodingResponse.Data);
-            }
-        }
-
-        else if (currentFunction is ModbusWriteFunction)
-        {
-            decodingResponse.LengthOfData = -1;
-        }
-
-        else
-        {
-            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
-        }
-
-        return decodingResponse;
+        return ConvertArrayToBytes(mainPart);
     }
-
+    
     public static byte[] ConvertArrayToASCII(byte[] arrayBytes)
     {
         // В Modbus ASCII один байт представлен двумя ASCII символами
         var ASCII_Array = new char[arrayBytes.Length * 2];
 
-        string element;
-
         for (var i = 0; i < arrayBytes.Length; i++)
         {
-            element = arrayBytes[i].ToString("X2");  // Представление двух разрядов числа в шестнацатеричном виде
+            var element = arrayBytes[i].ToString("X2");
 
             ASCII_Array[i * 2] = element.First();
             ASCII_Array[i * 2 + 1] = element.Last();

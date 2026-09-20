@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus;
+﻿using System.Buffers.Binary;
+using Core.Models.Modbus;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
@@ -11,24 +12,73 @@ public class ModbusRTU_DecodingResponseTest
     private readonly ILocalizationService _localization = new TestLocalizationService();
     
     [Fact]
-    public void WriteFunction_Success()
+    public void WriteSingleFunction_Success()
     {
         const byte slaveId = 1;
         
         var selectedFunction = Function.PresetSingleRegister;
 
-        var address = new byte[] { 0x00, 0x01 };
-        var data = new byte[] { 0x10, 0xFF };
+        const ushort address = 13;
+        const ushort data = 0x089F;
+
+        var addressBytes = new byte[2];
+        var dataBytes = new byte[2];
+
+        BinaryPrimitives.WriteUInt16BigEndian(addressBytes, address);
+        BinaryPrimitives.WriteUInt16BigEndian(dataBytes, data);
         
         var message = new byte[] { slaveId, selectedFunction.Number }
-            .Concat(address)
-            .Concat(data)
+            .Concat(addressBytes)
+            .Concat(dataBytes)
             .ToArray();
         
         var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
+        
+        Assert.IsType<PduResponseWriteSingle>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseWriteSingle;
+        
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(address, resultPdu.Address);
+        Assert.Equal(data, resultPdu.Data);
+    }
+    
+    [Fact]
+    public void WriteMultipleFunction_Success()
+    {
+        const byte slaveId = 10;
+
+        var selectedFunction = Function.PresetMultipleRegisters;
+
+        const ushort address = 18;
+        const ushort registerCount = 4;
+
+        var addressBytes = new byte[2];
+        var registerCountBytes = new byte[2];
+
+        BinaryPrimitives.WriteUInt16BigEndian(addressBytes, address);
+        BinaryPrimitives.WriteUInt16BigEndian(registerCountBytes, registerCount);
+        
+        var message = new byte[] { slaveId, selectedFunction.Number }
+            .Concat(addressBytes)
+            .Concat(registerCountBytes)
+            .ToArray();
+
+        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
+
+        Assert.Equal(slaveId, result.SlaveID);
+        
+        Assert.IsType<PduResponseWriteMultiple>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseWriteMultiple;
+        
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(address, resultPdu.Address);
+        Assert.Equal(registerCount, resultPdu.RegisterCount);
     }
     
     [Fact]
@@ -49,9 +99,15 @@ public class ModbusRTU_DecodingResponseTest
         var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
-        Assert.Equal(dataByteCount, result.LengthOfData);
-        Assert.Equal(data, result.Data);
+        
+        Assert.IsType<PduResponseRead>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseRead;
+
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(dataByteCount, resultPdu.Data.Length);
+        Assert.Equal(data, resultPdu.Data);
     }
     
     [Fact]
@@ -103,7 +159,7 @@ public class ModbusRTU_DecodingResponseTest
         // Код ошибки должен быть в диапазоне от 1 до 11 включительно
         for (byte errorCode = 1; errorCode <= 11; errorCode++)
         {
-            // Этот код не используется
+            // Согласно документации этот код не используется
             if (errorCode == 9)
                 continue;
             
@@ -136,7 +192,7 @@ public class ModbusRTU_DecodingResponseTest
     }
 
     [Fact]
-    public void ShortResponse_ReadHoldingRegisters_Throws()
+    public void OddDataByteCount_ReadHoldingRegisters_Throws()
     {
         const byte slaveId = 7;
         
@@ -171,7 +227,7 @@ public class ModbusRTU_DecodingResponseTest
         var result = _modbusMessage.DecodingResponse(selectedFunction, message, false, _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
-        Assert.Equal(selectedFunction.Number, result.Command);
+        Assert.Equal(selectedFunction.Number, result.PDU.FunctionNumber);
     }
     
     [Fact]

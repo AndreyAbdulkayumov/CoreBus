@@ -33,93 +33,23 @@ public class ModbusRTU_Message : ModbusMessage
 
     public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
-        if (!CheckMinimalSize(currentFunction, sourceArray, checkSumIsEnable, localization))
+        if (sourceArray.Length < 3 || (checkSumIsEnable && sourceArray.Length < 5))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
         if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
-        var decodingResponse = new ModbusResponse
+        var pduArraySize = checkSumIsEnable ? sourceArray.Length - 3 : sourceArray.Length - 1;
+        
+        var pduArray = new byte[pduArraySize];
+        
+        Array.Copy(sourceArray, 1, pduArray, 0, pduArray.Length);
+        
+        return new ModbusResponse
         {
             SlaveID = sourceArray[0],
-            Command = sourceArray[1]
+            PDU = DecodingPduResponse(pduArray, localization)
         };
-
-        CheckErrorCode(TypeOfModbus.RTU, ref decodingResponse, sourceArray, localization);
-
-        if (currentFunction is ModbusReadFunction)
-        {
-            const int lengthOfDataByteIndex = 2;
-            
-            decodingResponse.LengthOfData = sourceArray[lengthOfDataByteIndex];
-
-            if (decodingResponse.LengthOfData == 0)
-            {
-                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartRtu", currentFunction.Number));
-            }
-
-            decodingResponse.Data = new byte[decodingResponse.LengthOfData];
-
-            // Согласно документации на протокол Modbus:
-            // В ответном пакете Modbus RTU на команды чтения информационная часть начинается с четвертого байта.
-            // Байт с количеством байт данных - третий.
-            if (!CheckReadedDataLength(sourceArray, lengthOfDataByteIndex, checkSumIsEnable))
-                throw new Exception(localization.Get("Core.Modbus.InvalidDataLength", ProtocolName, currentFunction.Number));
-                
-            Array.Copy(sourceArray, 3, decodingResponse.Data, 0, decodingResponse.LengthOfData);
-
-            // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
-            if (currentFunction != Function.ReadCoilStatus &&
-                currentFunction != Function.ReadDiscreteInputs)
-            {
-                decodingResponse.Data = ReverseLowAndHighBytesInWords(decodingResponse.Data);
-            }
-        }
-
-        else if (currentFunction is ModbusWriteFunction)
-        {
-            decodingResponse.LengthOfData = -1;
-        }
-
-        else
-        {
-            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
-        }
-
-        return decodingResponse;
-    }
-
-    private static bool CheckMinimalSize(ModbusFunction function, byte[] data, bool checkSumIsEnable, ILocalizationService localization)
-    {
-        var crcSize = checkSumIsEnable ? 2 : 0;
-
-        if (data.Length >= 2 && data[1] >= 0x80)
-        {
-            // SlaveID + Function number + Exception code
-            return data.Length >= 3 + crcSize;
-        }
-
-        if (function.Number == Function.ReadCoilStatus.Number ||
-            function.Number == Function.ReadDiscreteInputs.Number)
-        {
-            // SlaveID + Function number + Byte count + Data(1)
-            return data.Length >= 4 + crcSize;
-        }
-
-        if (function.Number == Function.ReadHoldingRegisters.Number ||
-            function.Number == Function.ReadInputRegisters.Number)
-        {
-            // SlaveID + Function number + Byte count + Data(2)
-            return data.Length >= 5 + crcSize;
-        }
-
-        if (function is ModbusWriteFunction)
-        {
-            // Echo запроса: SlaveID + Function number + Address(2) + Value/Quantity(2)
-            return data.Length >= 6 + crcSize;
-        }
-
-        throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", function.Number));
     }
 
     private static bool ValidateCheckSum(byte[] message)

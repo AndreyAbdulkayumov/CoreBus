@@ -7,13 +7,13 @@ namespace Core.Tests.Modbus.CreateRequest;
 
 public abstract class BaseProtocolCreateRequestTest
 {
-    protected ModbusMessage Message;
-    protected ILocalizationService Localization;
+    private readonly ModbusMessage _message;
+    private readonly ILocalizationService _localization;
 
     protected BaseProtocolCreateRequestTest()
     {
-        Message = GetModbusMessageInstance();
-        Localization = new TestLocalizationService();
+        _message = GetModbusMessageInstance();
+        _localization = new TestLocalizationService();
     }
 
     // Абстрактный метод, который будет реализован в дочерних классах для создания экземпляра ModbusMessage.
@@ -35,57 +35,55 @@ public abstract class BaseProtocolCreateRequestTest
 
     protected void CheckReadFunction(ModbusReadFunction selectedFunction, byte slaveID, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable = false)
     {
-        MessageData Data = new ReadTypeMessage(slaveID, address, numberOfRegisters, checkSum_IsEnable);
+        var data = new ReadTypeMessage(slaveID, address, numberOfRegisters, checkSum_IsEnable);
 
-        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
+        var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
-        byte[] BytesArray_Expected = CreateExpectedReadMessage(slaveID, selectedFunction, address, numberOfRegisters, checkSum_IsEnable);
+        var bytesArrayExpected = CreateExpectedReadMessage(slaveID, selectedFunction, address, numberOfRegisters, checkSum_IsEnable);
 
-        Assert.Equal(BytesArray_Expected, BytesArray_Actual);
+        Assert.Equal(bytesArrayExpected, bytesArrayActual);
     }
 
     protected void CheckSingleWriteFunction(ModbusWriteFunction selectedFunction, byte slaveID, UInt16 address, UInt16 writeData, bool checkSum_IsEnable = false)
     {
-        UInt16[] WriteDataArray = new UInt16[] { writeData };
+        var bytes = BitConverter.GetBytes(writeData);
 
-        byte[] bytes = BitConverter.GetBytes(writeData);
+        var data = new WriteTypeMessage(slaveID, address, bytes, 1, checkSum_IsEnable);
 
-        MessageData Data = new WriteTypeMessage(slaveID, address, bytes, 1, checkSum_IsEnable);
+        var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
-        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
+        var bytesArrayExpected = CreateExpectedSingleWriteMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 
-        byte[] BytesArray_Expected = CreateExpectedSingleWriteMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
-
-        Assert.Equal(BytesArray_Expected, BytesArray_Actual);
+        Assert.Equal(bytesArrayExpected, bytesArrayActual);
     }
 
     protected void CheckMultiplyWriteCoilsFunction(byte slaveID, UInt16 address, int[] bitArray, bool checkSum_IsEnable = false)
     {
-        ModbusWriteFunction selectedFunction = Function.ForceMultipleCoils;
+        var selectedFunction = Function.ForceMultipleCoils;
 
         (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
 
-        MessageData data = new WriteTypeMessage(slaveID, address, writeBytes, numberOfCoils, checkSum_IsEnable);
+        var data = new WriteTypeMessage(slaveID, address, writeBytes, numberOfCoils, checkSum_IsEnable);
 
-        byte[] bytesArray_Actual = Message.CreateRequest(selectedFunction, data, Localization);
+        var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
-        byte[] bytesArray_Expected = CreateExpectedMultiplyWriteCoilsMessage(slaveID, selectedFunction, address, bitArray, checkSum_IsEnable);
+        var bytesArrayExpected = CreateExpectedMultiplyWriteCoilsMessage(slaveID, selectedFunction, address, bitArray, checkSum_IsEnable);
 
-        Assert.Equal(bytesArray_Expected, bytesArray_Actual);
+        Assert.Equal(bytesArrayExpected, bytesArrayActual);
     }
 
     protected void CheckMultiplyWriteRegistersFunction(byte slaveID, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable = false)
     {
-        ModbusWriteFunction selectedFunction = Function.PresetMultipleRegisters;
+        var selectedFunction = Function.PresetMultipleRegisters;
 
-        byte[] bytes = writeData.SelectMany(BitConverter.GetBytes).ToArray();
+        var bytes = writeData.SelectMany(BitConverter.GetBytes).ToArray();
 
-        MessageData Data = new WriteTypeMessage(slaveID, address, bytes, writeData.Length, checkSum_IsEnable);
+        var data = new WriteTypeMessage(slaveID, address, bytes, writeData.Length, checkSum_IsEnable);
 
-        byte[] BytesArray_Actual = Message.CreateRequest(selectedFunction, Data, Localization);
+        var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
-        byte[] BytesArray_Expected = CreateExpectedMultiplyWriteRegistersMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
+        var bytesArrayExpected = CreateExpectedMultiplyWriteRegistersMessage(slaveID, selectedFunction, address, writeData, checkSum_IsEnable);
 
-        Assert.Equal(BytesArray_Expected, BytesArray_Actual);
+        Assert.Equal(bytesArrayExpected, bytesArrayActual);
     }
 }

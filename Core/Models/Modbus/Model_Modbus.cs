@@ -74,6 +74,12 @@ public class Model_Modbus
             if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
             {
                 RX = RX_Info.ResponseBytes;
+                
+                // Делаем декодирование для запуска проверок.
+                var deviceResponse = message.DecodingResponse(writeFunction, RX, dataForWrite.CheckSum_IsEnable, _localization);
+
+                if (deviceResponse.PDU is not (PduResponseWriteSingle or PduResponseWriteMultiple))
+                    throw new Exception("Некорректный формат PDU.");
             }
 
             else
@@ -195,7 +201,10 @@ public class Model_Modbus
 
                 var deviceResponse = message.DecodingResponse(readFunction, RX, dataForRead.CheckSum_IsEnable, _localization);
 
-                result.ReadedData = deviceResponse.Data;
+                if (deviceResponse.PDU is not PduResponseRead pdu)
+                    throw new Exception("Некорректный формат PDU.");
+                
+                result.ReadedData = pdu.Data;
             }
 
             else

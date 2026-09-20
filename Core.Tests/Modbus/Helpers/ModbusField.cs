@@ -2,50 +2,48 @@
 
 public static class ModbusField
 {
-    public static byte[] Get_Address(UInt16 Address)
+    public static byte[] Get_Address(UInt16 address)
     {
-        byte[] ArrayBytes = BitConverter.GetBytes(Address);
+        var arrayBytes = BitConverter.GetBytes(address);
 
-        if (ArrayBytes.Length != 2)
+        if (arrayBytes.Length != 2)
         {
-            throw new Exception("Поле адреса имеет недопустимое количество байт: " + ArrayBytes.Length);
+            throw new Exception("Поле адреса имеет недопустимое количество байт: " + arrayBytes.Length);
         }
 
-        return ArrayBytes;
+        return arrayBytes;
     }
 
-    public static byte[] Get_NumberOfRegisters(UInt16 NumberOfRegisters)
+    public static byte[] Get_NumberOfRegisters(UInt16 numberOfRegisters)
     {
-        byte[] ArrayBytes = BitConverter.GetBytes(NumberOfRegisters);
+        var arrayBytes = BitConverter.GetBytes(numberOfRegisters);
 
-        if (ArrayBytes.Length != 2)
+        if (arrayBytes.Length != 2)
         {
-            throw new Exception("Поле количества регистров имеет недопустимое количество байт: " + ArrayBytes.Length);
+            throw new Exception("Поле количества регистров имеет недопустимое количество байт: " + arrayBytes.Length);
         }
 
-        return ArrayBytes;
+        return arrayBytes;
     }
 
-    public static byte[] Get_WriteData(UInt16[] Data)
+    public static byte[] Get_WriteData(UInt16[] data)
     {
-        var ListBytes = new List<byte>();
+        var listBytes = new List<byte>();
 
-        byte[] Temp;
-
-        foreach (UInt16 element in Data)
+        foreach (var element in data)
         {
-            Temp = BitConverter.GetBytes(element);
+            var temp = BitConverter.GetBytes(element);
 
-            ListBytes.Add(Temp[1]);
-            ListBytes.Add(Temp[0]);
+            listBytes.Add(temp[1]);
+            listBytes.Add(temp[0]);
         }
 
-        if (ListBytes.Count != Data.Length * 2)
+        if (listBytes.Count != data.Length * 2)
         {
-            throw new Exception("Поле данных имеет недопустимое количество байт: " + ListBytes.Count);
+            throw new Exception("Поле данных имеет недопустимое количество байт: " + listBytes.Count);
         }
 
-        return ListBytes.ToArray();
+        return listBytes.ToArray();
     }
 
     public static (byte[], int) Get_WriteDataFromMultipleCoils(int[] bitArray)
@@ -54,7 +52,7 @@ public static class ModbusField
 
         byte temp = 0;
 
-        for (int i = 0; i < bitArray.Length; i++)
+        for (var i = 0; i < bitArray.Length; i++)
         {
             temp |= (byte)(bitArray[i] << (i % 8));
 

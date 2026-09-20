@@ -117,6 +117,14 @@ public static class Function
             ReadInputRegisters
         };
 
+    public static readonly int[] AllReadFunctionNumbers =
+    {
+        ReadCoilStatus.Number,
+        ReadDiscreteInputs.Number,
+        ReadHoldingRegisters.Number,
+        ReadInputRegisters.Number
+    };
+
     public static readonly ModbusWriteFunction ForceSingleCoil =
         new ModbusWriteFunction(
             "Core.Modbus.Function.ForceSingleCoil.Name",
@@ -148,6 +156,14 @@ public static class Function
             ForceMultipleCoils,
             PresetMultipleRegisters
         };
+    
+    public static readonly int[] AllWriteFunctionNumbers =
+    {
+        ForceSingleCoil.Number,
+        PresetSingleRegister.Number,
+        ForceMultipleCoils.Number,
+        PresetMultipleRegisters.Number
+    };
 
     public static readonly ModbusFunction[] AllFunctions =
         {

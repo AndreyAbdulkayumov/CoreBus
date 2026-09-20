@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus.DataTypes;
+﻿using System.Buffers.Binary;
+using Core.Models.Modbus.DataTypes;
 
 namespace Core.Models.Modbus.Message;
 
@@ -18,46 +19,94 @@ public abstract class ModbusMessage
 
     protected ulong PackageNumber = 0;
 
-    protected enum TypeOfModbus
+    protected PduResponse DecodingPduResponse(byte[] pduArray, ILocalizationService localization)
     {
-        TCP,
-        RTU,
-        ASCII
+        if (pduArray.Length < 2)
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
+        
+        CheckErrorCode(pduArray, localization);
+
+        var functionNumber = pduArray[0];
+        
+        if (Function.AllReadFunctionNumbers.Contains(functionNumber))
+        {
+            return CreatePduResponseRead(pduArray, localization);
+        }
+
+        if (Function.AllWriteFunctionNumbers.Contains(functionNumber))
+        {
+            return CreatePduResponseWrite(pduArray, localization);
+        }
+
+        throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", functionNumber));
     }
 
-    protected void CheckErrorCode(TypeOfModbus modbusType, ref ModbusResponse decoding, byte[] massive, ILocalizationService localization)
+    private PduResponseRead CreatePduResponseRead(byte[] pduArray, ILocalizationService localization)
+    {
+        var functionNumber = pduArray[0];
+        
+        // Согласно документации на протокол Modbus:
+        // В PDU ответного пакета на команды чтения информационная часть начинается с третьего байта.
+        // Байт с количеством байт данных - второй.
+        var dataBytesCount = pduArray[1];
+            
+        if (dataBytesCount == 0 || dataBytesCount != pduArray.Length - 2)
+            throw new Exception(localization.Get("Core.Modbus.InvalidDataLength", ProtocolName, functionNumber));
+            
+        var data = new byte[dataBytesCount];
+            
+        Array.Copy(pduArray, 2, data, 0,  dataBytesCount);
+
+        // Реверс байтов нужен только функциям, работающим с регистрами (номера 3 и 4).
+        if (functionNumber == Function.ReadHoldingRegisters.Number ||
+            functionNumber == Function.ReadInputRegisters.Number)
+        {
+            if (data.Length % 2 != 0)
+                throw new Exception(localization.Get("Core.Modbus.InvalidDataLength", ProtocolName, functionNumber));
+            
+            return new PduResponseRead(functionNumber, ReverseLowAndHighBytesInWords(data));
+        }
+
+        return new PduResponseRead(functionNumber, data);
+    }
+
+    private PduResponse CreatePduResponseWrite(byte[] pduArray, ILocalizationService localization)
+    {
+        var functionNumber = pduArray[0];
+        
+        if (pduArray.Length < 5)
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, functionNumber));
+        
+        var address = BinaryPrimitives.ReadUInt16BigEndian(pduArray.AsSpan(1, 2));
+        
+        if (functionNumber == Function.ForceSingleCoil.Number ||
+            functionNumber == Function.PresetSingleRegister.Number)
+        { 
+            var data = BinaryPrimitives.ReadUInt16BigEndian(pduArray.AsSpan(3, 2));
+            return new PduResponseWriteSingle(functionNumber, address, data);
+        }
+        
+        var registerCount = BinaryPrimitives.ReadUInt16BigEndian(pduArray.AsSpan(3, 2));
+        return new PduResponseWriteMultiple(functionNumber, address, registerCount);
+    }
+
+    private void CheckErrorCode(byte[] pduArray, ILocalizationService localization)
     {
         // Согласно документации на протокол Modbus:
         // Если значение в поле команды больше 0x80, то это ошибка.
         // Значение команды = значение в поле команды - 0x80
-
-        if (decoding.Command > 0x80)
+        var command = pduArray[0];
+        
+        if (command > 0x80)
         {
-            var functionCode = decoding.Command - 0x80;
-
-            decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
-
-            // Modbus TCP
-            // [0],[1] - Package ID, [2],[3] - Modbus ID, [4],[5] - Length of PDU
-            // [6] - Slave ID, [7] - Command, [8] - Error code
-            if (modbusType == TypeOfModbus.TCP)
-            {
-                decoding.Data[0] = massive[8];
-            }
-
-            // Modbus RTU / ASCII 
-            // [0] - Slave ID, [1] - Command, [2] - Error code,
-            // [3] - CheckSum_low, [4] - CheckSum_high
-            else
-            {
-                decoding.Data[0] = massive[2];
-            }
-
-            GetModbusException(decoding.Data[0], (byte)functionCode, localization);
+            var functionCode = (byte)(command - 0x80);
+            var errorCode = pduArray[1];
+            
+            GetModbusException(functionCode, errorCode, localization);
         }
     }
 
-    protected static byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
+    private static byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
     {
         if (sourceArray.Length < 2)
         {
@@ -73,24 +122,8 @@ public abstract class ModbusMessage
 
         return sourceArray;
     }
-
-    protected static bool CheckReadedDataLength(byte[] message, int dataLengthIndex, bool checkSumIsEnable)
-    {
-        if (message.Length <= dataLengthIndex)
-            return false;
-
-        var expectedDataLength = message[dataLengthIndex];
-
-        var serviceByteCount = dataLengthIndex + 1; // С учетом байта количества данных
-        
-        var actualDataLength = checkSumIsEnable 
-            ? message.Length - serviceByteCount - 2 // CRC16 и LRC8 занимают по два байта
-            : message.Length - serviceByteCount;
-        
-        return expectedDataLength == actualDataLength;
-    }
     
-    private static void GetModbusException(byte errorCode, byte functionCode, ILocalizationService localization)
+    private static void GetModbusException(byte functionCode, byte errorCode, ILocalizationService localization)
     {
         switch (errorCode)
         {
