@@ -90,7 +90,7 @@ public abstract class ModbusMessage
         return new PduResponseWriteMultiple(functionNumber, address, registerCount);
     }
 
-    private void CheckErrorCode(byte[] pduArray, ILocalizationService localization)
+    private static void CheckErrorCode(byte[] pduArray, ILocalizationService localization)
     {
         // Согласно документации на протокол Modbus:
         // Если значение в поле команды больше 0x80, то это ошибка.

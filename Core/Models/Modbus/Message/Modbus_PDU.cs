@@ -14,25 +14,22 @@ public static class Modbus_PDU
             return Create_Read(function, dataForRead);
         }
 
-        else if (dataForWrite != null && (function.Number == 5 || function.Number == 6))
+        if (dataForWrite != null && (function.Number == 5 || function.Number == 6))
         {
             return Create_Write(function, dataForWrite);
         }
 
-        else if (dataForWrite != null && function.Number == 15)
+        if (dataForWrite != null && function.Number == 15)
         {
             return Create_WriteMultipleCoils(function, dataForWrite);
         }
 
-        else if (dataForWrite != null && function.Number == 16)
+        if (dataForWrite != null && function.Number == 16)
         {
             return Create_WriteMultipleRegisters(function, dataForWrite);
         }
 
-        else
-        {
-            throw new Exception(localization.Get("Core.Modbus.PduBuildErrorUnsupportedFunction", function.Number));
-        }
+        throw new Exception(localization.Get("Core.Modbus.PduBuildErrorUnsupportedFunction", function.Number));
     }
 
     private static byte[] Create_Read(ModbusFunction readFunction, ReadTypeMessage data)
@@ -101,7 +98,7 @@ public static class Modbus_PDU
 
     private static byte[] Create_WriteMultipleRegisters(ModbusFunction writeFunction, WriteTypeMessage data)
     {
-        var offsetPDU = 6;
+        const int offsetPDU = 6;
         var PDU = new byte[offsetPDU + data.WriteData.Length];
 
         var addressArray = BitConverter.GetBytes(data.Address);
