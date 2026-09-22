@@ -57,7 +57,21 @@ public static class CheckSum
         return CRC16;
     }
 
-    public static byte[] Calculate_LRC8(byte[] mainPart)
+    public static byte[] Calculate_LRC8_ASCII(byte[] mainPart)
+    {
+        var LRC8 = Calculate_LRC8(mainPart);
+        
+        var LRC8_String = LRC8.ToString("X2");
+
+        var LRC8_Array = new char[2];
+
+        LRC8_Array[0] = LRC8_String.First();
+        LRC8_Array[1] = LRC8_String.Last();
+
+        return Encoding.ASCII.GetBytes(LRC8_Array);
+    }
+    
+    public static byte Calculate_LRC8(byte[] mainPart)
     {
         byte LRC8 = 0;
 
@@ -68,13 +82,6 @@ public static class CheckSum
 
         LRC8 = (byte)((LRC8 ^ 0xFF) + 1);
 
-        var LRC8_String = LRC8.ToString("X2");
-
-        var LRC8_Array = new char[2];
-
-        LRC8_Array[0] = LRC8_String.First();
-        LRC8_Array[1] = LRC8_String.Last();
-
-        return Encoding.ASCII.GetBytes(LRC8_Array);
+        return LRC8;
     }
 }

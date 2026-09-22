@@ -33,7 +33,7 @@ public class ModbusASCII_Message : ModbusMessage
         // LRC8
         if (data.CheckSum_IsEnable)
         {
-            var LRC8 = CheckSum.Calculate_LRC8(mainPart);
+            var LRC8 = CheckSum.Calculate_LRC8_ASCII(mainPart);
             
             TX[^4] = LRC8[0];
             TX[^3] = LRC8[1];
@@ -48,15 +48,22 @@ public class ModbusASCII_Message : ModbusMessage
 
     public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
+        // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
+        // Символ начала сообщения - 1 байт, сообщение с кодом ошибки ASCII-формате - 6 байт, символы конца сообщения 2 байта
+        // Контрольная сумма LRC8 в ASCII-формате - 2 байта
+        if (sourceArray.Length < 9 || (checkSumIsEnable && sourceArray.Length < 11))
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+        
         if (!CheckStartAndEndMessage(sourceArray, localization))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
-     
-        if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
-            throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
         var convertedArray = GetBytesArrayFromCharArray(sourceArray);
 
-        var pduArraySize = checkSumIsEnable ? convertedArray.Length - 3 : convertedArray.Length - 1;
+        if (checkSumIsEnable && !ValidateCheckSum(convertedArray))
+            throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
+        
+        // SlaveID - 1 байт, LRC8 - 1 байт
+        var pduArraySize = checkSumIsEnable ? convertedArray.Length - 2 : convertedArray.Length - 1;
         
         var pduArray = new byte[pduArraySize];
         
@@ -81,41 +88,22 @@ public class ModbusASCII_Message : ModbusMessage
         if (message.Length < 2)
             return false;
         
-        // TODO: тут будет проверка
-
-        return true;
+        var mainPart = new byte[message.Length - 1];
+        
+        Array.Copy(message, mainPart, mainPart.Length);
+        
+        var actualLRC8 = CheckSum.Calculate_LRC8(mainPart);
+        var expectedLRC8 = message[^1];
+        
+        return actualLRC8 == expectedLRC8;
     }
     
     private static byte[] GetBytesArrayFromCharArray(byte[] sourceArray)
     {
-        var sizeOfArray = 0;
+        // Отрезаем символы начала и конца сообщения
+        var mainPart = new byte[sourceArray.Length - 3];
 
-        for (var i = 0; i < sourceArray.Length; i++)
-        {
-            if (i + 1 <= sourceArray.Length)
-            {
-                // Спец. символы 0x0D и 0x0A встречаются только в конце значимой части массива
-                if (sourceArray[i] == 0x0D && sourceArray[i + 1] == 0x0A)
-                {
-                    sizeOfArray = i + 2;
-                    break;
-                }
-            }
-
-            else
-            {
-                sizeOfArray = sourceArray.Length;
-                break;
-            }
-        }
-
-        var splitArray = new byte[sizeOfArray];
-
-        Array.Copy(sourceArray, 0, splitArray, 0, sizeOfArray);
-
-        var mainPart = new byte[splitArray.Length - 5];
-
-        Array.Copy(splitArray, 1, mainPart, 0, mainPart.Length);
+        Array.Copy(sourceArray, 1, mainPart, 0, mainPart.Length);
 
         return ConvertArrayToBytes(mainPart);
     }

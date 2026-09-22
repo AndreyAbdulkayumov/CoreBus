@@ -67,7 +67,7 @@ public class CheckSum_LRC8_Test
 
     private byte GetCheckSum_Actual(byte[] Data)
     {
-        byte[] CheckSum_Actual_Array = CheckSum.Calculate_LRC8(Data);
+        byte[] CheckSum_Actual_Array = CheckSum.Calculate_LRC8_ASCII(Data);
 
         return ModbusASCII_Message.ConvertArrayToBytes(CheckSum_Actual_Array).First();
     }

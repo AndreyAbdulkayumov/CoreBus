@@ -39,7 +39,9 @@ public class ModbusTCP_Message : ModbusMessage
 
     public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
-        if (sourceArray.Length < 7) 
+        // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
+        // Сервисные поля - 6 байт, сообщение с кодом ошибки - 3 байта,
+        if (sourceArray.Length < 9) 
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
         var decodingResponse = new ModbusResponse

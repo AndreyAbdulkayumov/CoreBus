@@ -297,7 +297,7 @@ public class ModbusASCII_CreateRequestTest : BaseProtocolCreateRequestTest
         // LRC8
         if (CheckSum_IsEnable)
         {
-            byte[] LRC8 = CheckSum.Calculate_LRC8(MessageBytes);
+            byte[] LRC8 = CheckSum.Calculate_LRC8_ASCII(MessageBytes);
             ResultArray[ResultArray.Length - 4] = LRC8[0];
             ResultArray[ResultArray.Length - 3] = LRC8[1];
         }

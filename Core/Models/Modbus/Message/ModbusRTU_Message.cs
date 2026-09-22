@@ -33,12 +33,16 @@ public class ModbusRTU_Message : ModbusMessage
 
     public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
+        // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
+        // Сообщение с кодом ошибки - 3 байта
+        // Контрольная сумма CRC16 - 2 байта
         if (sourceArray.Length < 3 || (checkSumIsEnable && sourceArray.Length < 5))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
         if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
+        // SlaveID - 1 байт, CRC16 - 2 байта
         var pduArraySize = checkSumIsEnable ? sourceArray.Length - 3 : sourceArray.Length - 1;
         
         var pduArray = new byte[pduArraySize];
