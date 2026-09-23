@@ -321,6 +321,12 @@
       "EmptyDataPartAscii": "报文信息部分长度为 0。\n功能码：{0}\nModbus ASCII 报文可能已损坏。",
       "EmptyDataPartRtu": "报文信息部分长度为 0。\n功能码：{0}\nModbus RTU 报文可能已损坏。",
       "EmptyDataPartTcp": "报文信息部分长度为 0。\n功能码：{0}\nModbus TCP 报文可能已损坏。",
+      "InvalidPduFormat": "响应包含不正确的 PDU 格式。\n预期格式：{0}",
+      "InvalidMessageSizeSimple": "数据包 {0} 完整性被破坏。",
+      "InvalidMessageSize": "数据包 {0} 完整性被破坏。\n功能码：{1}",
+      "InvalidCheckSum": "数据包 {0} 完整性被破坏。\n校验和无效。\n功能码：{1}",
+      "InvalidDataLength": "数据包 {0} 完整性被破坏。\n数据字节数不正确。\n功能码：{1}",
+      "InvalidFunctionNumberResponse": "收到了针对其他 Modbus 功能的响应。\n预期功能 {0} 的响应\n收到功能 {1} 的响应",
       "UnsupportedCommandCode": "不支持的 Modbus 命令码（码：{0}）",
       "PduBuildErrorUnsupportedFunction": "构建 PDU 时出错。\n不支持的功能码：{0}"
     }

@@ -321,6 +321,12 @@
       "EmptyDataPartAscii": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus ASCII packet integrity violation.",
       "EmptyDataPartRtu": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus RTU packet integrity violation.",
       "EmptyDataPartTcp": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus TCP packet integrity violation.",
+      "InvalidPduFormat": "The response contains an invalid PDU format.\nExpected format: {0}",
+      "InvalidMessageSizeSimple": "Packet integrity violation for {0}.",
+      "InvalidMessageSize": "Packet integrity violation for {0}.\nFunction code: {1}",
+      "InvalidCheckSum": "Packet integrity violation for {0}.\nInvalid checksum.\nFunction code: {1}",
+      "InvalidDataLength": "Packet integrity violation for {0}.\nInvalid data byte count.\nFunction code: {1}",
+      "InvalidFunctionNumberResponse": "Received a response for a different Modbus function.\nExpected a response for function {0}\nReceived a response for function {1}",
       "UnsupportedCommandCode": "Unsupported Modbus command code (Code: {0})",
       "PduBuildErrorUnsupportedFunction": "Error while building PDU.\nUnsupported function code: {0}"
     }

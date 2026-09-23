@@ -321,6 +321,12 @@
       "EmptyDataPartAscii": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-ASCII-Pakets beschädigt.",
       "EmptyDataPartRtu": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-RTU-Pakets beschädigt.",
       "EmptyDataPartTcp": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-TCP-Pakets beschädigt.",
+      "InvalidPduFormat": "Die Antwort enthält ein ungültiges PDU-Format.\nErwartetes Format: {0}",
+      "InvalidMessageSizeSimple": "Verletzung der Paketintegrität von {0}.",
+      "InvalidMessageSize": "Verletzung der Paketintegrität von {0}.\nFunktionscode: {1}",
+      "InvalidCheckSum": "Verletzung der Paketintegrität von {0}.\nUngültige Prüfsumme.\nFunktionscode: {1}",
+      "InvalidDataLength": "Verletzung der Paketintegrität von {0}.\nUngültige Anzahl der Datenbytes.\nFunktionscode: {1}",
+      "InvalidFunctionNumberResponse": "Antwort auf eine andere Modbus-Funktion empfangen.\nErwartete Antwort auf Funktion {0}\nEmpfangene Antwort auf Funktion {1}",
       "UnsupportedCommandCode": "Nicht unterstützter Modbus-Befehlscode (Code: {0})",
       "PduBuildErrorUnsupportedFunction": "Fehler beim Erstellen der PDU.\nNicht unterstützter Funktionscode: {0}"
     }

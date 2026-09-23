@@ -321,6 +321,12 @@
       "EmptyDataPartAscii": "정보 부분 길이가 0입니다.\n기능 코드: {0}\nModbus ASCII 패킷 무결성이 손상되었을 수 있습니다.",
       "EmptyDataPartRtu": "정보 부분 길이가 0입니다.\n기능 코드: {0}\nModbus RTU 패킷 무결성이 손상되었을 수 있습니다.",
       "EmptyDataPartTcp": "정보 부분 길이가 0입니다.\n기능 코드: {0}\nModbus TCP 패킷 무결성이 손상되었을 수 있습니다.",
+      "InvalidPduFormat": "응답에 잘못된 PDU 형식이 포함되어 있습니다.\n예상 형식: {0}",
+      "InvalidMessageSizeSimple": "{0} 패킷 무결성 위반.",
+      "InvalidMessageSize": "{0} 패킷 무결성 위반.\n기능 코드: {1}",
+      "InvalidCheckSum": "{0} 패킷 무결성 위반.\n잘못된 체크섬.\n기능 코드: {1}",
+      "InvalidDataLength": "{0} 패킷 무결성 위반.\n잘못된 데이터 바이트 수.\n기능 코드: {1}",
+      "InvalidFunctionNumberResponse": "다른 Modbus 기능에 대한 응답을 받았습니다.\n기능 {0}에 대한 응답이 예상되었습니다\n기능 {1}에 대한 응답을 받았습니다",
       "UnsupportedCommandCode": "지원되지 않는 Modbus 명령 코드 (코드: {0})",
       "PduBuildErrorUnsupportedFunction": "PDU 생성 중 오류.\n지원되지 않는 기능 코드: {0}"
     }
