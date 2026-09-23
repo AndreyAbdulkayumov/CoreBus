@@ -52,7 +52,7 @@ public class ModbusRTU_Message : ModbusMessage
         return new ModbusResponse
         {
             SlaveID = sourceArray[0],
-            PDU = DecodingPduResponse(pduArray, localization)
+            PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }
 

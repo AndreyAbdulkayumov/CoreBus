@@ -60,7 +60,7 @@ public class ModbusTCP_Message : ModbusMessage
         
         Array.Copy(sourceArray, 7, pduArray, 0, pduArray.Length);
         
-        decodingResponse.PDU = DecodingPduResponse(pduArray, localization);
+        decodingResponse.PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization);
         
         return decodingResponse;
     }

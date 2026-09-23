@@ -210,6 +210,20 @@ public class ModbusRTU_DecodingResponseTest
     }
     
     [Fact]
+    public void InvalidFunctionNumberInResponse_Throws()
+    {
+        const byte slaveId = 1;
+        
+        var expectedFunction = Function.PresetSingleRegister;
+        const byte actualFunctionNumber = 0x0A;
+
+        var message = new byte[] { slaveId, actualFunctionNumber, 0x00, 0x01, 0x10, 0xFF };
+
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(expectedFunction, message, false, _localization));
+    }
+    
+    [Fact]
     public void CheckSum_DisabledCRC_Success()
     {
         const byte slaveId = 1;

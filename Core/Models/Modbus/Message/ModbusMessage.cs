@@ -19,26 +19,29 @@ public abstract class ModbusMessage
 
     protected ulong PackageNumber = 0;
 
-    protected PduResponse DecodingPduResponse(byte[] pduArray, ILocalizationService localization)
+    protected PduResponse DecodingPduResponse(int expectedFunctionNumber, byte[] pduArray, ILocalizationService localization)
     {
         if (pduArray.Length < 2)
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
         
         CheckErrorCode(pduArray, localization);
 
-        var functionNumber = pduArray[0];
+        var actualFunctionNumber = pduArray[0];
         
-        if (Function.AllReadFunctionNumbers.Contains(functionNumber))
+        if (expectedFunctionNumber != actualFunctionNumber)
+            throw new Exception(localization.Get("Core.Modbus.InvalidFunctionNumberResponse", expectedFunctionNumber, actualFunctionNumber));
+        
+        if (Function.AllReadFunctionNumbers.Contains(actualFunctionNumber))
         {
             return CreatePduResponseRead(pduArray, localization);
         }
 
-        if (Function.AllWriteFunctionNumbers.Contains(functionNumber))
+        if (Function.AllWriteFunctionNumbers.Contains(actualFunctionNumber))
         {
             return CreatePduResponseWrite(pduArray, localization);
         }
 
-        throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", functionNumber));
+        throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", actualFunctionNumber));
     }
 
     private PduResponseRead CreatePduResponseRead(byte[] pduArray, ILocalizationService localization)

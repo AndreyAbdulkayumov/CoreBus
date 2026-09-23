@@ -246,6 +246,24 @@ public class ModbusTCP_DecodingResponseTest
     }
     
     [Fact]
+    public void InvalidFunctionNumberInResponse_Throws()
+    {
+        const byte slaveId = 1;
+        
+        var expectedFunction = Function.PresetSingleRegister;
+        const byte actualFunctionNumber = 0x0A;
+
+        var pdu = new byte[] { actualFunctionNumber, 0x00, 0x01, 0x10, 0xFF };
+
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(
+                expectedFunction, 
+                CreateTcpMessage(slaveId, pdu),
+                false, 
+                _localization));
+    }
+    
+    [Fact]
     public void TCPSpecific_WrongLengthOfPDU_Throws()
     {
         const byte slaveId = 16;

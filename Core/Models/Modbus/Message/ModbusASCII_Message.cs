@@ -70,7 +70,7 @@ public class ModbusASCII_Message : ModbusMessage
         if (sourceArray.Length < 9 || (checkSumIsEnable && sourceArray.Length < 11))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        if (!CheckStartAndEndMessage(sourceArray, localization))
+        if (!CheckStartAndEndMessage(sourceArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
         var convertedArray = GetBytesArrayFromCharArray(sourceArray);
@@ -88,11 +88,11 @@ public class ModbusASCII_Message : ModbusMessage
         return new ModbusResponse
         {
             SlaveID = convertedArray[0],
-            PDU = DecodingPduResponse(pduArray, localization)
+            PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }
 
-    private static bool CheckStartAndEndMessage(byte[] message, ILocalizationService localization)
+    private static bool CheckStartAndEndMessage(byte[] message)
     {
         return message[0] == StartByte &&
                message[^2] == EndByteCR &&

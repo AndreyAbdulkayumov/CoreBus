@@ -79,7 +79,9 @@ public class Model_Modbus
                 var deviceResponse = message.DecodingResponse(writeFunction, RX, dataForWrite.CheckSum_IsEnable, _localization);
 
                 if (deviceResponse.PDU is not (PduResponseWriteSingle or PduResponseWriteMultiple))
-                    throw new Exception("Некорректный формат PDU.");
+                    throw new Exception(
+                        _localization.Get("Core.Modbus.InvalidPduFormat",
+                            $"{nameof(PduResponseWriteSingle)} | {nameof(PduResponseWriteMultiple)}"));
             }
 
             else
@@ -157,11 +159,11 @@ public class Model_Modbus
         return result;
     }
 
-    private static byte[] GetOutputRX(byte[] RX, int length)
+    private static byte[] GetOutputRX(byte[] rx, int length)
     {
         var outputArray = new byte[length];
 
-        Array.Copy(RX, 0, outputArray, 0, outputArray.Length);
+        Array.Copy(rx, 0, outputArray, 0, outputArray.Length);
 
         return outputArray;
     }
@@ -202,7 +204,9 @@ public class Model_Modbus
                 var deviceResponse = message.DecodingResponse(readFunction, RX, dataForRead.CheckSum_IsEnable, _localization);
 
                 if (deviceResponse.PDU is not PduResponseRead pdu)
-                    throw new Exception("Некорректный формат PDU.");
+                    throw new Exception(
+                        _localization.Get("Core.Modbus.InvalidPduFormat",
+                            $"{nameof(PduResponseRead)}"));
                 
                 result.ReadedData = pdu.Data;
             }
