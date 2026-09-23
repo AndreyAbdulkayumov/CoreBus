@@ -7,6 +7,22 @@ public class ModbusASCII_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus ASCII";
 
+    /// <summary>
+    /// Первый байт сообщения Modbus ASCII (символ ':' = 0x3A)
+    /// </summary>
+    public static byte StartByte => 0x3A;
+    
+    /// <summary>
+    /// Предпоследний байт сообщения Modbus ASCII (символ 'CR' = 0x0D)
+    /// </summary>
+    public static byte EndByteCR => 0x0D;
+    
+    /// <summary>
+    /// Последний байт сообщения Modbus ASCII (символ 'LF' = 0x0A)
+    /// </summary>
+    public static byte EndByteLF => 0x0A;
+    
+
     public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
         var PDU = Modbus_PDU.Create(function, data, localization);
@@ -26,7 +42,7 @@ public class ModbusASCII_Message : ModbusMessage
             : new byte[3 + mainPart_ASCII.Length];
 
         // Символ начала кадра (префикс)
-        TX[0] = 0x3A;
+        TX[0] = StartByte;
 
         Array.Copy(mainPart_ASCII, 0, TX, 1, mainPart_ASCII.Length);
 
@@ -40,8 +56,8 @@ public class ModbusASCII_Message : ModbusMessage
         }
 
         // Символы конца кадра
-        TX[^2] = 0x0D;  // Предпоследний элемент
-        TX[^1] = 0x0A;  // Последний элемент
+        TX[^2] = EndByteCR;  // Предпоследний элемент
+        TX[^1] = EndByteLF;  // Последний элемент
 
         return TX;
     }
@@ -78,9 +94,9 @@ public class ModbusASCII_Message : ModbusMessage
 
     private static bool CheckStartAndEndMessage(byte[] message, ILocalizationService localization)
     {
-        return message[0] == 0x3A &&    // Начало сообщения символ ':' (0x3A)
-               message[^2] == 0x0D &&   // Предпоследний элемент символ 'CR' (0x0D)
-               message[^1] == 0x0A;     // Предпоследний элемент символ 'LF' (0x0A)
+        return message[0] == StartByte &&
+               message[^2] == EndByteCR &&
+               message[^1] == EndByteLF;
     }
 
     private static bool ValidateCheckSum(byte[] message)
@@ -88,6 +104,7 @@ public class ModbusASCII_Message : ModbusMessage
         if (message.Length < 2)
             return false;
         
+        // Убираем последний байт с LRC8
         var mainPart = new byte[message.Length - 1];
         
         Array.Copy(message, mainPart, mainPart.Length);
