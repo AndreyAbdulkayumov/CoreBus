@@ -158,7 +158,7 @@ public class SerialPortClient : IConnection
 
             _deviceSerialPort = new SerialPort();
 
-            if (int.TryParse(portInfo.BaudRate, out int BaudRate) == false)
+            if (!int.TryParse(portInfo.BaudRate, out var baudRate))
             {
                 throw new Exception(_localization.Get("Core.BaudRateParseError", portInfo.BaudRate));
             }
@@ -191,7 +191,7 @@ public class SerialPortClient : IConnection
                     throw new Exception(_localization.Get("Core.InvalidParity"));
             }
 
-            if (int.TryParse(portInfo.DataBits, out int DataBits) == false)
+            if (!int.TryParse(portInfo.DataBits, out var dataBits))
             {
                 throw new Exception(_localization.Get("Core.DataBitsParseError", portInfo.DataBits));
             }
@@ -217,9 +217,9 @@ public class SerialPortClient : IConnection
             }
 
             _deviceSerialPort.PortName = portInfo.Port;
-            _deviceSerialPort.BaudRate = BaudRate;
+            _deviceSerialPort.BaudRate = baudRate;
             _deviceSerialPort.Parity = selectedParity;
-            _deviceSerialPort.DataBits = DataBits;
+            _deviceSerialPort.DataBits = dataBits;
             _deviceSerialPort.StopBits = selectedStopBits;
 
             _deviceSerialPort.Open();
@@ -231,11 +231,11 @@ public class SerialPortClient : IConnection
         {
             _deviceSerialPort?.Close();
 
-            string CommonMessage = _localization.Get("Core.SerialConnectErrorPrefix") + "\n\n";
+            var commonMessage = _localization.Get("Core.SerialConnectErrorPrefix") + "\n\n";
 
             if (portInfo != null)
             {
-                throw new Exception(CommonMessage +
+                throw new Exception(commonMessage +
                     _localization.Get("Core.ConnectionDataHeader") + "\n" +
                     "Port: " + portInfo.Port + "\n" +
                     "BaudRate: " + portInfo.BaudRate + "\n" +
@@ -245,7 +245,7 @@ public class SerialPortClient : IConnection
                     error.Message);
             }
 
-            throw new Exception(CommonMessage + error.Message);
+            throw new Exception(commonMessage + error.Message);
         }
     }
 
@@ -255,9 +255,9 @@ public class SerialPortClient : IConnection
         {
             if (_deviceSerialPort != null && _deviceSerialPort.IsOpen)
             {
-                ProtocolMode? SelectedProtocol = ConnectedHost.SelectedProtocol;
+                var selectedProtocol = ConnectedHost.SelectedProtocol;
 
-                if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
+                if (selectedProtocol != null && selectedProtocol.CurrentReadMode == ReadMode.Async)
                 {
                     _readCancelSource?.Cancel();
 
@@ -288,7 +288,7 @@ public class SerialPortClient : IConnection
             return new ModbusOperationInfo(DateTime.Now, null);
         }
 
-        DateTime ExecutionTime = new DateTime();
+        var executionTime = new DateTime();
 
         try
         {
@@ -296,12 +296,12 @@ public class SerialPortClient : IConnection
             {
                 await _deviceSerialPort.BaseStream.WriteAsync(message, 0, numberOfBytes);
 
-                ExecutionTime = DateTime.Now;
+                executionTime = DateTime.Now;
 
                 Notifications.TransmitEvent();
             }
 
-            return new ModbusOperationInfo(ExecutionTime, null);
+            return new ModbusOperationInfo(executionTime, null);
         }
 
         catch (Exception error)
@@ -320,9 +320,9 @@ public class SerialPortClient : IConnection
             return new ModbusOperationInfo(DateTime.Now, Array.Empty<byte>());
         }
 
-        var ReceivedBytes = new List<byte>();
+        var receivedBytes = new List<byte>();
 
-        DateTime ExecutionTime = new DateTime();
+        var executionTime = new DateTime();
 
         try
         {
@@ -336,39 +336,35 @@ public class SerialPortClient : IConnection
                 // Для использования небольших скоростей передачи данных (Baud Rate)
                 // значение задержки взято с запасом.
 
-                byte[] buffer;
-
-                int numberOfReceivedBytes;
-
-                bool isFirstPackage = true;
+                var isFirstPackage = true;
 
                 do
                 {
-                    buffer = new byte[100];
+                    var buffer = new byte[100];
 
-                    numberOfReceivedBytes = _deviceSerialPort.Read(buffer, 0, buffer.Length);
+                    var numberOfReceivedBytes = _deviceSerialPort.Read(buffer, 0, buffer.Length);
 
                     if (isFirstPackage)
                     {
-                        ExecutionTime = DateTime.Now;
+                        executionTime = DateTime.Now;
                         isFirstPackage = false;
                     }
 
                     Array.Resize(ref buffer, numberOfReceivedBytes);
 
-                    ReceivedBytes.AddRange(buffer);
+                    receivedBytes.AddRange(buffer);
 
                     await Task.Delay(70);
 
                 } while (_deviceSerialPort.BytesToRead > 0);
 
-                if (ReceivedBytes.Count > 0)
+                if (receivedBytes.Count > 0)
                 {
                     Notifications.ReceiveEvent();
                 }
             }
 
-            return new ModbusOperationInfo(ExecutionTime, ReceivedBytes.ToArray());
+            return new ModbusOperationInfo(executionTime, receivedBytes.ToArray());
         }
 
         catch (TimeoutException error)
@@ -390,7 +386,7 @@ public class SerialPortClient : IConnection
             if (currentStream == null)
                 throw new InvalidOperationException(_localization.Get("Core.ReadStreamNotInitialized"));
 
-            byte[] bufferRX = new byte[65536];
+            var bufferRX = new byte[65536];
 
             int numberOfReceiveBytes;
 

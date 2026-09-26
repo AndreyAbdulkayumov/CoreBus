@@ -12,10 +12,10 @@ public class SocketInfo : ITypeOfInfo
     public string? IP;
     public string? Port;
 
-    public SocketInfo(string? IP, string? Port)
+    public SocketInfo(string? ip, string? port)
     {
-        this.IP = IP;
-        this.Port = Port;
+        IP = ip;
+        Port = port;
     }
 }
 
@@ -27,13 +27,13 @@ public class SerialPortInfo : ITypeOfInfo
     public string? DataBits;
     public string? StopBits;
 
-    public SerialPortInfo(string? Port, string? BaudRate, string? Parity, string? DataBits, string? StopBits)
+    public SerialPortInfo(string? port, string? baudRate, string? parity, string? dataBits, string? stopBits)
     {
-        this.Port = Port;
-        this.BaudRate = BaudRate;
-        this.Parity = Parity;
-        this.DataBits = DataBits;
-        this.StopBits = StopBits;
+        Port = port;
+        BaudRate = baudRate;
+        Parity = parity;
+        DataBits = dataBits;
+        StopBits = stopBits;
     }
 }
 

@@ -98,9 +98,9 @@ public class IPClient : IConnection
 
                     if (_readThread != null)
                     {
-                        Task waitCancel = Task.WhenAll(_readThread);
+                        var waitCancel = Task.WhenAll(_readThread);
 
-                        Task flushTask = _stream.FlushAsync();
+                        var flushTask = _stream.FlushAsync();
 
                         Task.WaitAll(waitCancel, flushTask);
                     }
@@ -131,14 +131,14 @@ public class IPClient : IConnection
                 );
         }
 
-        if (int.TryParse(socketInfo.Port, out int Port) == false)
+        if (!int.TryParse(socketInfo.Port, out var port))
         {
             throw new Exception(_localization.Get("Core.PortParseError", socketInfo.Port));
         }
 
         _client = new TcpClient();
 
-        IAsyncResult result = _client.BeginConnect(socketInfo.IP, Port, null, null);
+        var result = _client.BeginConnect(socketInfo.IP, port, null, null);
 
         if (result.AsyncWaitHandle.WaitOne(500, true) == true)
         {
@@ -161,7 +161,7 @@ public class IPClient : IConnection
 
     public async Task Disconnect()
     {
-        ProtocolMode? selectedProtocol = ConnectedHost.SelectedProtocol;
+        var selectedProtocol = ConnectedHost.SelectedProtocol;
 
         if (selectedProtocol != null && selectedProtocol.CurrentReadMode == ReadMode.Async)
         {
@@ -223,26 +223,24 @@ public class IPClient : IConnection
 
         var receivedBytes = new List<byte>();
 
-        DateTime executionTime = new DateTime();
+        var executionTime = new DateTime();
 
         try
         {
             if (IsConnected)
             {
-                byte[] buffer;
-
-                int numberOfReceivedBytes;
-
-                bool isFirstPackage = true;
+                var isFirstPackage = true;
 
                 do
                 {
-                    buffer = new byte[100];
+                    var buffer = new byte[100];
 
                     // Асинхронная операция не среагирует на срабатывание таймаута чтения.
                     // Поэтому чтобы предотвратить зависание программы на этом моменте, заведен токен отмены.
                     var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_stream.ReadTimeout));
 
+                    int numberOfReceivedBytes;
+                    
                     try
                     {
                         numberOfReceivedBytes = await _stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
@@ -292,7 +290,7 @@ public class IPClient : IConnection
             if (currentStream == null)
                 throw new InvalidOperationException(_localization.Get("Core.ReadStreamNotInitialized"));
 
-            byte[] bufferRX = new byte[currentStream.Socket.ReceiveBufferSize];
+            var bufferRX = new byte[currentStream.Socket.ReceiveBufferSize];
 
             int numberOfReceiveBytes;
 
