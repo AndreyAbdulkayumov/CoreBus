@@ -70,10 +70,10 @@ public class ModbusASCII_Message : ModbusMessage
         if (sourceArray.Length < 9 || (checkSumIsEnable && sourceArray.Length < 11))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        if (!CheckStartAndEndMessage(sourceArray))
+        if (!TryExtractFrame(sourceArray, out var asciiFrame))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
-        
-        var convertedArray = GetBytesArrayFromCharArray(sourceArray);
+
+        var convertedArray = GetBytesArrayFromCharArray(asciiFrame);
 
         if (checkSumIsEnable && !ValidateCheckSum(convertedArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
@@ -92,13 +92,38 @@ public class ModbusASCII_Message : ModbusMessage
         };
     }
 
+    private static bool TryExtractFrame(byte[] sourceArray, out byte[] frame)
+    {
+        frame = Array.Empty<byte>();
+        
+        if (!CheckStartAndEndMessage(sourceArray))
+            return false;
+        
+        var startIndex = Array.IndexOf(sourceArray, StartByte);
+        
+        for (var i = startIndex + 1; i < sourceArray.Length - 1; i++)
+        {
+            if (sourceArray[i] == EndByteCR && sourceArray[i + 1] == EndByteLF)
+            {
+                var frameLength = i + 2 - startIndex;
+                frame = new byte[frameLength];
+                
+                Array.Copy(sourceArray, startIndex, frame, 0, frameLength);
+                
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     private static bool CheckStartAndEndMessage(byte[] message)
     {
-        return message[0] == StartByte &&
-               message[^2] == EndByteCR &&
-               message[^1] == EndByteLF;
+        return message.Contains(StartByte) &&
+               message.Contains(EndByteCR) &&
+               message.Contains(EndByteLF);
     }
-
+    
     private static bool ValidateCheckSum(byte[] message)
     {
         if (message.Length < 2)

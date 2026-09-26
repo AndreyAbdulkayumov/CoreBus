@@ -363,6 +363,42 @@ public class ModbusASCII_DecodingResponseTest
             _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
     }
     
+    [Fact]
+    public void ASCIISpecific_GarbageInStartAndEnd_Success()
+    {
+        var selectedFunction = Function.PresetSingleRegister;
+
+        byte[] message =
+        [
+            0xFD, 0xFA, 0x34, 0x33,       // Мусор
+            0x3A,                         // ':'
+            0x30, 0x31,                   // '0','1'  SlaveID
+            0x30, 0x36,                   // '0','6'  Function code
+            0x30, 0x30, 0x30, 0x44,       // '0','0','0','D'  Address = 13
+            0x30, 0x38, 0x39, 0x46,       // '0','8','9','F'  Data = 0x089F
+            0x34, 0x35,                   // LRC8
+            0x0D, 0x0A,                   // CR LF
+            0xFD, 0xFA, 0x22              // Мусор
+        ];
+
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction, 
+            message, 
+            true, 
+            _localization);
+        
+        Assert.Equal(1, result.SlaveID);
+        
+        Assert.IsType<PduResponseWriteSingle>(result.PDU);
+        
+        var resultPdu = result.PDU as PduResponseWriteSingle;
+        
+        Assert.NotNull(resultPdu);
+        Assert.Equal(selectedFunction.Number, resultPdu.FunctionNumber);
+        Assert.Equal(13, resultPdu.Address);
+        Assert.Equal(0x089F, resultPdu.Data);
+    }
+    
     private static byte[] CreateAsciiMessageFromBytes(byte[] mainPart, bool checkSumIsEnable)
     {
         var mainPartAscii = ModbusASCII_Message.ConvertArrayToASCII(mainPart);
