@@ -113,7 +113,7 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
     private ValidateMessage? Check_IP_Address(string value)
     {
         // Регулярное выражение для проверки корректного IPv4 адреса
-        string pattern = @"^(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])$";
+        const string pattern = @"^(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])$";
 
         if (!Regex.IsMatch(value, pattern))
         {
@@ -125,9 +125,9 @@ public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
 
     private ValidateMessage? Check_Port(string value)
     {
-        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out ushort port) || port < 1)
         {
-            return AllErrorMessages[DecError_uint];
+            return AllErrorMessages[TCP_Port_Invalid];
         }
 
         return null;
