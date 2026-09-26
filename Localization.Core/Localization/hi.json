@@ -195,7 +195,6 @@
     "StartSearch": "खोज शुरू करें",
     "StopSearch": "खोज रोकें"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "सेटिंग्स आरंभ नहीं हुईं।",
     "UnknownConnectionType": "अज्ञात कनेक्शन प्रकार: {0}",
@@ -318,9 +317,6 @@
       "ExceptionCode10": "गेटवे गलत कॉन्फ़िगर है या अनुरोधों से अधिभारित है।",
       "ExceptionCode11": "नेटवर्क में स्लेव नहीं है या उससे कोई उत्तर नहीं।",
       "UnknownErrorWithCodes": "फ़ंक्शन कोड: {0}\nअज्ञात Modbus त्रुटि (कोड {1})",
-      "EmptyDataPartAscii": "पैकेट की सूचना भाग की लंबाई 0 है।\nफ़ंक्शन कोड: {0}\nसंभवतः Modbus ASCII पैकेट अखंडता भंग।",
-      "EmptyDataPartRtu": "पैकेट की सूचना भाग की लंबाई 0 है।\nफ़ंक्शन कोड: {0}\nसंभवतः Modbus RTU पैकेट अखंडता भंग।",
-      "EmptyDataPartTcp": "पैकेट की सूचना भाग की लंबाई 0 है।\nफ़ंक्शन कोड: {0}\nसंभवतः Modbus TCP पैकेट अखंडता भंग।",
       "InvalidPduFormat": "प्रतिक्रिया में अमान्य PDU प्रारूप है।\nअपेक्षित प्रारूप: {0}",
       "InvalidMessageSizeSimple": "पैकेट {0} की अखंडता भंग।",
       "InvalidMessageSize": "पैकेट {0} की अखंडता भंग।\nफ़ंक्शन कोड: {1}",

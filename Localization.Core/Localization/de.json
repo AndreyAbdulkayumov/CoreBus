@@ -195,7 +195,6 @@
     "StartSearch": "Suche starten",
     "StopSearch": "Suche stoppen"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "Einstellungen sind nicht initialisiert.",
     "UnknownConnectionType": "Unbekannter Verbindungstyp: {0}",
@@ -318,9 +317,6 @@
       "ExceptionCode10": "Gateway ist falsch konfiguriert oder mit Anfragen überlastet.",
       "ExceptionCode11": "Slave ist nicht im Netzwerk oder antwortet nicht.",
       "UnknownErrorWithCodes": "Funktionscode: {0}\nUnbekannter Modbus-Fehler (Code {1})",
-      "EmptyDataPartAscii": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-ASCII-Pakets beschädigt.",
-      "EmptyDataPartRtu": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-RTU-Pakets beschädigt.",
-      "EmptyDataPartTcp": "Die Länge des Informationsanteils des Pakets ist 0.\nFunktionscode: {0}\nMöglicherweise ist die Integrität des Modbus-TCP-Pakets beschädigt.",
       "InvalidPduFormat": "Die Antwort enthält ein ungültiges PDU-Format.\nErwartetes Format: {0}",
       "InvalidMessageSizeSimple": "Verletzung der Paketintegrität von {0}.",
       "InvalidMessageSize": "Verletzung der Paketintegrität von {0}.\nFunktionscode: {1}",

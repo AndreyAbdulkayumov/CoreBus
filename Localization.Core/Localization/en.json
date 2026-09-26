@@ -195,7 +195,6 @@
     "StartSearch": "Start search",
     "StopSearch": "Stop search"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "Settings are not initialized.",
     "UnknownConnectionType": "Unknown connection type: {0}",
@@ -318,9 +317,6 @@
       "ExceptionCode10": "Gateway is misconfigured or overloaded with requests.",
       "ExceptionCode11": "Target slave is not present on the network or did not respond.",
       "UnknownErrorWithCodes": "Function code: {0}\nUnknown Modbus error (Code {1})",
-      "EmptyDataPartAscii": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus ASCII packet integrity violation.",
-      "EmptyDataPartRtu": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus RTU packet integrity violation.",
-      "EmptyDataPartTcp": "The information part length of the packet is 0.\nFunction code: {0}\nPossible Modbus TCP packet integrity violation.",
       "InvalidPduFormat": "The response contains an invalid PDU format.\nExpected format: {0}",
       "InvalidMessageSizeSimple": "Packet integrity violation for {0}.",
       "InvalidMessageSize": "Packet integrity violation for {0}.\nFunction code: {1}",

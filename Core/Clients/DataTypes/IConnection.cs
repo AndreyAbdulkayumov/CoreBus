@@ -39,13 +39,13 @@ public interface IConnection
     /// <summary>
     /// Установка синхронного или асинхронного режима чтения.
     /// </summary>
-    /// <param name="Mode"></param>
+    /// <param name="mode"></param>
     void SetReadMode(ReadMode mode);
 
     /// <summary>
     /// Подключение к указанному хосту.
     /// </summary>
-    /// <param name="Info"></param>
+    /// <param name="info"></param>
     void Connect(ConnectionInfo info);
 
     /// <summary>
@@ -56,8 +56,8 @@ public interface IConnection
     /// <summary>
     /// Запись определенного колличества байт в открытое соединение.
     /// </summary>
-    /// <param name="Message"></param>
-    /// <param name="NumberOfBytes"></param>
+    /// <param name="message"></param>
+    /// <param name="numberOfBytes"></param>
     Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes);
 
     /// <summary>

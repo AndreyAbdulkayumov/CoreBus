@@ -195,7 +195,6 @@
     "StartSearch": "开始搜索",
     "StopSearch": "停止搜索"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "设置未初始化。",
     "UnknownConnectionType": "未知的连接类型：{0}",
@@ -318,9 +317,6 @@
       "ExceptionCode10": "网关配置错误或请求过载。",
       "ExceptionCode11": "网络中无从站或从站无应答。",
       "UnknownErrorWithCodes": "功能码：{0}\n未知 Modbus 错误（码 {1}）",
-      "EmptyDataPartAscii": "报文信息部分长度为 0。\n功能码：{0}\nModbus ASCII 报文可能已损坏。",
-      "EmptyDataPartRtu": "报文信息部分长度为 0。\n功能码：{0}\nModbus RTU 报文可能已损坏。",
-      "EmptyDataPartTcp": "报文信息部分长度为 0。\n功能码：{0}\nModbus TCP 报文可能已损坏。",
       "InvalidPduFormat": "响应包含不正确的 PDU 格式。\n预期格式：{0}",
       "InvalidMessageSizeSimple": "数据包 {0} 完整性被破坏。",
       "InvalidMessageSize": "数据包 {0} 完整性被破坏。\n功能码：{1}",

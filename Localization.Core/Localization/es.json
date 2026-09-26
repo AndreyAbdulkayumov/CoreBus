@@ -195,7 +195,6 @@
     "StartSearch": "Iniciar búsqueda",
     "StopSearch": "Detener búsqueda"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "Los ajustes no están inicializados.",
     "UnknownConnectionType": "Tipo de conexión desconocido: {0}",
@@ -318,9 +317,6 @@
       "ExceptionCode10": "La pasarela está mal configurada o sobrecargada de solicitudes.",
       "ExceptionCode11": "No hay esclavo en la red o no responde.",
       "UnknownErrorWithCodes": "Código de función: {0}\nError Modbus desconocido (código {1})",
-      "EmptyDataPartAscii": "La longitud de la parte de información del paquete es 0.\nCódigo de función: {0}\nPosible daño en la integridad del paquete Modbus ASCII.",
-      "EmptyDataPartRtu": "La longitud de la parte de información del paquete es 0.\nCódigo de función: {0}\nPosible daño en la integridad del paquete Modbus RTU.",
-      "EmptyDataPartTcp": "La longitud de la parte de información del paquete es 0.\nCódigo de función: {0}\nPosible daño en la integridad del paquete Modbus TCP.",
       "InvalidPduFormat": "La respuesta contiene un formato de PDU incorrecto.\nFormato esperado: {0}",
       "InvalidMessageSizeSimple": "Violación de la integridad del paquete {0}.",
       "InvalidMessageSize": "Violación de la integridad del paquete {0}.\nCódigo de función: {1}",
