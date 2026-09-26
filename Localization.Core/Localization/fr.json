@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "Champ d'écriture des données n° {0}",
     "EnterSendData": "Saisissez les données à envoyer.",
     "ItemFieldLabel": "Élément {0} - {1}",
-    "InvalidIp": "Adresse IP non valide"
+    "InvalidIp": "Adresse IP non valide",
+    "InvalidTcpPort": "Port non valide. Plage de nombres de 1 à 65535.",
+    "InvalidTimeout": "Valeur de délai d'attente non valide.\nPlage de nombres de 1 à 2 147 483 647."
   },
   "Monitoring": {
     "ForAddress": "Pour l'adresse « {0} »",

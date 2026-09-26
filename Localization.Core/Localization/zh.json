@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "数据写入字段 #{0}",
     "EnterSendData": "请输入要发送的数据。",
     "ItemFieldLabel": "项 {0} - {1}",
-    "InvalidIp": "无效的 IP 地址"
+    "InvalidIp": "无效的 IP 地址",
+    "InvalidTcpPort": "无效的端口。数字范围 1 至 65535。",
+    "InvalidTimeout": "无效的超时值。\n数字范围 1 至 2 147 483 647。"
   },
   "Monitoring": {
     "ForAddress": "对于地址 \"{0}\"",

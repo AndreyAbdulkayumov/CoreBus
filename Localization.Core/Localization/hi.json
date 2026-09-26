@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "डेटा लेखन फ़ील्ड №{0}",
     "EnterSendData": "भेजने के लिए डेटा दर्ज करें।",
     "ItemFieldLabel": "आइटम {0} - {1}",
-    "InvalidIp": "अमान्य IP-पता"
+    "InvalidIp": "अमान्य IP-पता",
+    "InvalidTcpPort": "अमान्य पोर्ट। संख्या सीमा 1 से 65535।",
+    "InvalidTimeout": "अमान्य टाइमआउट मान।\nसंख्या सीमा 1 से 2 147 483 647।"
   },
   "Monitoring": {
     "ForAddress": "पते \"{0}\" के लिए",
