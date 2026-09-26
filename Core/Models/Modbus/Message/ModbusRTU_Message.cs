@@ -1,5 +1,4 @@
 ﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
 
 namespace Core.Models.Modbus.Message;
 
@@ -7,21 +6,13 @@ public class ModbusRTU_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus RTU";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data, localization);
+        var PDU = Modbus_PDU.Create(function, data, localization);
 
-        byte[] TX;
-
-        if (data.CheckSum_IsEnable)
-        {
-            TX = new byte[3 + PDU.Length];
-        }
-
-        else
-        {
-            TX = new byte[1 + PDU.Length];
-        }
+        var TX = data.CheckSum_IsEnable 
+            ? new byte[3 + PDU.Length] 
+            : new byte[1 + PDU.Length];
 
         // Slave ID
         TX[0] = data.SlaveID;
@@ -31,59 +22,50 @@ public class ModbusRTU_Message : ModbusMessage
         // CRC16
         if (data.CheckSum_IsEnable)
         {
-            byte[] CRC16 = CheckSum.Calculate_CRC16(TX, data.Polynom);
-            TX[TX.Length - 2] = CRC16[0];  // Предпоследний элемент
-            TX[TX.Length - 1] = CRC16[1];  // Последний элемент
+            var CRC16 = CheckSum.Calculate_CRC16(TX, data.Polynom);
+            
+            TX[^2] = CRC16[0];  // Предпоследний элемент
+            TX[^1] = CRC16[1];  // Последний элемент
         }
 
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
-        var decodingResponse = new ModbusResponse
+        // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
+        // Сообщение с кодом ошибки - 3 байта
+        // Контрольная сумма CRC16 - 2 байта
+        if (sourceArray.Length < 3 || (checkSumIsEnable && sourceArray.Length < 5))
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+        
+        if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
+            throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
+        
+        // SlaveID - 1 байт, CRC16 - 2 байта
+        var pduArraySize = checkSumIsEnable ? sourceArray.Length - 3 : sourceArray.Length - 1;
+        
+        var pduArray = new byte[pduArraySize];
+        
+        Array.Copy(sourceArray, 1, pduArray, 0, pduArray.Length);
+        
+        return new ModbusResponse
         {
             SlaveID = sourceArray[0],
-            Command = sourceArray[1]
+            PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
+    }
 
-        CheckErrorCode(TypeOfModbus.RTU, ref decodingResponse, sourceArray, localization);
+    private static bool ValidateCheckSum(byte[] message)
+    {
+        if (message.Length < 2)
+            return false;
+        
+        var calculatedCheckSum = CheckSum.Calculate_CRC16(message);
 
-        if (currentFunction is ModbusReadFunction)
-        {
-            decodingResponse.LengthOfData = sourceArray[2];
-
-            if (decodingResponse.LengthOfData == 0)
-            {
-                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartRtu", currentFunction.Number));
-            }
-
-            decodingResponse.Data = new byte[decodingResponse.LengthOfData];
-
-            // Согласно документации на протокол Modbus:
-            // В ответном пакете Modbus RTU на команды чтения
-            // информационная часть начинается с 3 байта.
-
-            Array.Copy(sourceArray, 3, decodingResponse.Data, 0, decodingResponse.LengthOfData);
-
-            // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
-            if (currentFunction != Function.ReadCoilStatus &&
-                currentFunction != Function.ReadDiscreteInputs)
-            {
-                decodingResponse.Data = ReverseLowAndHighBytesInWords(decodingResponse.Data);
-            }
-        }
-
-        else if (currentFunction is ModbusWriteFunction)
-        {
-            decodingResponse.LengthOfData = -1;
-        }
-
-        else
-        {
-            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
-        }
-
-        return decodingResponse;
+        var checkSumFromMessage = new byte[2];
+        Array.Copy(message, message.Length - 2, checkSumFromMessage, 0, 2);
+        
+        return checkSumFromMessage.SequenceEqual(calculatedCheckSum);
     }
 }

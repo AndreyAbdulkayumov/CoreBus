@@ -195,7 +195,6 @@
     "StartSearch": "Iniciar pesquisa",
     "StopSearch": "Parar pesquisa"
   },
-  "Mode": {},
   "Exception": {
     "SettingsNotInitialized": "As definições não foram inicializadas.",
     "UnknownConnectionType": "Foi definido um tipo de ligação desconhecido: {0}",
@@ -318,9 +317,12 @@
       "ExceptionCode10": "O gateway está mal configurado ou sobrecarregado com pedidos.",
       "ExceptionCode11": "O dispositivo escravo não está na rede ou não responde.",
       "UnknownErrorWithCodes": "Código de função: {0}\nErro Modbus desconhecido (código {1})",
-      "EmptyDataPartAscii": "O comprimento da parte de informação do pacote é 0.\nCódigo de função: {0}\nPossível violação da integridade do pacote Modbus ASCII.",
-      "EmptyDataPartRtu": "O comprimento da parte de informação do pacote é 0.\nCódigo de função: {0}\nPossível violação da integridade do pacote Modbus RTU.",
-      "EmptyDataPartTcp": "O comprimento da parte de informação do pacote é 0.\nCódigo de função: {0}\nPossível violação da integridade do pacote Modbus TCP.",
+      "InvalidPduFormat": "A resposta contém um formato de PDU inválido.\nFormato esperado: {0}",
+      "InvalidMessageSizeSimple": "Violação da integridade do pacote {0}.",
+      "InvalidMessageSize": "Violação da integridade do pacote {0}.\nCódigo de função: {1}",
+      "InvalidCheckSum": "Violação da integridade do pacote {0}.\nSoma de verificação inválida.\nCódigo de função: {1}",
+      "InvalidDataLength": "Violação da integridade do pacote {0}.\nQuantidade inválida de bytes de dados.\nCódigo de função: {1}",
+      "InvalidFunctionNumberResponse": "Foi recebida uma resposta para outra função Modbus.\nEsperava-se uma resposta para a função {0}\nFoi recebida uma resposta para a função {1}",
       "UnsupportedCommandCode": "Código de comando Modbus não suportado (código: {0})",
       "PduBuildErrorUnsupportedFunction": "Erro ao formar a PDU.\nCódigo de função não suportado: {0}"
     }

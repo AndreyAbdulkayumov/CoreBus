@@ -3,7 +3,6 @@ using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
 using Core.Models.Settings;
-using Services.Interfaces;
 using System.Text;
 
 namespace Core.Models;

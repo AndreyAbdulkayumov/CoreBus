@@ -193,7 +193,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
     public void SetCheckSumVisiblity()
     {
-        bool isVisible = !_connectedHostModel.HostIsConnect || ModbusClient_VM.ModbusMessageType is not ModbusTCP_Message;
+        var isVisible = !_connectedHostModel.HostIsConnect || ModbusClient_VM.ModbusMessageType is not ModbusTCP_Message;
 
         CheckSum_VisibilityChanged?.Invoke(this, isVisible);
     }
@@ -280,7 +280,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
         MacrosCommandModbus? currentCommand = null;
 
-        string messageSeparator = "\n\n---------------------------\n\n";
+        const string messageSeparator = "\n\n---------------------------\n\n";
 
         foreach (var command in macros.Commands)
         {
@@ -399,7 +399,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
     private async Task ReadAction(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
     {
-        if (_connectedHostModel.HostIsConnect == false)
+        if (!_connectedHostModel.HostIsConnect)
         {
             throw new Exception(_localization.Get("Exception.ClientDisconnected"));
         }
@@ -422,7 +422,7 @@ public class ModbusManualMode_VM : ReactiveObject
             numberOfRegisters,
             ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-        ModbusOperationResult? result = await _modbusModel.ReadRegister(
+        var result = await _modbusModel.ReadRegister(
                         readFunction,
                         data,
                         ModbusClient_VM.ModbusMessageType);
@@ -441,7 +441,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
     private async Task WriteAction(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
     {
-        if (_connectedHostModel.HostIsConnect == false)
+        if (!_connectedHostModel.HostIsConnect)
         {
             throw new Exception(_localization.Get("Exception.ClientDisconnected"));
         }
@@ -465,7 +465,7 @@ public class ModbusManualMode_VM : ReactiveObject
             numberOfRegisters,
             ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-        ModbusOperationResult result = await _modbusModel.WriteRegister(
+        var result = await _modbusModel.WriteRegister(
             writeFunction,
             data,
             ModbusClient_VM.ModbusMessageType);
@@ -495,7 +495,7 @@ public class ModbusManualMode_VM : ReactiveObject
         },
         error.Details);
 
-        string addition = string.Empty;
+        var addition = string.Empty;
 
         if (_currentFunction == Function.ForceSingleCoil && error.ErrorCode == 3)
         {
@@ -508,7 +508,7 @@ public class ModbusManualMode_VM : ReactiveObject
             addition;
     }
 
-    private (string[], string) ParseData(byte[]? data)
+    private static (string[], string) ParseData(byte[]? data)
     {
         if (data == null)
         {
@@ -516,9 +516,9 @@ public class ModbusManualMode_VM : ReactiveObject
         }
 
         var dataBytes = new string[data.Length];
-        string stringForLog = string.Empty;
+        var stringForLog = string.Empty;
 
-        for (int i = 0; i < data.Length; i++)
+        for (var i = 0; i < data.Length; i++)
         {
             dataBytes[i] = data[i].ToString("X2");
             stringForLog += data[i].ToString("X2") + "   ";
@@ -527,13 +527,7 @@ public class ModbusManualMode_VM : ReactiveObject
         return (dataBytes, stringForLog);
     }
 
-    /*************************************************************************/
-    //
-    // Следующие три метода используются в Modbus_Mode_Cycle_VM
-    //
-    /*************************************************************************/
-
-    public async Task AddDataOnView(ModbusDataDisplayed? data, ModbusActionDetails? details)
+    private async Task AddDataOnView(ModbusDataDisplayed? data, ModbusActionDetails? details)
     {
         if (data != null)
         {
@@ -588,13 +582,13 @@ public class ModbusManualMode_VM : ReactiveObject
         _packageNumber++;
     }
 
-    public static string CreateViewAddress(ushort startAddress, int numberOfRegisters)
+    private static string CreateViewAddress(ushort startAddress, int numberOfRegisters)
     {
-        string displayedString = string.Empty;
+        var displayedString = string.Empty;
 
-        ushort currentAddress = startAddress;
+        var currentAddress = startAddress;
 
-        for (int i = 0; i < numberOfRegisters; i++)
+        for (var i = 0; i < numberOfRegisters; i++)
         {
             displayedString += $"0x{currentAddress.ToString("X")} ({currentAddress.ToString()})";
 
@@ -609,7 +603,7 @@ public class ModbusManualMode_VM : ReactiveObject
         return displayedString;
     }
 
-    public static string CreateViewData(byte[]? modbusData, ModbusFunction function, int numberOfRegisters)
+    private static string CreateViewData(byte[]? modbusData, ModbusFunction function, int numberOfRegisters)
     {
         if (modbusData == null)
         {
@@ -632,7 +626,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
         UInt16 temp;
 
-        for (int i = 0; i < modbusData.Length - 1; i += 2)
+        for (var i = 0; i < modbusData.Length - 1; i += 2)
         {
             temp = (UInt16)((modbusData[i + 1] << 8) | modbusData[i]);
 
@@ -656,11 +650,11 @@ public class ModbusManualMode_VM : ReactiveObject
     {
         var displayedString = string.Empty;
 
-        int registerCounter = 0;
+        var registerCounter = 0;
 
-        foreach (byte element in modbusData)
+        foreach (var element in modbusData)
         {
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 if (registerCounter == numberOfRegisters)
                 {

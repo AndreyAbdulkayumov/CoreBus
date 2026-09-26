@@ -7,7 +7,7 @@ public class CheckSum_CRC16_Test
     private const UInt16 Polynom = 0xA001;
 
     [Fact]
-    public void Test_WriteSingleCoil_Request()
+    public void WriteSingleCoil_Request()
     {
         byte[] Data = new byte[] { 0x01, 0x05, 0x05, 0x00, 0xFF, 0x00, 0x00, 0x00 };
 
@@ -19,7 +19,7 @@ public class CheckSum_CRC16_Test
     }
 
     [Fact]
-    public void Test_ReadHoldingRegisters_Request()
+    public void ReadHoldingRegisters_Request()
     {
         byte[] Data = new byte[] { 0x01, 0x03, 0x0B, 0x00, 0x00, 0x02, 0x00, 0x00 };
 
@@ -31,7 +31,7 @@ public class CheckSum_CRC16_Test
     }
 
     [Fact]
-    public void Test_WriteMultipleRegisters_Request()
+    public void WriteMultipleRegisters_Request()
     {
         byte[] Data = new byte[] { 0x01, 0x10, 0x0A, 0x05, 0x00, 0x02, 0x04, 0x41, 0x70, 0x00, 0x00, 0x00, 0x00 };
 
@@ -43,7 +43,7 @@ public class CheckSum_CRC16_Test
     }
 
     [Fact]
-    public void Test_EmptyArray()
+    public void EmptyArray()
     {
         byte[] Data = Array.Empty<byte>();
 
@@ -55,7 +55,7 @@ public class CheckSum_CRC16_Test
     }
 
     [Fact]
-    public void Test_SingleByte()
+    public void SingleByte()
     {
         byte[] Data = new byte[] { 0x01 };
 

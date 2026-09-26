@@ -5,12 +5,12 @@ namespace Core.Models;
 
 public abstract class ProtocolMode
 {
-    public int WriteTimeout { get; protected set; } = Timeout.Infinite;
-    public int ReadTimeout { get; protected set; } = Timeout.Infinite;
+    protected int WriteTimeout { get; set; } = Timeout.Infinite;
+    protected int ReadTimeout { get; set; } = Timeout.Infinite;
 
     public ReadMode CurrentReadMode { get; protected set; } = ReadMode.Async;
 
-    public virtual void InitMode(IConnection? client)
+    public void InitMode(IConnection? client)
     {
         if (client == null || client.IsConnected == false)
         {

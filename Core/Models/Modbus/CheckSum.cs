@@ -30,11 +30,11 @@ public static class CheckSum
 
         // Два последних элемента массива предназначены для хранения байтов CRC.
         // Поэтому их не учитываем в расчете.
-        for (int i = 0; i < message.Length - 2; i++) // для каждого байта в принятом\отправляемом сообщении проводим следующие операции(байты сообщения без принятого CRC)
+        for (var i = 0; i < message.Length - 2; i++) // для каждого байта в принятом\отправляемом сообщении проводим следующие операции(байты сообщения без принятого CRC)
         {
             register = (ushort)(register ^ message[i]); // Делим через XOR регистр на выбранный байт сообщения(от младшего к старшему)
 
-            for (int j = 0; j < 8; j++) // для каждого бита в выбранном байте делим полученный регистр на полином
+            for (var j = 0; j < 8; j++) // для каждого бита в выбранном байте делим полученный регистр на полином
             {
                 if ((ushort)(register & 0x01) == 1) //если старший бит равен 1 то
                 {
@@ -49,7 +49,7 @@ public static class CheckSum
         }
 
         // выдаваемый массив CRC
-        byte[] CRC16 = new byte[2];
+        var CRC16 = new byte[2];
 
         CRC16[0] = (byte)(register & 0x00FF); // присваеваем младший байт 
         CRC16[1] = (byte)(register >> 8); // присваеваем старший байт
@@ -57,24 +57,31 @@ public static class CheckSum
         return CRC16;
     }
 
-    public static byte[] Calculate_LRC8(byte[] mainPart)
+    public static byte[] Calculate_LRC8_ASCII(byte[] mainPart)
+    {
+        var LRC8 = Calculate_LRC8(mainPart);
+        
+        var LRC8_String = LRC8.ToString("X2");
+
+        var LRC8_Array = new char[2];
+
+        LRC8_Array[0] = LRC8_String.First();
+        LRC8_Array[1] = LRC8_String.Last();
+
+        return Encoding.ASCII.GetBytes(LRC8_Array);
+    }
+    
+    public static byte Calculate_LRC8(byte[] mainPart)
     {
         byte LRC8 = 0;
 
-        foreach (byte element in mainPart)
+        foreach (var element in mainPart)
         {
             LRC8 += element;
         }
 
         LRC8 = (byte)((LRC8 ^ 0xFF) + 1);
 
-        string LRC8_String = LRC8.ToString("X2");
-
-        char[] LRC8_Array = new char[2];
-
-        LRC8_Array[0] = LRC8_String.First();
-        LRC8_Array[1] = LRC8_String.Last();
-
-        return Encoding.ASCII.GetBytes(LRC8_Array);
+        return LRC8;
     }
 }

@@ -1,5 +1,5 @@
-﻿using Core.Models.Modbus.DataTypes;
-using Services.Interfaces;
+﻿using System.Buffers.Binary;
+using Core.Models.Modbus.DataTypes;
 
 namespace Core.Models.Modbus.Message;
 
@@ -7,18 +7,16 @@ public class ModbusTCP_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus TCP";
 
-    public override byte[] CreateMessage(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
     {
-        byte[] PDU = Modbus_PDU.Create(function, data, localization);
+        var PDU = Modbus_PDU.Create(function, data, localization);
 
-        byte[] TX;
+        var TX = new byte[7 + PDU.Length];
 
-        TX = new byte[7 + PDU.Length];
-
-        byte[] packageNumberArray = BitConverter.GetBytes(PackageNumber);
+        var packageNumberArray = BitConverter.GetBytes(PackageNumber);
 
         // 1 байт SlaveID + байты PDU
-        byte[] SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
+        var SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
 
         PackageNumber++;
 
@@ -39,60 +37,38 @@ public class ModbusTCP_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
     {
-        var decodingResponse = new ModbusResponse();
-
-        byte[] temp = new byte[2];
-
-        temp[0] = sourceArray[1];
-        temp[1] = sourceArray[0];
-        decodingResponse.OperationNumber = (UInt16)BitConverter.ToInt16(temp, 0);
-        temp[0] = sourceArray[3];
-        temp[1] = sourceArray[2];
-        decodingResponse.ProtocolID = (UInt16)BitConverter.ToInt16(temp, 0);
-        temp[0] = sourceArray[5];
-        temp[1] = sourceArray[4];
-        decodingResponse.LengthOfPDU = (UInt16)BitConverter.ToInt16(temp, 0);
+        // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
+        // Сервисные поля - 6 байт, сообщение с кодом ошибки - 3 байта,
+        if (sourceArray.Length < 9) 
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+        
+        var decodingResponse = new ModbusResponse
+        {
+            OperationNumber = BinaryPrimitives.ReadUInt16BigEndian(sourceArray.AsSpan(0, 2)),
+            ProtocolID = BinaryPrimitives.ReadUInt16BigEndian(sourceArray.AsSpan(2, 2)),
+            Length = BinaryPrimitives.ReadUInt16BigEndian(sourceArray.AsSpan(4, 2))
+        };
+        
+        if (!CheckLength(decodingResponse.Length, sourceArray))
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+        
         decodingResponse.SlaveID = sourceArray[6];
-        decodingResponse.Command = sourceArray[7];
-
-        CheckErrorCode(TypeOfModbus.TCP, ref decodingResponse, sourceArray, localization);
-
-        if (currentFunction is ModbusReadFunction)
-        {
-            decodingResponse.LengthOfData = sourceArray[8];
-
-            if (decodingResponse.LengthOfData == 0)
-            {
-                throw new Exception(localization.Get("Core.Modbus.EmptyDataPartTcp", currentFunction.Number));
-            }
-
-            decodingResponse.Data = new byte[decodingResponse.LengthOfData];
-
-            // Согласно документации на протокол Modbus:
-            // В ответном пакете Modbus TCP на команды чтения
-            // информационная часть начинается с 9 байта.
-            Array.Copy(sourceArray, 9, decodingResponse.Data, 0, decodingResponse.LengthOfData);
-
-            // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
-            if (currentFunction != Function.ReadCoilStatus &&
-                currentFunction != Function.ReadDiscreteInputs)
-            {
-                decodingResponse.Data = ReverseLowAndHighBytesInWords(decodingResponse.Data);
-            }
-        }
-
-        else if (currentFunction is ModbusWriteFunction)
-        {
-            decodingResponse.LengthOfData = -1;
-        }
-
-        else
-        {
-            throw new Exception(localization.Get("Core.Modbus.UnsupportedCommandCode", currentFunction.Number));
-        }
-
+        
+        var pduArray = new byte[sourceArray.Length - 7];
+        
+        Array.Copy(sourceArray, 7, pduArray, 0, pduArray.Length);
+        
+        decodingResponse.PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization);
+        
         return decodingResponse;
+    }
+
+    private static bool CheckLength(ushort expectedLength, byte[] data)
+    {
+        var actualLength = data.Length - 6; // 6 специфичных для этого протокола байт до SlaveID
+        
+        return expectedLength == actualLength;
     }
 }

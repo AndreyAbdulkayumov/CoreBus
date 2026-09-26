@@ -19,7 +19,7 @@ public class BinaryRepresentation_ItemData : ReactiveObject
 
         Command_Copy_BinaryWord = ReactiveCommand.CreateFromTask(async () =>
         {
-            string Data = string.Empty;
+            var Data = string.Empty;
 
             foreach (var group in BinaryData)
             {
