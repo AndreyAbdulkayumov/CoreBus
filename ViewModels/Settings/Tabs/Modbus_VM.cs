@@ -108,12 +108,12 @@ public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null;
+            return AllErrorMessages[NotEmptyField];
         }
 
-        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out int timeoutValue) || timeoutValue < 1)
         {
-            return AllErrorMessages[DecError_uint];
+            return AllErrorMessages[Timeout_Invalid];
         }
 
         return null;

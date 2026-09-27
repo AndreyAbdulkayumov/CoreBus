@@ -15,8 +15,10 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
     protected const string DecError_float = "DecError_float";
     protected const string BinError_UInt16 = "BinError_UInt16";
     protected const string IP_Address_Invalid = "IP-Address Invalid";
+    protected const string TCP_Port_Invalid = "TCP Port Invalid";
+    protected const string Timeout_Invalid = "Timeout Invalid";
 
-    protected Dictionary<string, ValidateMessage> AllErrorMessages = new Dictionary<string, ValidateMessage>()
+    protected readonly Dictionary<string, ValidateMessage> AllErrorMessages = new Dictionary<string, ValidateMessage>()
     {
         { NotEmptyField,
             new ValidateMessage(
@@ -71,6 +73,18 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
                 shortMessage: LocalizationProvider.Get("Validation.InvalidIp"),
                 fullMessage: LocalizationProvider.Get("Validation.InvalidIp")
                 )},
+        
+        { TCP_Port_Invalid,
+            new ValidateMessage(
+                shortMessage: "1 - 65535",
+                fullMessage: LocalizationProvider.Get("Validation.InvalidTcpPort")
+            )},
+        
+        { Timeout_Invalid,
+            new ValidateMessage(
+                shortMessage: "1 - 2^31",
+                fullMessage: LocalizationProvider.Get("Validation.InvalidTimeout")
+            )},
     };
 
     public Dictionary<string, ValidateMessage> ActualErrors => _errors;
@@ -79,7 +93,7 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
     {
         _errors.Remove(fieldName);
 
-        ValidateMessage? message = GetErrorMessage(fieldName, value);
+        var message = GetErrorMessage(fieldName, value);
 
         if (message != null)
         {
@@ -105,7 +119,7 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
 
     private void ChangeErrorsToDec(string fieldName)
     {
-        if (_errors.TryGetValue(fieldName, out ValidateMessage? value))
+        if (_errors.TryGetValue(fieldName, out var value))
         {
             if (value.Equals(AllErrorMessages[HexError_Byte]))
             {
@@ -123,7 +137,7 @@ public abstract class ValidatedDateInput : ValidatedDateInputBase
 
     private void ChangeErrorsToHex(string fieldName)
     {
-        if (_errors.TryGetValue(fieldName, out ValidateMessage? value))
+        if (_errors.TryGetValue(fieldName, out var value))
         {
             if (value.Equals(AllErrorMessages[DecError_Byte]))
             {

@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "Campo de escritura de datos n.º {0}",
     "EnterSendData": "Introduzca los datos a enviar.",
     "ItemFieldLabel": "Elemento {0} - {1}",
-    "InvalidIp": "Dirección IP no válida"
+    "InvalidIp": "Dirección IP no válida",
+    "InvalidTcpPort": "Puerto no válido. Rango de números de 1 a 65535.",
+    "InvalidTimeout": "Valor de tiempo de espera no válido.\nRango de números de 1 a 2 147 483 647."
   },
   "Monitoring": {
     "ForAddress": "Para la dirección \"{0}\"",

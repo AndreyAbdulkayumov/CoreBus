@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "Data write field №{0}",
     "EnterSendData": "Enter data to send.",
     "ItemFieldLabel": "Item {0} - {1}",
-    "InvalidIp": "Invalid IP address"
+    "InvalidIp": "Invalid IP address",
+    "InvalidTcpPort": "Invalid port. Range: 1 to 65535.",
+    "InvalidTimeout": "Invalid timeout value.\nRange: 1 to 2 147 483 647."
   },
   "Monitoring": {
     "ForAddress": "For address \"{0}\"",

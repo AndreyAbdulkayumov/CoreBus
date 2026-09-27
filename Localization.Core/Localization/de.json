@@ -345,7 +345,9 @@
     "WriteFieldLabelNumbered": "Datenschreibfeld Nr. {0}",
     "EnterSendData": "Geben Sie die zu sendenden Daten ein.",
     "ItemFieldLabel": "Element {0} - {1}",
-    "InvalidIp": "Ungültige IP-Adresse"
+    "InvalidIp": "Ungültige IP-Adresse",
+    "InvalidTcpPort": "Ungültiger Port. Zahlenbereich von 1 bis 65535.",
+    "InvalidTimeout": "Ungültiger Timeout-Wert.\nZahlenbereich von 1 bis 2 147 483 647."
   },
   "Monitoring": {
     "ForAddress": "Für Adresse \"{0}\"",
