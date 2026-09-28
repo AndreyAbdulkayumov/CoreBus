@@ -7,11 +7,6 @@ public class MathFormula_Test
 {
     private const int DoublePrecision = 10;
 
-    public MathFormula_Test()
-    {
-        LocalizationProvider.Instance = new TestLocalizationService();
-    }
-
     [Theory]
     [InlineData("x+5", 4.0, 9.0)]
     [InlineData("x-5", 4.0, -1.0)]
@@ -28,11 +23,11 @@ public class MathFormula_Test
     [InlineData("asin(0)", 0.0, 0.0)]
     [InlineData("acos(1)", 0.0, 0.0)]
     [InlineData("atan(0)", 0.0, 0.0)]
-    public void Solve_BasicExpressions_ReturnsExpected(string formula, double xValue, double expected)
+    public void Solve_BasicExpressions_ReturnsExpected(string formula, double xValue, double expectedValue)
     {
-        var actual = MathFormula.Solve(formula, xValue);
+        var actualValue = MathFormula.Solve(formula, xValue);
 
-        Assert.Equal(expected, actual, DoublePrecision);
+        Assert.Equal(expectedValue, actualValue, DoublePrecision);
     }
 
     [Theory]
@@ -99,5 +94,59 @@ public class MathFormula_Test
     public void Normalize_TrimsAndInsertsMultiplication(string formula, string expected)
     {
         Assert.Equal(expected, MathFormula.Normalize(formula));
+    }
+
+    [Theory]
+    [InlineData("x")]
+    [InlineData("-x")]
+    [InlineData("2x")]
+    [InlineData("2*x+1")]
+    [InlineData("sin(x)")]
+    [InlineData("abs(-5)")]
+    [InlineData("log(x,10)")]
+    [InlineData("x(2)")]
+    [InlineData("(x-4)/16*100")]
+    [InlineData("  x+1  ")]
+    public void IsValid_ValidFormula(string formula)
+    {
+        var isValid = MathFormula.IsValid(formula, out var errorMessage);
+
+        Assert.True(isValid);
+        Assert.Equal(string.Empty, errorMessage);
+    }
+
+    [Theory]
+    [InlineData("y", "Core.FormulaAllowedChars")]
+    [InlineData("X", "Core.FormulaAllowedChars")]
+    [InlineData("foo(x)", "Core.FormulaAllowedChars")]
+    [InlineData("2&x", "Core.FormulaAllowedChars")]
+    [InlineData("", "Core.FormulaAllowedChars")]
+    [InlineData("x++1", "Core.FormulaMultipleOperators")]
+    [InlineData("2+-3", "Core.FormulaMultipleOperators")]
+    [InlineData("x*/2", "Core.FormulaMultipleOperators")]
+    [InlineData("+x", "Core.FormulaInvalidStart")]
+    [InlineData("*x", "Core.FormulaInvalidStart")]
+    [InlineData("/x", "Core.FormulaInvalidStart")]
+    [InlineData(")x", "Core.FormulaInvalidStart")]
+    [InlineData("x+", "Core.FormulaInvalidEnd")]
+    [InlineData("x-", "Core.FormulaInvalidEnd")]
+    [InlineData("x*", "Core.FormulaInvalidEnd")]
+    [InlineData("x/", "Core.FormulaInvalidEnd")]
+    [InlineData("x(", "Core.FormulaInvalidEnd")]
+    [InlineData("(x", "Core.FormulaBracketMismatch")]
+    [InlineData("x)", "Core.FormulaBracketMismatch")]
+    [InlineData("((x)", "Core.FormulaBracketMismatch")]
+    [InlineData("2(x)", "Core.FormulaMissingOperatorNearBracket")]
+    [InlineData("(x)2", "Core.FormulaMissingOperatorNearBracket")]
+    [InlineData("log(x)", "Core.FormulaParseError")]
+    [InlineData("pow(x)", "Core.FormulaParseError")]
+    public void IsValid_InvalidFormula(string formula, string expectedErrorKey)
+    {
+        // Тут LocalizationProvider.Get() вернет ключ, а не локализованную строку.
+        // В errorMessage будет ключ.
+        var isValid = MathFormula.IsValid(formula, out var errorMessage);
+
+        Assert.False(isValid);
+        Assert.Equal(expectedErrorKey, errorMessage);
     }
 }
