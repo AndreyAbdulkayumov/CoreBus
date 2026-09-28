@@ -67,4 +67,37 @@ public class MathFormula_Test
 
         Assert.Equal(expectedResult, actualResult, DoublePrecision);
     }
+
+    [Theory]
+    [InlineData("2x", "2*x")]
+    [InlineData("(1+2)x", "(1+2)*x")]
+    [InlineData("x2", "x*2")]
+    [InlineData("x(1+2)", "x*(1+2)")]
+    [InlineData("2x3", "2*x*3")]
+    [InlineData("2x(3)", "2*x*(3)")]
+    [InlineData("(2+3)x(4)", "(2+3)*x*(4)")]
+    public void Normalize_InsertsMultiplicationAroundX(string formula, string expected)
+    {
+        Assert.Equal(expected, MathFormula.Normalize(formula));
+    }
+
+    [Theory]
+    [InlineData("x")]
+    [InlineData("2*x")]
+    [InlineData("x*2")]
+    [InlineData("sin(x)")]
+    [InlineData("2*x+1")]
+    [InlineData("(x-4)/16*100")]
+    public void Normalize_WhenAlreadyExplicit_ReturnsUnchanged(string formula)
+    {
+        Assert.Equal(formula, MathFormula.Normalize(formula));
+    }
+
+    [Theory]
+    [InlineData("  2x  ", "2*x")]
+    [InlineData("\tx(1)\t", "x*(1)")]
+    public void Normalize_TrimsAndInsertsMultiplication(string formula, string expected)
+    {
+        Assert.Equal(expected, MathFormula.Normalize(formula));
+    }
 }
