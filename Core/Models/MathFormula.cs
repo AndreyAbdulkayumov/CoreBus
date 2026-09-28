@@ -148,7 +148,7 @@ public static class MathFormula
     {
         var depth = 0;
 
-        foreach (char symbol in formula)
+        foreach (var symbol in formula)
         {
             switch (symbol)
             {
