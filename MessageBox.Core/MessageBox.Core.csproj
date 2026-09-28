@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ReactiveUI.Avalonia.Reactive" Version="12.1.2" />
-  </ItemGroup>
-
 </Project>
