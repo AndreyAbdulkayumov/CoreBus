@@ -177,12 +177,11 @@ public class ModbusClient_VM : ReactiveObject
                 }
             });
 
-        var isStartObservable = Observable.Switch(
-            this
-                .WhenAnyValue(x => x.CurrentModeViewModel)
-                .Select(vm => vm as ModbusMonitoring_VM)
-                .Select(monitoringVM =>
-                    monitoringVM?.WhenAnyValue(x => x.IsMonitoringRunning) ?? Observable.Return(false)));
+        var isStartObservable = this
+            .WhenAnyValue(x => x.CurrentModeViewModel)
+            .Select(vm => vm as ModbusMonitoring_VM)
+            .Select(monitoringVM => monitoringVM?.WhenAnyValue(x => x.IsMonitoringRunning) ?? Observable.Return(false))
+            .Switch();
 
         _buttonModbusScanner_IsEnabled = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.UI_IsEnable),

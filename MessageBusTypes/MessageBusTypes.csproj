@@ -11,4 +11,8 @@
     <ProjectReference Include="..\MessageBox.Core\MessageBox.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Avalonia.Reactive" Version="12.1.2" />
+  </ItemGroup>
+
 </Project>

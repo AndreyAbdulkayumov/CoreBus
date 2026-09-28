@@ -63,19 +63,19 @@ namespace ViewModels.Macros.MacrosEdit
                 {
                     try
                     {
-                        if (values.Property1 && values.Property2)
+                        if (values.Item1 == true && values.Item2 == true)
                         {
                             return;
                         }
 
                         // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
-                        if (values.Property1)
+                        if (values.Item1)
                         {
                             SelectNumberFormat_Hex();
                         }
 
                         // Выбран десятичный формат числа в полях Адрес и Данные
-                        else if (values.Property2)
+                        else if (values.Item2)
                         {
                             SelectNumberFormat_Dec();
                         }
