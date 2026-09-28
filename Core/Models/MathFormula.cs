@@ -10,19 +10,22 @@ public static class MathFormula
     
     public static double Solve(string formula, double xValue)
     {
-        if (formula is "X" or "x")
+        if (formula is "x" or "X")
             return xValue;
         
         var expression = Cache.GetOrAdd(formula, static f =>
             new Expression(f, ExpressionOptions.IgnoreCaseAtBuiltInFunctions));
         
-        expression.Parameters["x"] = xValue;
-        
         try
         {
-            return Convert.ToDouble(
-                expression.Evaluate() // Вычисление результата
+            lock (expression)
+            {
+                expression.Parameters["x"] = xValue;
+                
+                return Convert.ToDouble(
+                    expression.Evaluate() // Вычисление результата
                 );
+            }
         }
         
         catch (Exception error)
