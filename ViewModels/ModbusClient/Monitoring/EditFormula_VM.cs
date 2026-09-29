@@ -109,7 +109,7 @@ public class EditFormula_VM : ValidatedDateInput
             return new ValidateMessage(_localization.Get("Validation.EnterFormula"));
         }
 
-        if (!MathFormula.IsValid(value, out string errorMessage))
+        if (!MathFormula.IsValid(value, out var errorMessage))
         {
             return new ValidateMessage(errorMessage);
         }

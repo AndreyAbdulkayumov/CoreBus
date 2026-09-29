@@ -1,29 +1,40 @@
 using NCalc;
-using Services.Interfaces;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace Core.Models;
 
 public static class MathFormula
 {
+    private static readonly ConcurrentDictionary<string, Expression> Cache = new();
+    
     public static double Solve(string formula, double xValue)
-    {        
-        var expression = CreateExpression(formula, xValue);
-
-        object? result;
-
+    {
+        if (formula is "x" or "X")
+            return xValue;
+        
+        var expression = Cache.GetOrAdd(formula, static f =>
+            new Expression(f, ExpressionOptions.IgnoreCaseAtBuiltInFunctions));
+        
         try
         {
-            // Вычисление результата
-            result = expression.Evaluate();
+            lock (expression)
+            {
+                expression.Parameters["x"] = xValue;
+                
+                return Convert.ToDouble(
+                    expression.Evaluate() // Вычисление результата
+                );
+            }
         }
         
         catch (Exception error)
         {
-            throw new Exception(LocalizationProvider.Get("Core.FormulaSolveError", formula ?? string.Empty, xValue) + "\n\n" + error.Message, error);
+            throw new Exception(
+                LocalizationProvider.Get("Core.FormulaSolveError", formula ?? string.Empty, xValue)
+                + "\n\n" + error.Message,
+                error);
         }
-
-        return Convert.ToDouble(result);
     }
 
     private static Expression CreateExpression(string? formula, double xValue = 0)
@@ -137,7 +148,7 @@ public static class MathFormula
     {
         var depth = 0;
 
-        foreach (char symbol in formula)
+        foreach (var symbol in formula)
         {
             switch (symbol)
             {
