@@ -1,12 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
-using Services.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
@@ -15,13 +16,16 @@ namespace CoreBus.Base.Views.Chart;
 
 public partial class ChartWindow : Window
 {
+    private const int ChartRefreshIntervalMs = 40;
+
     public static ChartWindow? Instance { get; private set; }
     public static Grid? Workspace { get; private set; }
 
     private readonly Border _resizeIcon;
     private readonly AvaPlot _chart;
-
-    private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
+    private readonly Dictionary<Guid, DataLogger> _loggers;
+    private readonly DispatcherTimer _refreshTimer;
+    private readonly ConcurrentQueue<ChartValue> _pendingPoints;
 
     private uint _incrementX;
 
@@ -44,10 +48,21 @@ public partial class ChartWindow : Window
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon") ?? throw new ArgumentNullException(nameof(_resizeIcon));
         _chart = this.FindControl<AvaPlot>("Chart") ?? throw new ArgumentNullException(nameof(_chart));
 
+        _loggers = new Dictionary<Guid, DataLogger>();
+        _pendingPoints = new ConcurrentQueue<ChartValue>();
+        
         // Настройка графика
 
         Chart_VM.InitAxes += Chart_VM_InitAxis;
         Chart_VM.AddPointOnChart += Chart_VM_AddPointOnChart;
+
+        _refreshTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(ChartRefreshIntervalMs)
+        };
+        
+        _refreshTimer.Tick += RefreshTimer_Tick;
+        _refreshTimer.Start();
 
         _chart.Plot.Axes.SetLimits(0, 5, 0, 7);
 
@@ -58,20 +73,25 @@ public partial class ChartWindow : Window
     {
         Chart_VM.InitAxes -= Chart_VM_InitAxis;
         Chart_VM.AddPointOnChart -= Chart_VM_AddPointOnChart;
+
+        _refreshTimer.Stop();
+        _refreshTimer.Tick -= RefreshTimer_Tick;
     }
 
     private void Chart_VM_InitAxis(object? sender, InitAxesEventArgs e)
     {
+        ClearPendingPoints();
+
         _chart.Plot.Clear();
         _loggers.Clear();
 
         var numberOfVisiblePoints = _viewModel?.NumberOfVisiblePoints ?? 10;
 
-        var AxesXWidth = numberOfVisiblePoints * e.IncrementX;
+        var axesXWidth = numberOfVisiblePoints * e.IncrementX;
 
         foreach (var axis in e.Axes)
         {
-            var logger = CreateDataLogger(axis, AxesXWidth);
+            var logger = CreateDataLogger(axis, axesXWidth);
 
             _loggers.Add(axis.Id, logger);
         }
@@ -107,14 +127,35 @@ public partial class ChartWindow : Window
 
     private void Chart_VM_AddPointOnChart(object? sender, ChartValue e)
     {
-        if (_loggers.TryGetValue(e.AxisId, out var logger))
+        _pendingPoints.Enqueue(e);
+    }
+
+    private void RefreshTimer_Tick(object? sender, EventArgs e)
+    {
+        var hasNewPoints = false;
+
+        while (_pendingPoints.TryDequeue(out var point))
         {
-            var xCoordinate = logger.Data.Coordinates.Count == 0 ? 0 : logger.Data.Coordinates[^1].X + _incrementX;
+            if (!_loggers.TryGetValue(point.AxisId, out var logger))
+                continue;
 
-            logger.Add(xCoordinate, e.Value);
+            var xCoordinate = logger.Data.Coordinates.Count == 0
+                ? 0
+                : logger.Data.Coordinates[^1].X + _incrementX;
 
-            _chart.Refresh();
+            logger.Add(xCoordinate, point.Value);
+            hasNewPoints = true;
         }
+
+        if (!hasNewPoints)
+            return;
+
+        _chart.Refresh();
+    }
+
+    private void ClearPendingPoints()
+    {
+        while (_pendingPoints.TryDequeue(out _)) ;
     }
 
     private void Window_DataContextChanged(object? sender, EventArgs e)
