@@ -7,6 +7,7 @@ using ScottPlot.Avalonia;
 using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ViewModels.Chart;
 using ViewModels.Chart.DataTypes;
@@ -22,15 +23,13 @@ public partial class ChartWindow : Window
 
     private readonly Border _resizeIcon;
     private readonly AvaPlot _chart;
+    private readonly Dictionary<Guid, DataLogger> _loggers;
     private readonly DispatcherTimer _refreshTimer;
-
-    private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
+    private readonly ConcurrentQueue<ChartValue> _pendingPoints;
 
     private uint _incrementX;
 
     private Chart_VM? _viewModel;
-
-    private volatile bool _isChartDirty;
 
 
     public ChartWindow()
@@ -49,6 +48,9 @@ public partial class ChartWindow : Window
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon") ?? throw new ArgumentNullException(nameof(_resizeIcon));
         _chart = this.FindControl<AvaPlot>("Chart") ?? throw new ArgumentNullException(nameof(_chart));
 
+        _loggers = new Dictionary<Guid, DataLogger>();
+        _pendingPoints = new ConcurrentQueue<ChartValue>();
+        
         // Настройка графика
 
         Chart_VM.InitAxes += Chart_VM_InitAxis;
@@ -58,6 +60,7 @@ public partial class ChartWindow : Window
         {
             Interval = TimeSpan.FromMilliseconds(ChartRefreshIntervalMs)
         };
+        
         _refreshTimer.Tick += RefreshTimer_Tick;
         _refreshTimer.Start();
 
@@ -77,6 +80,8 @@ public partial class ChartWindow : Window
 
     private void Chart_VM_InitAxis(object? sender, InitAxesEventArgs e)
     {
+        ClearPendingPoints();
+
         _chart.Plot.Clear();
         _loggers.Clear();
 
@@ -98,7 +103,6 @@ public partial class ChartWindow : Window
 
         _chart.Plot.Axes.SetLimits(0, 1000, -100, 100);
 
-        _isChartDirty = false;
         _chart.Refresh();
     }
 
@@ -123,23 +127,35 @@ public partial class ChartWindow : Window
 
     private void Chart_VM_AddPointOnChart(object? sender, ChartValue e)
     {
-        if (_loggers.TryGetValue(e.AxisId, out var logger))
-        {
-            var xCoordinate = logger.Data.Coordinates.Count == 0 ? 0 : logger.Data.Coordinates[^1].X + _incrementX;
-
-            logger.Add(xCoordinate, e.Value);
-
-            _isChartDirty = true;
-        }
+        _pendingPoints.Enqueue(e);
     }
 
     private void RefreshTimer_Tick(object? sender, EventArgs e)
     {
-        if (!_isChartDirty)
+        var hasNewPoints = false;
+
+        while (_pendingPoints.TryDequeue(out var point))
+        {
+            if (!_loggers.TryGetValue(point.AxisId, out var logger))
+                continue;
+
+            var xCoordinate = logger.Data.Coordinates.Count == 0
+                ? 0
+                : logger.Data.Coordinates[^1].X + _incrementX;
+
+            logger.Add(xCoordinate, point.Value);
+            hasNewPoints = true;
+        }
+
+        if (!hasNewPoints)
             return;
 
-        _isChartDirty = false;
         _chart.Refresh();
+    }
+
+    private void ClearPendingPoints()
+    {
+        while (_pendingPoints.TryDequeue(out _)) ;
     }
 
     private void Window_DataContextChanged(object? sender, EventArgs e)
