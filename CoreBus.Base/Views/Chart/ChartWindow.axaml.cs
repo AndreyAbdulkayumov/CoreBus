@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.AxisLimitManagers;
 using ScottPlot.Plottables;
-using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using ViewModels.Chart;
@@ -15,17 +15,22 @@ namespace CoreBus.Base.Views.Chart;
 
 public partial class ChartWindow : Window
 {
+    private const int ChartRefreshIntervalMs = 40;
+
     public static ChartWindow? Instance { get; private set; }
     public static Grid? Workspace { get; private set; }
 
     private readonly Border _resizeIcon;
     private readonly AvaPlot _chart;
+    private readonly DispatcherTimer _refreshTimer;
 
     private readonly Dictionary<Guid, DataLogger> _loggers = new Dictionary<Guid, DataLogger>();
 
     private uint _incrementX;
 
     private Chart_VM? _viewModel;
+
+    private volatile bool _isChartDirty;
 
 
     public ChartWindow()
@@ -49,6 +54,13 @@ public partial class ChartWindow : Window
         Chart_VM.InitAxes += Chart_VM_InitAxis;
         Chart_VM.AddPointOnChart += Chart_VM_AddPointOnChart;
 
+        _refreshTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(ChartRefreshIntervalMs)
+        };
+        _refreshTimer.Tick += RefreshTimer_Tick;
+        _refreshTimer.Start();
+
         _chart.Plot.Axes.SetLimits(0, 5, 0, 7);
 
         _chart.Refresh();
@@ -58,6 +70,9 @@ public partial class ChartWindow : Window
     {
         Chart_VM.InitAxes -= Chart_VM_InitAxis;
         Chart_VM.AddPointOnChart -= Chart_VM_AddPointOnChart;
+
+        _refreshTimer.Stop();
+        _refreshTimer.Tick -= RefreshTimer_Tick;
     }
 
     private void Chart_VM_InitAxis(object? sender, InitAxesEventArgs e)
@@ -67,11 +82,11 @@ public partial class ChartWindow : Window
 
         var numberOfVisiblePoints = _viewModel?.NumberOfVisiblePoints ?? 10;
 
-        var AxesXWidth = numberOfVisiblePoints * e.IncrementX;
+        var axesXWidth = numberOfVisiblePoints * e.IncrementX;
 
         foreach (var axis in e.Axes)
         {
-            var logger = CreateDataLogger(axis, AxesXWidth);
+            var logger = CreateDataLogger(axis, axesXWidth);
 
             _loggers.Add(axis.Id, logger);
         }
@@ -83,6 +98,7 @@ public partial class ChartWindow : Window
 
         _chart.Plot.Axes.SetLimits(0, 1000, -100, 100);
 
+        _isChartDirty = false;
         _chart.Refresh();
     }
 
@@ -113,8 +129,17 @@ public partial class ChartWindow : Window
 
             logger.Add(xCoordinate, e.Value);
 
-            _chart.Refresh();
+            _isChartDirty = true;
         }
+    }
+
+    private void RefreshTimer_Tick(object? sender, EventArgs e)
+    {
+        if (!_isChartDirty)
+            return;
+
+        _isChartDirty = false;
+        _chart.Refresh();
     }
 
     private void Window_DataContextChanged(object? sender, EventArgs e)
