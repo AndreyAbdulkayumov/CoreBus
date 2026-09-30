@@ -5,20 +5,20 @@
 Система построена вокруг интерфейса `INotifyDataErrorInfo` и набора базовых классов/помощников.
 
 Есть два типа сообщений об ошибках:
-* **Короткие** - для отобряжением прямо под полем ввода.
+* **Короткие** - для отображения прямо под полем ввода.
 * **Полные** - для отображения в сообщениях, логах или где-то еще.
 
 
 ## Основные сущности
 
-* `ValidatedDateInputBase` – базовый класс, реализующий `INotifyDataErrorInfo`. 
+* `ValidatedDataInputBase` – базовый класс, реализующий `INotifyDataErrorInfo`. 
   
   Кроме реализации интерфейса содержит:
   * Словарь ошибок `_errors`, где ключ – имя свойства (`propertyName`), значение – `ValidateMessage`.
   * Свойство `HasErrors` показывает, есть ли хоть одна ошибка во всей ViewModel.
 
-* `ValidatedDateInput` – абстрактный класс для реализации во ViewModel с валидируемыми строковыми полями.
-  * Наследуется от `ValidatedDateInputBase`.
+* `ValidatedDataInput` – абстрактный класс для реализации во ViewModel с валидируемыми строковыми полями.
+  * Наследуется от `ValidatedDataInputBase`.
   * Содержит словарь готовых сообщений об ошибках `AllErrorMessages` (пустое поле, неверный формат числа, IP‑адрес и т.п.).
   * Определяет абстрактный метод  
     `protected abstract ValidateMessage? GetErrorMessage(string fieldName, string? value);`  
@@ -42,7 +42,7 @@
 
 ## Общая схема работы
 
-1. ViewModel, в которой есть валидируемые поля, **наследуется** от `ValidatedDateInput`.
+1. ViewModel, в которой есть валидируемые поля, **наследуется** от `ValidatedDataInput`.
 2. Для каждого свойства, которое нужно валидировать, в сеттере вызывается `ValidateInput(nameof(ИмяСвойства), value)`.
 3. ViewModel переопределяет метод `GetErrorMessage`, где по имени свойства и его значению решается какое сообщение об ошибке вернуть (или `null`, если всё корректно).
 4. UI (через биндинги с поддержкой `INotifyDataErrorInfo`) автоматически отображает краткие сообщения об ошибках под полями ввода.
@@ -53,7 +53,7 @@
 ## Как развивать?
 
 В целом функционал валидации не требует доработок. 
-Но может возникнуть необходимость в добавлении новых ошибок в словарь `AllErrorMessages` класса `ValidatedDateInput`.
+Но может возникнуть необходимость в добавлении новых ошибок в словарь `AllErrorMessages` класса `ValidatedDataInput`.
 Сделать просто по аналогии.
 
 
@@ -61,7 +61,7 @@
 
 Алгоритм:
 
-1. Наследуемся от `ValidatedDateInput` и при необходимости реализуем интерфейс `IValidationFieldInfo`.
+1. Наследуемся от `ValidatedDataInput` и при необходимости реализуем интерфейс `IValidationFieldInfo`.
 2. Для каждого валидируемого свойства в сеттере вызываем `ValidateInput(nameof(Field), value)` после `RaiseAndSetIfChanged`.
 
 Пример ViewModel с использованием `IValidationFieldInfo`:
@@ -69,7 +69,7 @@
 ```csharp
 using ViewModels.Validation;
 
-public class Example_VM : ValidatedDateInput, IValidationFieldInfo
+public class Example_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private string? _field;
 
@@ -139,7 +139,7 @@ public class Example_VM : ValidatedDateInput, IValidationFieldInfo
 ```csharp
 using ViewModels.Validation;
 
-public class Example_VM_NoFieldName : ValidatedDateInput
+public class Example_VM_NoFieldName : ValidatedDataInput
 {
     private string? _field;
 

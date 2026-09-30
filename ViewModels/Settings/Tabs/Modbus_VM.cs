@@ -8,7 +8,7 @@ namespace ViewModels.Settings.Tabs;
 
 public record TimestampFormatItem(TimestampFormat Value, string Display);
 
-public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
+public class Modbus_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private string _writeTimeout = string.Empty;
 

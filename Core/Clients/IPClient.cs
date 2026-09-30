@@ -147,7 +147,7 @@ public class IPClient : IConnection
 
         else
         {
-            _client.Close();
+            CloseAndDisposeClient();
 
             throw new Exception(_localization.Get("Core.ServerConnectError", socketInfo.IP, socketInfo.Port));
         }
@@ -172,14 +172,23 @@ public class IPClient : IConnection
                 await Task.WhenAll(_readThread).ConfigureAwait(false);
             }
         }
-
-        _stream?.Close();
-
-        _client?.Close();
+        
+        CloseAndDisposeClient();
 
         await Notifications.StopMonitor();
 
         IsConnected = false;
+    }
+    
+    private void CloseAndDisposeClient()
+    {
+        _stream?.Close();
+        _client?.Close();
+        
+        _client?.Dispose();
+        
+        _client = null;
+        _stream = null;
     }
 
     public async Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes)

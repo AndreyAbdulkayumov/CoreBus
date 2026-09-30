@@ -8,7 +8,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.Macros.MacrosEdit
 {
-    public class CommonSlaveIdField_VM : ValidatedDateInput, IValidationFieldInfo
+    public class CommonSlaveIdField_VM : ValidatedDataInput, IValidationFieldInfo
     {
         public event EventHandler<bool>? UseCommonSlaveIdChanged;
 

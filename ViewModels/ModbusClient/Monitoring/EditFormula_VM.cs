@@ -4,7 +4,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
-public class EditFormula_VM : ValidatedDateInput
+public class EditFormula_VM : ValidatedDataInput
 {
     private bool _ui_IsEnable;
 

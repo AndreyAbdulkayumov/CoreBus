@@ -4,7 +4,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
-public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
+public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private string? CheckFields()
     {

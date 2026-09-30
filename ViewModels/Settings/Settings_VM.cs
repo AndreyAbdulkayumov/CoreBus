@@ -306,7 +306,7 @@ public class Settings_VM : ReactiveObject
 
         foreach (var tab in neededTabs)
         {
-            var validationTab = tab as ValidatedDateInput;
+            var validationTab = tab as ValidatedDataInput;
 
             if (validationTab != null && validationTab.HasErrors)
             {

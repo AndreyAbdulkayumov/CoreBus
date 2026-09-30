@@ -31,7 +31,7 @@ public class MonitoringStateEventArgs : EventArgs
     }
 }
 
-public partial class ModbusMonitoring_VM : ValidatedDateInput, IValidationFieldInfo
+public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldInfo
 {
     public event EventHandler<MonitoringStateEventArgs>? ModbusMonitoringStateChanged;
 

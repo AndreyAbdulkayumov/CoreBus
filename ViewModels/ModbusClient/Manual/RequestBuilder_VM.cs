@@ -18,7 +18,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Manual;
 
-public class RequestBuilder_VM : ValidatedDateInput, IValidationFieldInfo
+public class RequestBuilder_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private bool ui_IsEnable = false;
 

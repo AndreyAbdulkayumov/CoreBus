@@ -229,7 +229,7 @@ public class SerialPortClient : IConnection
 
         catch (Exception error)
         {
-            _deviceSerialPort?.Close();
+            CloseAndDisposeClient();
 
             var commonMessage = _localization.Get("Core.SerialConnectErrorPrefix") + "\n\n";
 
@@ -268,10 +268,10 @@ public class SerialPortClient : IConnection
                         await Task.Delay(100);
                     }
                 }
-
-                _deviceSerialPort.Close();
             }
 
+            CloseAndDisposeClient();
+            
             await Notifications.StopMonitor();
         }
 
@@ -279,6 +279,13 @@ public class SerialPortClient : IConnection
         {
             throw new Exception(_localization.Get("Core.SerialDisconnectError") + "\n\n" + error.Message);
         }
+    }
+
+    private void CloseAndDisposeClient()
+    {
+        _deviceSerialPort?.Close();
+        _deviceSerialPort?.Dispose();
+        _deviceSerialPort = null;
     }
 
     public async Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes)

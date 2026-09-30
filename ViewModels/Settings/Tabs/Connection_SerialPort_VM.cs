@@ -12,7 +12,7 @@ using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs;
 
-public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
+public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo
 {
     /************************************/
     //

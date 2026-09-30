@@ -8,7 +8,7 @@ using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs;
 
-public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
+public class Connection_Ethernet_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private string? _ip_address = string.Empty;
 

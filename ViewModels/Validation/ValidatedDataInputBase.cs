@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace ViewModels.Validation;
 
-public class ValidatedDateInputBase : ReactiveObject, INotifyDataErrorInfo
+public class ValidatedDataInputBase : ReactiveObject, INotifyDataErrorInfo
 {
     public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 

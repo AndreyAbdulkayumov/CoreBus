@@ -17,7 +17,7 @@ namespace ViewModels.ModbusClient.Monitoring;
 
 public record ValueTypeItem(MonitoringValueType Value, string Display);
 
-public class MonitoringItem_VM : ValidatedDateInput, IValidationFieldInfo
+public class MonitoringItem_VM : ValidatedDataInput, IValidationFieldInfo
 {
     public bool ItemShowOnChartAndLog => ShowOnChartAndLog && !VisibleOnlyRawValue;
 

@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace ViewModels.Validation;
 
-public abstract class ValidatedDateInput : ValidatedDateInputBase
+public abstract class ValidatedDataInput : ValidatedDataInputBase
 {
     protected abstract ValidateMessage? GetErrorMessage(string fieldName, string? value);
 

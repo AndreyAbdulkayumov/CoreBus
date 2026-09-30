@@ -15,7 +15,7 @@ using ViewModels.ModbusClient.Manual;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit;
 
-public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, ICommandContent, ICommandValidation
+public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, ICommandContent, ICommandValidation
 {
     private readonly Guid _id;
 

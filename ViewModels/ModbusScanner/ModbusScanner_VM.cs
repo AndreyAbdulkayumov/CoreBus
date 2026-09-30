@@ -16,7 +16,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusScanner;
 
-public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
+public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 {
     private bool _searchInProcess = false;
 

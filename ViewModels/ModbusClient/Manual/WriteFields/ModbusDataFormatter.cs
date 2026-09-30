@@ -4,7 +4,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Manual.WriteFields;
 
-public abstract class ModbusDataFormatter : ValidatedDateInput, INotifyDataErrorInfo
+public abstract class ModbusDataFormatter : ValidatedDataInput, INotifyDataErrorInfo
 {
     public const string DataFormatName_dec = "dec";
     public const string DataFormatName_hex = "hex";
