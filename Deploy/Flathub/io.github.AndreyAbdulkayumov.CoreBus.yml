@@ -1,0 +1,64 @@
+# Манифест Flatpak для CoreBus.
+# Перед сабмитом в Flathub: сгенерировать nuget-sources.json (см. README.md)
+# и указать tag/commit, в котором уже есть файлы из Deploy/Flathub.
+id: io.github.AndreyAbdulkayumov.CoreBus
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet10
+command: CoreBus
+finish-args:
+  # TCP / Modbus TCP
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Доступ к /dev/tty* (COM-порты)
+  - --device=all
+  # Импорт/экспорт макросов и отправка файлов
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-download
+cleanup:
+  - /include
+  - /lib/*.a
+modules:
+  - name: corebus
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/dotnet10/bin
+      append-ld-library-path: /usr/lib/sdk/dotnet10/lib
+      prepend-pkg-config-path: /usr/lib/sdk/dotnet10/lib/pkgconfig
+      arch:
+        x86_64:
+          env:
+            RUNTIME: linux-x64
+        aarch64:
+          env:
+            RUNTIME: linux-arm64
+    build-commands:
+      - mkdir -p /app/bin
+      - >
+        dotnet publish CoreBus.Desktop/CoreBus.Desktop.csproj
+        -c Release
+        --source ./nuget-sources
+        --source /usr/lib/sdk/dotnet10/nuget/packages
+        --runtime $RUNTIME
+        --self-contained true
+        -p:PublishReadyToRun=true
+        -o /app/bin
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.desktop
+        /app/share/applications/io.github.AndreyAbdulkayumov.CoreBus.desktop
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.metainfo.xml
+        /app/share/metainfo/io.github.AndreyAbdulkayumov.CoreBus.metainfo.xml
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.png
+        /app/share/icons/hicolor/256x256/apps/io.github.AndreyAbdulkayumov.CoreBus.png
+    sources:
+      - type: git
+        url: https://github.com/AndreyAbdulkayumov/CoreBus.git
+        # TODO: заменить после коммита Deploy/Flathub в репозиторий
+        # (тег 3.5.3 этих файлов ещё не содержит)
+        tag: 3.5.3
+        commit: 256e159f4675f67159a326cbf2b2f090326188ff
+      - nuget-sources.json
