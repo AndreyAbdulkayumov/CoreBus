@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-# Генерация nuget-sources.json для офлайн-сборки Flatpak.
-# Запускать в Linux при установленных Flatpak SDK и extension dotnet10.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
