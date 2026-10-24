@@ -24,12 +24,13 @@ echo "Скачивание flatpak-dotnet-generator..."
 curl -fsSL "${GENERATOR_URL}" -o "${GENERATOR_PATH}"
 
 echo "Генерация ${OUTPUT} (linux-x64 и linux-arm64)..."
+# Позиционные output/project до --runtime: иначе nargs="+" съедает их как runtime.
 python3 "${GENERATOR_PATH}" \
   --dotnet "${DOTNET_VERSION}" \
   --freedesktop "${FREEDESKTOP_VERSION}" \
-  --runtime linux-x64 linux-arm64 \
   "${OUTPUT}" \
-  "${CSPROJ}"
+  "${CSPROJ}" \
+  --runtime linux-x64 linux-arm64
 
 echo "Готово: ${OUTPUT}"
 echo "Скопируйте этот файл вместе с манифестом в PR Flathub."
