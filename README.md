@@ -1,5 +1,7 @@
 # CoreBus
 
+[🇷🇺 Русский](README.md) | [🇬🇧 English](README.en.md)
+
 [![License](https://img.shields.io/github/license/AndreyAbdulkayumov/CoreBus?style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/blob/main/LICENSE)
 [![GitHub repo size](https://img.shields.io/github/repo-size/AndreyAbdulkayumov/CoreBus?style=for-the-badge)]()
 [![Code size](https://img.shields.io/github/languages/code-size/AndreyAbdulkayumov/CoreBus?style=for-the-badge)]()
@@ -238,11 +240,3 @@ GUI Framework - [Avalonia UI](https://avaloniaui.net/)
 Скрипт установщика написан с помощью [Inno Setup Compiler](https://jrsoftware.org/isdl.php)
 
 Иконки приложения [Material.Icons.Avalonia](https://github.com/AvaloniaUtils/Material.Icons.Avalonia/)
-
-# *Система версирования* Global.Major.Minor
-
-*Global* - глобальная версия репозитория. До релиза это 0. Цифра меняется во время релиза и при именениях, затрагивающих значительную часть UI или внутренней логики.
-
-*Major* - добавление нового функционала, крупные изменения.
-
-*Minor* - исправление багов, мелкие добавления.
