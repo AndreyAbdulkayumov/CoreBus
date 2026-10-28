@@ -1,6 +1,6 @@
 # CoreBus
 
-[🇷🇺 Русский](README.md) | [🇬🇧 English](README.en.md)
+**Язык**: [Русский](README.md) | [English](README.en.md)
 
 [![License](https://img.shields.io/github/license/AndreyAbdulkayumov/CoreBus?style=for-the-badge)](https://github.com/AndreyAbdulkayumov/CoreBus/blob/main/LICENSE)
 [![GitHub repo size](https://img.shields.io/github/repo-size/AndreyAbdulkayumov/CoreBus?style=for-the-badge)]()
