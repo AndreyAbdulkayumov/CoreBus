@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# Генерация nuget-sources.json для офлайн-сборки Flatpak.
+# Запускать в Linux при установленных Flatpak SDK и extension dotnet10.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,7 +28,8 @@ curl -fsSL "${GENERATOR_URL}" -o "${GENERATOR_PATH}"
 
 echo "Генерация ${OUTPUT} (linux-x64 и linux-arm64)..."
 # Позиционные output/project до --runtime: иначе nargs="+" съедает их как runtime.
-python3 "${GENERATOR_PATH}" \
+# printf отвечает на вопрос flatpak «user или system», если extension установлен дважды.
+printf '1\n1\n' | python3 "${GENERATOR_PATH}" \
   --dotnet "${DOTNET_VERSION}" \
   --freedesktop "${FREEDESKTOP_VERSION}" \
   "${OUTPUT}" \
