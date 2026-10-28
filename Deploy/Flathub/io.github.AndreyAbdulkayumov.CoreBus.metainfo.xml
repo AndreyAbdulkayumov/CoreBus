@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2024–2026 Andrey Abdulkayumov -->
+<component type="desktop-application">
+  <id>io.github.AndreyAbdulkayumov.CoreBus</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>CoreBus</name>
+  <summary>Terminal for Modbus and serial/TCP links</summary>
+  <developer id="io.github.AndreyAbdulkayumov">
+    <name>Andrey Abdulkayumov</name>
+  </developer>
+  <description>
+    <p>
+      CoreBus is a cross-platform terminal for working with serial ports and TCP
+      sockets, with support for Modbus TCP, RTU, ASCII and RTU/ASCII over TCP.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Three modes: No Protocol, Modbus, and Modbus monitoring</li>
+      <li>String and byte data, multiple encodings, single/cyclic/file send</li>
+      <li>Modbus scanner, float and binary data, write helpers</li>
+      <li>Register monitoring with formulas, live charts and logging</li>
+      <li>Macros with import/export, dark and light themes, presets</li>
+      <li>
+        UI languages: English, Russian, Hindi, Chinese (Simplified), German,
+        Spanish, French, Korean, Portuguese
+      </li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.AndreyAbdulkayumov.CoreBus.desktop</launchable>
+  <url type="homepage">https://andreyabdulkayumov.github.io/TerminalProgram_Website/</url>
+  <url type="bugtracker">https://github.com/AndreyAbdulkayumov/CoreBus/issues</url>
+  <url type="vcs-browser">https://github.com/AndreyAbdulkayumov/CoreBus</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/user-attachments/assets/6c2d48cd-2c7b-4521-89a3-44589fcd38d5</image>
+      <caption>No Protocol mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/user-attachments/assets/15430654-6cc5-464d-826c-7f9762963a6d</image>
+      <caption>Modbus mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/user-attachments/assets/bacd6053-50f9-43cd-b311-69278ef31b83</image>
+      <caption>Modbus data views</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="3.5.3" date="2026-09-30">
+      <description>
+        <p>Modbus response checks, monitoring optimizations, validation fixes.</p>
+      </description>
+      <url>https://github.com/AndreyAbdulkayumov/CoreBus/releases/tag/3.5.3</url>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+</component>

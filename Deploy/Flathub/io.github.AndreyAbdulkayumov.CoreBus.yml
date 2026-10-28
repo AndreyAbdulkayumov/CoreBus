@@ -1,0 +1,62 @@
+id: io.github.AndreyAbdulkayumov.CoreBus
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet10
+command: CoreBus
+finish-args:
+  # For TCP / Modbus TCP
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Serial / COM ports (/dev/ttyUSB*, /dev/ttyACM*, /dev/ttyS*): no portal for raw
+  # tty access, so --device=all is required for working with serial ports.
+  - --device=all
+  # Import/Export macros and file sending
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-download
+cleanup:
+  - /include
+  - /lib/*.a
+modules:
+  - name: corebus
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/dotnet10/bin
+      append-ld-library-path: /usr/lib/sdk/dotnet10/lib
+      prepend-pkg-config-path: /usr/lib/sdk/dotnet10/lib/pkgconfig
+      arch:
+        x86_64:
+          env:
+            RUNTIME: linux-x64
+        aarch64:
+          env:
+            RUNTIME: linux-arm64
+    build-commands:
+      - mkdir -p /app/bin
+      - >
+        dotnet publish CoreBus.Desktop/CoreBus.Desktop.csproj
+        -c Release
+        --source ./nuget-sources
+        --source /usr/lib/sdk/dotnet10/nuget/packages
+        --runtime $RUNTIME
+        --self-contained true
+        -p:PublishReadyToRun=true
+        -o /app/bin
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.desktop
+        /app/share/applications/io.github.AndreyAbdulkayumov.CoreBus.desktop
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.metainfo.xml
+        /app/share/metainfo/io.github.AndreyAbdulkayumov.CoreBus.metainfo.xml
+      - install -Dm644 Deploy/Flathub/io.github.AndreyAbdulkayumov.CoreBus.png
+        /app/share/icons/hicolor/256x256/apps/io.github.AndreyAbdulkayumov.CoreBus.png
+      - install -Dm644 LICENSE.md
+        /app/share/licenses/io.github.AndreyAbdulkayumov.CoreBus/LICENSE.md
+    sources:
+      - type: git
+        url: https://github.com/AndreyAbdulkayumov/CoreBus.git
+        tag: 3.5.3
+        commit: 256e159f4675f67159a326cbf2b2f090326188ff
+      - nuget-sources.json
