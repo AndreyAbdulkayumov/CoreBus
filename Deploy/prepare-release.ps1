@@ -112,10 +112,25 @@ function Assert-InnoSetupDefines
     }
 
     $issPublishDirectory = $publishMatch.Groups[1].Value
-    if ($issPublishDirectory -ne $ExpectedPublishDirectory)
+    $issDirectory = Split-Path -Parent $IssPath
+    if ([System.IO.Path]::IsPathRooted($issPublishDirectory))
     {
-        throw ("PublishDirectory в .iss ('{0}') не совпадает с ожидаемым ('{1}')." -f `
-            $issPublishDirectory, $ExpectedPublishDirectory)
+        $issPublishFullPath = [System.IO.Path]::GetFullPath($issPublishDirectory)
+    }
+    else
+    {
+        $issPublishFullPath = [System.IO.Path]::GetFullPath(
+            (Join-Path $issDirectory $issPublishDirectory))
+    }
+
+    $expectedPublishFullPath = [System.IO.Path]::GetFullPath($ExpectedPublishDirectory)
+    if (-not [string]::Equals(
+            $issPublishFullPath,
+            $expectedPublishFullPath,
+            [System.StringComparison]::OrdinalIgnoreCase))
+    {
+        throw ("PublishDirectory в .iss ('{0}' → '{1}') не совпадает с ожидаемым ('{2}')." -f `
+            $issPublishDirectory, $issPublishFullPath, $expectedPublishFullPath)
     }
 
     Write-Host "MyAppVersion и PublishDirectory в .iss совпадают с ожидаемыми."
@@ -336,17 +351,21 @@ Write-Host "Версия: $Version"
 $targetFramework = Get-TargetFramework -CsprojPath $desktopCsproj
 Write-Host "TargetFramework: $targetFramework"
 
+$iscc = $null
 if (-not $SkipInstaller)
 {
-    # Тот же относительный путь, что зашит в WindowsInstallerScript.iss
-    $expectedIssPublishDirectory =
-        "..\..\CoreBus.Desktop\bin\Release\$targetFramework\win-x64\publish"
+    $expectedIssPublishDirectory = [System.IO.Path]::GetFullPath(
+        (Join-Path $repoRoot "CoreBus.Desktop\bin\Release\$targetFramework\win-x64\publish"))
 
     Write-Step "Проверка define в WindowsInstallerScript.iss"
     Assert-InnoSetupDefines `
         -IssPath $issPath `
         -ExpectedVersion $Version `
         -ExpectedPublishDirectory $expectedIssPublishDirectory
+
+    Write-Step "Проверка ISCC"
+    $iscc = Find-Iscc -ExplicitPath $IsccPath
+    Write-Host "ISCC найден: $iscc"
 }
 
 $winPortableName = "CoreBus_${Version}_win_x64_portable"
@@ -387,7 +406,6 @@ $installerPath = Join-Path $installerOutputDir $installerFileName
 if (-not $SkipInstaller)
 {
     Write-Step "Сборка Inno Setup-установщика"
-    $iscc = Find-Iscc -ExplicitPath $IsccPath
     Write-Host "ISCC: $iscc"
     & $iscc $issPath
     if ($LASTEXITCODE -ne 0)
