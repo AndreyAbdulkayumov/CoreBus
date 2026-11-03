@@ -49,7 +49,7 @@ function Get-ProjectVersion
 {
     param([string] $CsprojPath)
 
-    [xml] $xml = Get-Content -LiteralPath $CsprojPath -Encoding UTF8
+    [xml] $xml = Get-Content -LiteralPath $CsprojPath -Raw -Encoding UTF8
     $node = $xml.Project.PropertyGroup.Version | Select-Object -First 1
     if ([string]::IsNullOrWhiteSpace($node))
     {
@@ -74,7 +74,7 @@ function Get-TargetFramework
 {
     param([string] $CsprojPath)
 
-    [xml] $xml = Get-Content -LiteralPath $CsprojPath -Encoding UTF8
+    [xml] $xml = Get-Content -LiteralPath $CsprojPath -Raw -Encoding UTF8
     $node = $xml.Project.PropertyGroup.TargetFramework | Select-Object -First 1
     if ([string]::IsNullOrWhiteSpace($node))
     {
