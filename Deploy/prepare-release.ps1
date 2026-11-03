@@ -4,7 +4,7 @@
     Локальная сборка релиза CoreBus.
 
 .DESCRIPTION
-    1. Читает версию из CoreBus.Base.csproj, синхронизирует её в скрипте установщика Windows (.iss).
+    1. Читает версию из CoreBus.Base.csproj.
     2. Запускает remove-all-bin-obj-folders.bat перед публикацией.
     3. Публикует win-x64 и linux-x64.
 	4. Версию win portable архивирует, версию linux portable кладет папкой без архива.
@@ -59,17 +59,6 @@ function Get-ProjectVersion
     return $node.Trim()
 }
 
-function Set-TextFileContent
-{
-    param(
-        [string] $Path,
-        [string] $Content
-    )
-
-    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [System.IO.File]::WriteAllText($Path, $Content, $utf8NoBom)
-}
-
 function Get-TargetFramework
 {
     param([string] $CsprojPath)
@@ -84,35 +73,52 @@ function Get-TargetFramework
     return $node.Trim()
 }
 
-function Update-InnoSetupVersion
+function Assert-InnoSetupDefines
 {
     param(
         [string] $IssPath,
-        [string] $NewVersion,
-        [string] $TargetFramework
+        [string] $ExpectedVersion,
+        [string] $ExpectedPublishDirectory
     )
 
-    $content = Get-Content -LiteralPath $IssPath -Raw -Encoding UTF8
-    $versionPattern = '(#define\s+MyAppVersion\s+")[^"]+(")'
-    $updated = [regex]::Replace(
-        $content,
-        $versionPattern,
-        { param($m) $m.Groups[1].Value + $NewVersion + $m.Groups[2].Value },
-        1)
-
-    $publishPattern = '(#define\s+PublishDirectory\s+''[^'']*\\)net[\d.]+(\\win-x64\\publish'')'
-    if ($updated -notmatch $publishPattern)
+    if (-not (Test-Path -LiteralPath $IssPath -PathType Leaf))
     {
-        throw "Не удалось найти PublishDirectory с netX.Y в '$IssPath'."
+        throw "Не найден скрипт Inno Setup: '$IssPath'."
     }
 
-    $updated = [regex]::Replace(
-        $updated,
-        $publishPattern,
-        { param($m) $m.Groups[1].Value + $TargetFramework + $m.Groups[2].Value },
-        1)
+    $content = Get-Content -LiteralPath $IssPath -Raw -Encoding UTF8
 
-    Set-TextFileContent -Path $IssPath -Content $updated
+    $versionMatch = [regex]::Match(
+        $content,
+        '#define\s+MyAppVersion\s+"([^"]+)"')
+    if (-not $versionMatch.Success)
+    {
+        throw "В '$IssPath' не найден #define MyAppVersion."
+    }
+
+    $issVersion = $versionMatch.Groups[1].Value
+    if ($issVersion -ne $ExpectedVersion)
+    {
+        throw ("MyAppVersion в .iss ('{0}') не совпадает с версией проекта ('{1}')." -f `
+            $issVersion, $ExpectedVersion)
+    }
+
+    $publishMatch = [regex]::Match(
+        $content,
+        "#define\s+PublishDirectory\s+'([^']+)'")
+    if (-not $publishMatch.Success)
+    {
+        throw "В '$IssPath' не найден #define PublishDirectory."
+    }
+
+    $issPublishDirectory = $publishMatch.Groups[1].Value
+    if ($issPublishDirectory -ne $ExpectedPublishDirectory)
+    {
+        throw ("PublishDirectory в .iss ('{0}') не совпадает с ожидаемым ('{1}')." -f `
+            $issPublishDirectory, $ExpectedPublishDirectory)
+    }
+
+    Write-Host "MyAppVersion и PublishDirectory в .iss совпадают с ожидаемыми."
 }
 
 function Find-Iscc
@@ -330,14 +336,23 @@ Write-Host "Версия: $Version"
 $targetFramework = Get-TargetFramework -CsprojPath $desktopCsproj
 Write-Host "TargetFramework: $targetFramework"
 
+if (-not $SkipInstaller)
+{
+    # Тот же относительный путь, что зашит в WindowsInstallerScript.iss
+    $expectedIssPublishDirectory =
+        "..\..\CoreBus.Desktop\bin\Release\$targetFramework\win-x64\publish"
+
+    Write-Step "Проверка define в WindowsInstallerScript.iss"
+    Assert-InnoSetupDefines `
+        -IssPath $issPath `
+        -ExpectedVersion $Version `
+        -ExpectedPublishDirectory $expectedIssPublishDirectory
+}
+
 $winPortableName = "CoreBus_${Version}_win_x64_portable"
 $linuxPortableName = "CoreBus_${Version}_linux_x64"
 $installerName = "CoreBus_${Version}_win_x64_installer"
 $installerFileName = "$installerName.exe"
-
-Write-Step "Синхронизация версии в Inno Setup"
-Update-InnoSetupVersion -IssPath $issPath -NewVersion $Version -TargetFramework $targetFramework
-Write-Host "Обновлён: WindowsInstallerScript.iss"
 
 Write-Step "Очистка bin/obj (remove-all-bin-obj-folders.bat)"
 Invoke-CleanBinObj -RepoRoot $repoRoot
