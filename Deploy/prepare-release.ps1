@@ -179,6 +179,17 @@ function Invoke-CleanBinObj
     }
 }
 
+function Assert-DotnetAvailable
+{
+    $dotnet = Get-Command 'dotnet' -ErrorAction SilentlyContinue
+    if ($null -eq $dotnet)
+    {
+        throw "dotnet не найден в PATH. Установите .NET SDK и повторите."
+    }
+
+    Write-Host "Окружение dotnet найдено."
+}
+
 function Invoke-DotnetPublish
 {
     param(
@@ -214,6 +225,23 @@ function Get-PublishDirectory
     }
 
     return $path
+}
+
+function Assert-PublishedExecutable
+{
+    param(
+        [string] $PublishDirectory,
+        [string] $Runtime
+    )
+
+    $fileName = if ($Runtime -like 'win-*') { 'CoreBus.exe' } else { 'CoreBus' }
+    $exePath = Join-Path $PublishDirectory $fileName
+    if (-not (Test-Path -LiteralPath $exePath -PathType Leaf))
+    {
+        throw "После publish не найден исполняемый файл: '$exePath'."
+    }
+
+    Write-Host "Проверка: $exePath"
 }
 
 function Remove-PdbFiles
@@ -292,6 +320,9 @@ $desktopCsproj = Join-Path $repoRoot 'CoreBus.Desktop\CoreBus.Desktop.csproj'
 $issPath = Join-Path $repoRoot 'Deploy\WindowsInstaller\WindowsInstallerScript.iss'
 $installerOutputDir = Join-Path $repoRoot 'Deploy\WindowsInstaller'
 
+Write-Step "Проверка окружения"
+Assert-DotnetAvailable
+
 Write-Step "Версия из CoreBus.Base.csproj"
 $Version = Get-ProjectVersion -CsprojPath $baseCsproj
 Write-Host "Версия: $Version"
@@ -319,6 +350,10 @@ $winPublishDir = Get-PublishDirectory -RepoRoot $repoRoot `
     -TargetFramework $targetFramework -Runtime 'win-x64'
 $linuxPublishDir = Get-PublishDirectory -RepoRoot $repoRoot `
     -TargetFramework $targetFramework -Runtime 'linux-x64'
+
+Write-Step "Проверка исполняемых файлов после publish"
+Assert-PublishedExecutable -PublishDirectory $winPublishDir -Runtime 'win-x64'
+Assert-PublishedExecutable -PublishDirectory $linuxPublishDir -Runtime 'linux-x64'
 
 $artifactsDir = Join-Path $repoRoot "Deploy\Artifacts\$Version"
 $stagingRoot = Join-Path $artifactsDir '_staging'
