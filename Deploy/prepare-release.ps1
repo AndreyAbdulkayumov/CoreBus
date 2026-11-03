@@ -318,7 +318,7 @@ function Get-FileSha256
     return (Get-FileHash -LiteralPath $FilePath -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
-function Copy-Artifact
+function Move-Artifact
 {
     param(
         [string] $SourcePath,
@@ -330,7 +330,7 @@ function Copy-Artifact
         throw "Артефакт не найден: '$SourcePath'."
     }
 
-    Copy-Item -LiteralPath $SourcePath -Destination $ArtifactsDir -Force
+    Move-Item -LiteralPath $SourcePath -Destination $ArtifactsDir -Force
 }
 
 # --- main ---
@@ -385,7 +385,7 @@ $winPublishDir = Get-PublishDirectory -RepoRoot $repoRoot `
 $linuxPublishDir = Get-PublishDirectory -RepoRoot $repoRoot `
     -TargetFramework $targetFramework -Runtime 'linux-x64'
 
-Write-Step "Проверка исполняемых файлов после publish"
+Write-Step "Проверка наличия исполняемых файлов после публикации"
 Assert-PublishedExecutable -PublishDirectory $winPublishDir -Runtime 'win-x64'
 Assert-PublishedExecutable -PublishDirectory $linuxPublishDir -Runtime 'linux-x64'
 
@@ -399,13 +399,20 @@ if (Test-Path -LiteralPath $artifactsDir)
     Remove-Item -LiteralPath $artifactsDir -Recurse -Force
 }
 
+Write-Step "Создание Portable версий: win-x64 (zip), linux-x64 (папка)"
+$winZipPath = Join-Path $artifactsDir "$winPortableName.zip"
+$linuxFolderPath = Join-Path $artifactsDir $linuxPortableName
+New-PortableZip -SourcePublishDir $winPublishDir -StagingRoot $stagingRoot `
+    -FolderName $winPortableName -OutputZipPath $winZipPath
+New-PortableFolder -SourcePublishDir $linuxPublishDir -DestinationDir $linuxFolderPath
+
 New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
 
 $installerPath = Join-Path $installerOutputDir $installerFileName
 
 if (-not $SkipInstaller)
 {
-    Write-Step "Сборка Inno Setup-установщика"
+    Write-Step "Сборка Inno Setup установщика"
     Write-Host "ISCC: $iscc"
     & $iscc $issPath
     if ($LASTEXITCODE -ne 0)
@@ -417,31 +424,21 @@ if (-not $SkipInstaller)
     {
         throw "Установщик не создан: '$installerPath'."
     }
-}
-else
-{
-    Write-Step "Пропуск установщика (-SkipInstaller)"
-}
-
-Write-Step "Portable: win-x64 (zip), linux-x64 (папка)"
-$winZipPath = Join-Path $artifactsDir "$winPortableName.zip"
-$linuxFolderPath = Join-Path $artifactsDir $linuxPortableName
-New-PortableZip -SourcePublishDir $winPublishDir -StagingRoot $stagingRoot `
-    -FolderName $winPortableName -OutputZipPath $winZipPath
-New-PortableFolder -SourcePublishDir $linuxPublishDir -DestinationDir $linuxFolderPath
-
-if (-not $SkipInstaller)
-{
-    Write-Step "Копирование установщика в Artifacts"
-    Copy-Artifact -SourcePath $installerPath -ArtifactsDir $artifactsDir
+	
+    Write-Step "Перемещение установщика в Artifacts"
+    Move-Artifact -SourcePath $installerPath -ArtifactsDir $artifactsDir
     $artifactInstallerPath = Join-Path $artifactsDir $installerFileName
 
     Write-Step "SHA256 установщика"
     $checksum = Get-FileSha256 -FilePath $artifactInstallerPath
     Write-Host "SHA256: $checksum"
 
-    $checksumsPath = Join-Path $artifactsDir 'SHA256SUMS.txt'
+    $checksumsPath = Join-Path $artifactsDir 'SHA256.txt'
     "$checksum  $installerFileName" | Set-Content -LiteralPath $checksumsPath -Encoding ASCII
+}
+else
+{
+    Write-Step "Пропуск установщика (-SkipInstaller)"
 }
 
 Remove-Item -LiteralPath $stagingRoot -Recurse -Force -ErrorAction SilentlyContinue
