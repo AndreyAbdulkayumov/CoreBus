@@ -12,7 +12,7 @@
 
 1. В случае изменения версии .NET поменять значения в тегах `Project\PropertyGroup\TargetFramework` во всех файлах проектов.
 
-1. Проверить установщик для Windows (см. README.md в папке `CoreBus\Deploy\WindowsInstaller`).
+1. Подготовить скрипт установщика Windows (см. README.md в папке `CoreBus\Deploy\WindowsInstaller`).
 
 1. В PowerShell выполнить скрипт `prepare-release.ps1`. Он проведет публикацию приложения для Windows (Portable zip, Installer) и Linux (Portable).
 

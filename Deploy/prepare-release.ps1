@@ -191,7 +191,7 @@ function Invoke-CleanBinObj
         cmd.exe /c "echo.| `"$cleanBat`""
         if ($LASTEXITCODE -ne 0)
         {
-            throw "remove-all-bin-obj-folders.bat завершился с кодом $LASTEXITCODE."
+            throw "Ошибка в remove-all-bin-obj-folders.bat. Выполнение завершилось с кодом $LASTEXITCODE."
         }
     }
     finally
@@ -405,8 +405,6 @@ $linuxFolderPath = Join-Path $artifactsDir $linuxPortableName
 New-PortableZip -SourcePublishDir $winPublishDir -StagingRoot $stagingRoot `
     -FolderName $winPortableName -OutputZipPath $winZipPath
 New-PortableFolder -SourcePublishDir $linuxPublishDir -DestinationDir $linuxFolderPath
-
-New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
 
 $installerPath = Join-Path $installerOutputDir $installerFileName
 
