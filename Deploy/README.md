@@ -14,7 +14,7 @@
 
 1. Проверить установщик для Windows (см. README.md в папке `CoreBus\Deploy\WindowsInstaller`).
 
-1. В Power Shell выполнить скрипт `prepare-release.ps1`. Он проведет публикацию приложения для Windows (Portable zip, Installer) и Linux (Portable).
+1. В PowerShell выполнить скрипт `prepare-release.ps1`. Он проведет публикацию приложения для Windows (Portable zip, Installer) и Linux (Portable).
 
 1. Создать .zip-архив для Linux версии. Создать архив для Linux можно только в дистрибутиве Linux!
 
