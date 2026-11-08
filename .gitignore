@@ -455,3 +455,6 @@ $RECYCLE.BIN/
 
 # Executable files
 *.exe
+
+# Артефакты локальной сборки релиза
+Deploy/Artifacts/
