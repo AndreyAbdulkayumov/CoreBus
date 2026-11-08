@@ -12,9 +12,12 @@ MANIFEST_YML="${SCRIPT_DIR}/io.github.AndreyAbdulkayumov.CoreBus.yml"
 MANIFEST_RESOLVED="${SCRIPT_DIR}/manifest.resolved.json"
 NUGET_SOURCES="${SCRIPT_DIR}/nuget-sources.json"
 APP_ID="io.github.AndreyAbdulkayumov.CoreBus"
-BUILD_DIR="${SCRIPT_DIR}/build-dir"
-REPO_DIR="${SCRIPT_DIR}/repo"
-LOCAL_REMOTE="corebus-local"
+# Рабочие папки вне репозитория: иначе они копируются в сборку как часть
+# источника type: dir при каждом следующем запуске.
+WORK_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/corebus-flatpak"
+BUILD_DIR="${WORK_DIR}/build-dir"
+REPO_DIR="${WORK_DIR}/repo"
+STATE_DIR="${WORK_DIR}/.flatpak-builder"
 
 RUN_APP=0
 SKIP_NUGET=0
@@ -75,7 +78,7 @@ else
 fi
 
 echo "==> Сборка манифеста для локальной проверки (type: dir + inline nuget)"
-python3 << EOF
+python3 - "${MANIFEST_YML}" "${NUGET_SOURCES}" "${MANIFEST_RESOLVED}" "${REPO_ROOT}" << 'EOF'
 import json
 import sys
 from pathlib import Path
@@ -83,36 +86,36 @@ from pathlib import Path
 try:
     import yaml
 except ImportError:
-    print("Нужен python3-yaml", file=sys.stderr)
-    sys.exit(1)
+    sys.exit("Нужен python3-yaml")
 
-manifest_path = Path(r"""${MANIFEST_YML}""")
-nuget_path = Path(r"""${NUGET_SOURCES}""")
-out_path = Path(r"""${MANIFEST_RESOLVED}""")
-repo_root = Path(r"""${REPO_ROOT}""")
+manifest_path, nuget_path, out_path, repo_root = (Path(p) for p in sys.argv[1:5])
 
 with manifest_path.open(encoding="utf-8") as f:
     manifest = yaml.safe_load(f)
 
 if not isinstance(manifest, dict) or not manifest.get("modules"):
-    print(f"Некорректный манифест: {manifest_path}", file=sys.stderr)
-    sys.exit(1)
+    sys.exit(f"Некорректный манифест: {manifest_path}")
 
 with nuget_path.open(encoding="utf-8") as f:
     nuget = json.load(f)
 
-if not isinstance(nuget, list):
-    print(
-        f"{nuget_path} должен быть JSON-массивом, получено: {type(nuget).__name__}",
-        file=sys.stderr,
-    )
-    sys.exit(1)
+if not isinstance(nuget, list) or not nuget:
+    sys.exit(f"{nuget_path} должен быть непустым JSON-массивом")
+
+# В сборку не копируем git-метаданные, артефакты релизов и bin/obj проектов:
+# skip принимает только точные пути относительно path, без масок.
+skip = [".git", ".idea", "Deploy/Artifacts"]
+for csproj in repo_root.glob("*/*.csproj"):
+    for folder in ("bin", "obj"):
+        if (csproj.parent / folder).is_dir():
+            skip.append(f"{csproj.parent.name}/{folder}")
 
 # Для локальной сборки не читаем sources из YAML (хрупкий include) —
 # всегда: исходники с диска + содержимое nuget-sources.json.
+# path относительно манифеста, который лежит в Deploy/Flathub.
 module = manifest["modules"][0]
 module["sources"] = [
-    {"type": "dir", "path": str(repo_root)},
+    {"type": "dir", "path": "../..", "skip": skip},
     *nuget,
 ]
 
@@ -120,32 +123,29 @@ with out_path.open("w", encoding="utf-8") as f:
     json.dump(manifest, f, indent=2)
     f.write("\n")
 
-print(f"Готово: {out_path} (nuget packages: {len(nuget)})")
+print(f"Готово: {out_path} (nuget packages: {len(nuget)}, skip: {len(skip)})")
 EOF
 
 echo "==> Сборка и установка Flatpak"
-# Относительные пути: абсолютные с пробелом («Рабочий стол») ломают
-# разбор аргументов у flatpak-builder внутри org.flatpak.Builder.
-# Явно --filesystem=host, чтобы был доступ к каталогу проекта.
+mkdir -p "${WORK_DIR}"
+# Явно --filesystem=host, чтобы был доступ к каталогу проекта и к WORK_DIR.
+# --install ставит приложение в user-инсталляцию сразу из собранного repo.
+# --mirror-screenshots-url повторяет сборку Flathub, иначе lint repo ругается
+# на незеркалированные скриншоты.
 flatpak run --filesystem=host --command=flatpak-builder org.flatpak.Builder \
   --force-clean \
   --user \
+  --install \
   --install-deps-from=flathub \
-  --repo=repo \
-  build-dir \
+  --mirror-screenshots-url=https://dl.flathub.org/media/ \
+  --state-dir="${STATE_DIR}" \
+  --repo="${REPO_DIR}" \
+  "${BUILD_DIR}" \
   manifest.resolved.json
-
-# Для remote нужен абсолютный путь к repo
-flatpak --user remote-add --no-gpg-verify --if-not-exists "${LOCAL_REMOTE}" "${REPO_DIR}"
-
-if flatpak --user info "${APP_ID}" >/dev/null 2>&1; then
-  flatpak --user uninstall -y "${APP_ID}" || true
-fi
-
-flatpak --user install -y "${LOCAL_REMOTE}" "${APP_ID}"
 
 echo "==> Установлено: ${APP_ID}"
 echo "Запуск: flatpak run ${APP_ID}"
+echo "Lint repo: flatpak run --command=flatpak-builder-lint org.flatpak.Builder repo ${REPO_DIR}"
 
 if [[ "${RUN_APP}" -eq 1 ]]; then
   echo "==> Запуск приложения"

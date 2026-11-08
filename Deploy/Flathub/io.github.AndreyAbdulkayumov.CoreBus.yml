@@ -1,6 +1,6 @@
 id: io.github.AndreyAbdulkayumov.CoreBus
 runtime: org.freedesktop.Platform
-runtime-version: '25.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.dotnet10
@@ -9,15 +9,16 @@ finish-args:
   # For TCP / Modbus TCP
   - --share=network
   - --share=ipc
-  - --socket=wayland
-  - --socket=fallback-x11
-  - --device=dri
+  # Avalonia renders through X11 (XWayland on Wayland sessions), there is no native
+  # Wayland backend in use. With fallback-x11 the app would get no display on Wayland.
+  - --socket=x11
   # Serial / COM ports (/dev/ttyUSB*, /dev/ttyACM*, /dev/ttyS*): no portal for raw
   # tty access, so --device=all is required for working with serial ports.
+  # It also covers /dev/dri for GPU rendering.
   - --device=all
-  # Import/Export macros and file sending
+  # Settings, logs and macros are stored in ~/Documents/CoreBus.
+  # Other files are opened through the file chooser portal.
   - --filesystem=xdg-documents
-  - --filesystem=xdg-download
 cleanup:
   - /include
   - /lib/*.a
@@ -28,6 +29,10 @@ modules:
       append-path: /usr/lib/sdk/dotnet10/bin
       append-ld-library-path: /usr/lib/sdk/dotnet10/lib
       prepend-pkg-config-path: /usr/lib/sdk/dotnet10/lib/pkgconfig
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 'true'
+        DOTNET_NOLOGO: 'true'
       arch:
         x86_64:
           env:
@@ -37,6 +42,7 @@ modules:
             RUNTIME: linux-arm64
     build-commands:
       - mkdir -p /app/bin
+      # ./nuget-sources must come before the SDK packages dir (runtime packs, crossgen2).
       - >
         dotnet publish CoreBus.Desktop/CoreBus.Desktop.csproj
         -c Release
