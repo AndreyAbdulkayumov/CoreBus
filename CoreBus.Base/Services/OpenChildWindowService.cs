@@ -171,21 +171,13 @@ public class OpenChildWindowService : IOpenChildWindowService
                 DataContext = _macrosVM
             };
 
-            void MainWindowClosedHandler(object? sender, EventArgs e)
+            SubscribeOnMainWindowClosed(window, () =>
             {
-                window?.Close();
-            }
-
-            window.Closed += (object? sender, EventArgs e) =>
-            {
-                MainWindow.Instance.Closed -= MainWindowClosedHandler;
                 MacrosWindowIsOpen = false;
                 _macrosVM.Dispose();
                 _macrosVM = null;
-            };
-
-            MainWindow.Instance.Closed += MainWindowClosedHandler;
-
+            });
+            
             MacrosWindowIsOpen = true;
             
             window.Show();
@@ -226,17 +218,7 @@ public class OpenChildWindowService : IOpenChildWindowService
             DataContext = _editMacrosVM
         };
 
-        void MainWindowClosedHandler(object? sender, EventArgs e)
-        {
-            window?.Close();
-        }
-
-        window.Closed += (object? sender, EventArgs e) =>
-        {
-            MainWindow.Instance.Closed -= MainWindowClosedHandler;
-        };
-
-        MainWindow.Instance.Closed += MainWindowClosedHandler;
+        SubscribeOnMainWindowClosed(window);
 
         await Dispatcher.UIThread.Invoke(async () =>
         {
@@ -289,8 +271,6 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
-            ChartWindowIsOpen = true;
-
             _chartVM = _serviceProvider.GetService<Chart_VM>();
 
             if (_chartVM == null)
@@ -303,10 +283,11 @@ public class OpenChildWindowService : IOpenChildWindowService
                 DataContext = _chartVM
             };
 
-            void MainWindowClosedHandler(object? sender, EventArgs e)
+            SubscribeOnMainWindowClosed(window, () =>
             {
-                window?.Close();
-            }
+                ChartWindowIsOpen = false;
+                window.UnsubscribeFromEvents();
+            });
 
             window.Closing += async (object? sender, WindowClosingEventArgs e) =>
             {
@@ -342,15 +323,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 }
             };
 
-            window.Closed += (object? sender, EventArgs e) =>
-            {
-                MainWindow.Instance.Closed -= MainWindowClosedHandler;
-                ChartWindowIsOpen = false;
-
-                window.UnsubscribeFromEvents();
-            };
-
-            MainWindow.Instance.Closed += MainWindowClosedHandler;
+            ChartWindowIsOpen = true;
 
             window.Show();
         }
@@ -406,5 +379,25 @@ public class OpenChildWindowService : IOpenChildWindowService
 
             workspace.Opacity = workspaceOpacityDefault;
         });
+    }
+    
+    private void SubscribeOnMainWindowClosed(Window window, Action? closeHandler = null)
+    {
+        var mainWindow = MainWindow.Instance;
+        if (mainWindow == null)
+            return;
+        
+        window.Closed += (object? sender, EventArgs e) =>
+        {
+            mainWindow.Closed -= MainWindowClosedHandler;
+            closeHandler?.Invoke();
+        };
+
+        mainWindow.Closed += MainWindowClosedHandler;
+
+        void MainWindowClosedHandler(object? sender, EventArgs e)
+        {
+            window.Close();
+        }
     }
 }
