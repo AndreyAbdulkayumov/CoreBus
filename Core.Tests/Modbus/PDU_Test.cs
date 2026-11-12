@@ -2,7 +2,6 @@ using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using Core.Tests.Infrastructure;
 using Core.Tests.Modbus.Helpers;
-using Services.Interfaces;
 
 namespace Core.Tests.Modbus;
 

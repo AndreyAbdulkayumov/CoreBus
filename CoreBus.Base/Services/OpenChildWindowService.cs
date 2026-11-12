@@ -159,8 +159,6 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
-            MacrosWindowIsOpen = true;
-
             _macrosVM = _serviceProvider.GetService<Macros_VM>();
 
             if (_macrosVM == null)
@@ -182,10 +180,14 @@ public class OpenChildWindowService : IOpenChildWindowService
             {
                 MainWindow.Instance.Closed -= MainWindowClosedHandler;
                 MacrosWindowIsOpen = false;
+                _macrosVM.Dispose();
+                _macrosVM = null;
             };
 
             MainWindow.Instance.Closed += MainWindowClosedHandler;
 
+            MacrosWindowIsOpen = true;
+            
             window.Show();
         }
 
@@ -408,13 +410,13 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         await Dispatcher.UIThread.Invoke(async () =>
         {
-            double workspaceOpacity_Default = workspace.Opacity;
+            var workspaceOpacityDefault = workspace.Opacity;
 
             workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
 
             await window.ShowDialog(owner);
 
-            workspace.Opacity = workspaceOpacity_Default;
+            workspace.Opacity = workspaceOpacityDefault;
         });
     }
 }
