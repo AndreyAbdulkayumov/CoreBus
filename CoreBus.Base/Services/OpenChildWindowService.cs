@@ -269,19 +269,7 @@ public class OpenChildWindowService : IOpenChildWindowService
         {
             DataContext = _editFormulaVM
         };
-
-        void MainWindowClosedHandler(object? sender, EventArgs e)
-        {
-            window?.Close();
-        }
-
-        window.Closed += (object? sender, EventArgs e) =>
-        {
-            MainWindow.Instance.Closed -= MainWindowClosedHandler;
-        };
-
-        MainWindow.Instance.Closed += MainWindowClosedHandler;
-
+        
         await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
 
         return _editFormulaVM.GetResult();
