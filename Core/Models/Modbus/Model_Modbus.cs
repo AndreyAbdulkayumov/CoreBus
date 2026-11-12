@@ -153,15 +153,6 @@ public class Model_Modbus
         return result;
     }
 
-    private static byte[] GetOutputRX(byte[] rx, int length)
-    {
-        var outputArray = new byte[length];
-
-        Array.Copy(rx, 0, outputArray, 0, outputArray.Length);
-
-        return outputArray;
-    }
-
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
         await _transactionSemaphore.WaitAsync();
@@ -275,6 +266,15 @@ public class Model_Modbus
         return result;
     }
 
+    private static byte[] GetOutputRX(byte[] rx, int length)
+    {
+        var outputArray = new byte[length];
+
+        Array.Copy(rx, 0, outputArray, 0, outputArray.Length);
+
+        return outputArray;
+    }
+    
     public void MonitoringStart(Func<Task> monitoringActionHandler, int period)
     {
         _monitoringAction = monitoringActionHandler;
