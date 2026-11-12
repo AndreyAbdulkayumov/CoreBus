@@ -8,8 +8,6 @@ public class Model_Modbus
 {
     public event EventHandler<Exception>? Model_MonitoringError;
 
-    private static bool _isBusy = false;
-
     private IConnection? _device;
 
     private readonly System.Timers.Timer _monitoringTimer;
@@ -17,6 +15,7 @@ public class Model_Modbus
 
     private Func<Task>? _monitoringAction;
 
+    private readonly SemaphoreSlim _transactionSemaphore = new SemaphoreSlim(1, 1);
     private readonly SemaphoreSlim _monitoringSemaphore = new SemaphoreSlim(1, 1);
     
     private readonly ILocalizationService _localization;
@@ -44,12 +43,7 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
     {
-        while (_isBusy)
-        {
-            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
-        }
-        
-        _isBusy = true;
+        await _transactionSemaphore.WaitAsync();
 
         var TX = Array.Empty<byte>();
         var RX = Array.Empty<byte>();
@@ -153,7 +147,7 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            _isBusy = false;
+            _transactionSemaphore.Release();
         }
 
         return result;
@@ -170,12 +164,7 @@ public class Model_Modbus
 
     public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
     {
-        while (_isBusy)
-        {
-            await Task.Delay(1); // Асинхронная задержка, чтобы создать асинхронное ожидание.
-        }
-
-        _isBusy = true;
+        await _transactionSemaphore.WaitAsync();
 
         var TX = Array.Empty<byte>();
         var RX = Array.Empty<byte>();
@@ -280,7 +269,7 @@ public class Model_Modbus
                 Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
             };
 
-            _isBusy = false;
+            _transactionSemaphore.Release();
         }
 
         return result;
@@ -303,10 +292,10 @@ public class Model_Modbus
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        var isAlreadyRunning = !_monitoringSemaphore.Wait(0);
+        var isPreviousCycleInProgress = !await _monitoringSemaphore.WaitAsync(0);
 
         // Цикл опроса пропускается, если семафор уже был захвачен.
-        if (isAlreadyRunning)
+        if (isPreviousCycleInProgress)
             return;
 
         try
