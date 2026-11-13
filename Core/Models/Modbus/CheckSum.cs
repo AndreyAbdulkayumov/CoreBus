@@ -4,6 +4,8 @@ namespace Core.Models.Modbus;
 
 public static class CheckSum
 {
+    private const ushort PolynomCRC16 = 0xA001;
+    
     /* Принцип расчета CRC:
     * 1) задаем значение из единиц регистру Register = 0xFFFF, в этом значении будет сохраняться наш рассчитанный по каждому байту сообщения CRC.
     * 2) задаем нужный нам полином, в нашем случае это 0xA001
@@ -19,14 +21,13 @@ public static class CheckSum
     * По окончанию основного цикла содержимое регистра присваивается массиву CRC младшим байтом вперед и выдается в виде результата функции
     */
     /// <summary>
-    /// Метод расчета CRC с указанным полиномом
+    /// Метод расчета CRC
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public static byte[] Calculate_CRC16(byte[] message, ushort polynom = 0xA001)
+    public static byte[] Calculate_CRC16(byte[] message)
     {
         ushort register = 0xFFFF; // создаем регистр, в котором будем сохранять высчитанный CRC
-                                  //ushort Polynom = 0xA001; // Указываем полином, он может быть как 0xA001(старший бит справа), так и его реверс 0x8005(старший бит слева, здесь не рассматривается), при сдвиге вправо используется 0xA001
 
         // Два последних элемента массива предназначены для хранения байтов CRC.
         // Поэтому их не учитываем в расчете.
@@ -39,7 +40,7 @@ public static class CheckSum
                 if ((ushort)(register & 0x01) == 1) //если старший бит равен 1 то
                 {
                     register = (ushort)(register >> 1); //сдвигаем на один бит вправо
-                    register = (ushort)(register ^ polynom); //делим регистр на полином по XOR
+                    register = (ushort)(register ^ PolynomCRC16); //делим регистр на полином по XOR
                 }
                 else //если старший бит равен 0 то
                 {
