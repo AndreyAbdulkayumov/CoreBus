@@ -373,6 +373,7 @@
       "OpenUserManual": "사용자 설명서 열기 오류.",
       "OpenVideoPage": "동영상 페이지 열기 오류.",
       "OpenMacrosWindow": "매크로 창 열기 오류.",
+      "OpenModbusScannerWindow": "Modbus 스캐너 창 열기 오류.",
       "AppDownloadLink": "애플리케이션 다운로드 링크 이동 오류:",
       "PresetSelection": "프리셋 선택 오류.",
       "CopyRequest": "요청을 클립보드에 복사하는 중 오류.",

@@ -131,7 +131,8 @@ public class ModbusClient_VM : ReactiveObject
         };
 
         Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(_openChildWindow.ModbusScanner);
-
+        Command_Open_ModbusScanner.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenModbusScannerWindow") + "\n\n" + error.Message, MessageType.Error, error));
+        
         Command_ClearData = ReactiveCommand.Create(() =>
         {
             if (CurrentModeViewModel is ModbusManualMode_VM manualMode)

@@ -373,6 +373,7 @@
       "OpenUserManual": "Error al abrir el manual del usuario.",
       "OpenVideoPage": "Error al abrir la página de vídeos.",
       "OpenMacrosWindow": "Error al abrir la ventana de macros.",
+      "OpenModbusScannerWindow": "Error al abrir la ventana del escáner Modbus.",
       "AppDownloadLink": "Error al abrir el enlace de descarga de la aplicación:",
       "PresetSelection": "Error al seleccionar el preset.",
       "CopyRequest": "Error al copiar la solicitud al portapapeles.",

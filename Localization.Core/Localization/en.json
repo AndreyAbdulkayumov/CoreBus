@@ -373,6 +373,7 @@
       "OpenUserManual": "Error opening the user manual.",
       "OpenVideoPage": "Error opening the videos page.",
       "OpenMacrosWindow": "Error opening the macros window.",
+      "OpenModbusScannerWindow": "Error opening the Modbus scanner window.",
       "AppDownloadLink": "Error navigating to the application download link:",
       "PresetSelection": "Preset selection error.",
       "CopyRequest": "Error copying the request to the clipboard.",

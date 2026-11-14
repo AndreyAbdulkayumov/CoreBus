@@ -373,6 +373,7 @@
       "OpenUserManual": "打开用户手册时出错。",
       "OpenVideoPage": "打开视频页面时出错。",
       "OpenMacrosWindow": "打开宏窗口时出错。",
+      "OpenModbusScannerWindow": "打开 Modbus 扫描器窗口时出错。",
       "AppDownloadLink": "打开应用程序下载链接时出错：",
       "PresetSelection": "选择预设时出错。",
       "CopyRequest": "将请求复制到剪贴板时出错。",
