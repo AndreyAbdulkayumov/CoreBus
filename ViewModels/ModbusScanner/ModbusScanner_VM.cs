@@ -9,7 +9,6 @@ using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Text;
 using ViewModels.ModbusClient;
 using ViewModels.Validation;
@@ -209,13 +208,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
-        _localization.LanguageChanged += (_, _) =>
-        {
-            this.RaisePropertyChanged(nameof(ActionButtonContent));
-            this.RaisePropertyChanged(nameof(DeviceReadTimeout));
-            this.RaisePropertyChanged(nameof(ErrorMessageInUI));
-        };
-
+        
         _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
 
         _availableFunctions.AddRange(AllSearchFunctions.Select(e => e.DisplayedName));
