@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "सेटिंग्स फ़ाइल का नाम निर्दिष्ट नहीं है।",
     "SettingsSaveError": "सेटिंग्स सहेजने में त्रुटि।",
     "SettingsReadErrorDetailed": "दस्तावेज़ से डेटा पढ़ने में त्रुटि। अखंडता जाँचें या दूसरी सेटिंग्स फ़ाइल चुनें। यह फ़ाइल वर्तमान प्रोग्राम संस्करण के साथ असंगत हो सकती है।",
-    "FileNotFoundInFolder": "फ़ोल्डर {1} में \"{0}\" फ़ाइल नहीं मिली",
     "AppSettingsSaveError": "ऐप सेटिंग्स सहेजने में त्रुटि।",
     "MonitoringRegistersSaveError": "Modbus मॉनिटरिंग रजिस्टर सहेजने में त्रुटि।",
     "UnsupportedMacrosTypeSaveAttempt": "असमर्थित मैक्रो प्रकार सहेजने का प्रयास।",

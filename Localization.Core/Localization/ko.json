@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "설정 파일 이름이 지정되지 않았습니다.",
     "SettingsSaveError": "설정 저장 오류.",
     "SettingsReadErrorDetailed": "문서에서 데이터를 읽는 중 오류가 발생했습니다. 무결성을 확인하거나 다른 설정 파일을 선택하세요. 이 파일이 현재 프로그램 버전과 호환되지 않을 수 있습니다.",
-    "FileNotFoundInFolder": "폴더 {1}에서 파일 \"{0}\"을(를) 찾을 수 없습니다",
     "AppSettingsSaveError": "애플리케이션 설정 저장 오류.",
     "MonitoringRegistersSaveError": "모니터링 Modbus 레지스터 저장 오류.",
     "UnsupportedMacrosTypeSaveAttempt": "지원되지 않는 매크로 유형을 저장하려는 시도입니다.",

@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "Name der Einstellungsdatei ist nicht gesetzt.",
     "SettingsSaveError": "Fehler beim Speichern der Einstellungen.",
     "SettingsReadErrorDetailed": "Fehler beim Lesen der Daten aus dem Dokument. Prüfen Sie die Integrität oder wählen Sie eine andere Einstellungsdatei. Die Datei ist möglicherweise mit der aktuellen Programmversion inkompatibel.",
-    "FileNotFoundInFolder": "Datei \"{0}\" im Ordner {1} nicht gefunden",
     "AppSettingsSaveError": "Fehler beim Speichern der Anwendungseinstellungen.",
     "MonitoringRegistersSaveError": "Fehler beim Speichern der Modbus-Überwachungsregister.",
     "UnsupportedMacrosTypeSaveAttempt": "Versuch, einen nicht unterstützten Makrotyp zu speichern.",

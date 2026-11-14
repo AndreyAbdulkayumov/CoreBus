@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "Le nom du fichier de paramètres n'est pas défini.",
     "SettingsSaveError": "Erreur lors de l'enregistrement des paramètres.",
     "SettingsReadErrorDetailed": "Erreur lors de la lecture des données du document. Vérifiez son intégrité ou choisissez un autre fichier de paramètres. Ce fichier est peut-être incompatible avec la version actuelle du programme.",
-    "FileNotFoundInFolder": "Impossible de trouver le fichier « {0} » dans le dossier {1}",
     "AppSettingsSaveError": "Erreur lors de l'enregistrement des paramètres de l'application.",
     "MonitoringRegistersSaveError": "Erreur lors de l'enregistrement des registres Modbus de surveillance.",
     "UnsupportedMacrosTypeSaveAttempt": "Tentative d'enregistrement d'un type de macros non pris en charge.",

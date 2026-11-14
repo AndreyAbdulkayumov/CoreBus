@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "Settings file name is not set.",
     "SettingsSaveError": "Settings save error.",
     "SettingsReadErrorDetailed": "Error reading data from document. Check file integrity or choose another settings file. This file may be incompatible with the current app version.",
-    "FileNotFoundInFolder": "Failed to find file \"{0}\" in folder {1}",
     "AppSettingsSaveError": "Application settings save error.",
     "MonitoringRegistersSaveError": "Modbus monitoring registers save error.",
     "UnsupportedMacrosTypeSaveAttempt": "Attempt to save unsupported macros type.",

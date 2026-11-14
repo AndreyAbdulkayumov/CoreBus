@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "O nome do ficheiro de definições não foi definido.",
     "SettingsSaveError": "Erro ao guardar as definições.",
     "SettingsReadErrorDetailed": "Erro ao ler dados do documento. Verifique a integridade ou escolha outro ficheiro de definições. É possível que este ficheiro não seja compatível com a versão atual do programa.",
-    "FileNotFoundInFolder": "Não foi possível encontrar o ficheiro \"{0}\" na pasta {1}",
     "AppSettingsSaveError": "Erro ao guardar as definições da aplicação.",
     "MonitoringRegistersSaveError": "Erro ao guardar os registos Modbus de monitorização.",
     "UnsupportedMacrosTypeSaveAttempt": "Tentativa de guardar um tipo de macros não suportado.",

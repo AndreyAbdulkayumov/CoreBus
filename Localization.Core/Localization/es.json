@@ -262,7 +262,6 @@
     "SettingsFileNameNotSet": "No se ha definido el nombre del archivo de ajustes.",
     "SettingsSaveError": "Error al guardar los ajustes.",
     "SettingsReadErrorDetailed": "Error al leer datos del documento. Compruebe la integridad o elija otro archivo de ajustes. Es posible que el archivo no sea compatible con la versión actual del programa.",
-    "FileNotFoundInFolder": "No se encontró el archivo \"{0}\" en la carpeta {1}",
     "AppSettingsSaveError": "Error al guardar los ajustes de la aplicación.",
     "MonitoringRegistersSaveError": "Error al guardar los registros Modbus de supervisión.",
     "UnsupportedMacrosTypeSaveAttempt": "Intento de guardar un tipo de macros no soportado.",
