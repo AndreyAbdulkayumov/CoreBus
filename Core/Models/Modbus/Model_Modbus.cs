@@ -187,7 +187,7 @@ public class Model_Modbus
 
         _monitoringTimer.Start();
 
-        _monitoringAction.Invoke();
+        _ = RunMonitoringCycleAsync();
     }
 
     public void MonitoringStop()
@@ -196,6 +196,11 @@ public class Model_Modbus
     }
 
     private async void MonitoringTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        await RunMonitoringCycleAsync();
+    }
+
+    private async Task RunMonitoringCycleAsync()
     {
         var isPreviousCycleInProgress = !await _monitoringSemaphore.WaitAsync(0);
 
