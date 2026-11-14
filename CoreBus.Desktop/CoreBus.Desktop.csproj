@@ -5,7 +5,6 @@
         One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AssemblyName>CoreBus</AssemblyName>
 		<ApplicationIcon>MainLogo.ico</ApplicationIcon>
