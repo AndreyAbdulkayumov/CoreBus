@@ -139,9 +139,6 @@ CoreBus — кроссплатформенный терминал для раб�
   <img src="https://github.com/user-attachments/assets/6c2d48cd-2c7b-4521-89a3-44589fcd38d5"/>
 </p>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/85d15ba5-dfe9-4f13-94a3-e7396c9efbce"/>
-</p>
 
 ## *"Modbus"*
 Пользователь может взаимодействовать с выбранными регистрами Modbus, используя соответствующие элементы интерфейса. Для дополнительной расшифровки транзакции существует раздел с представлениями.
@@ -209,10 +206,6 @@ CoreBus — кроссплатформенный терминал для раб�
   <img src="https://github.com/user-attachments/assets/3c8e565a-d0cb-4d12-b240-11ac016c1abd"/>
 </p>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/81fee370-8128-40c8-a306-0679d92f1b68"/>
-</p>
-
 Макрос разделен на команды. Каждая команда – это отправка одного сообщения.
 
 
@@ -224,10 +217,6 @@ CoreBus — кроссплатформенный терминал для раб�
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/55327425-509c-45fc-b15e-aefa56a86972"/>
-</p>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/aa69326d-b260-44d7-8617-58ef4b9c54c7"/>
 </p>
 
 # *Вспомогательный софт*
