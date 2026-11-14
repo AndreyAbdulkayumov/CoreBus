@@ -145,49 +145,49 @@ public class OpenChildWindowService : IOpenChildWindowService
         await _modbusScannerVM.WindowClosed();
     }
 
-    public void Macros()
+    public async Task Macros()
     {
+        if (MacrosWindowIsOpen)
+        {
+            return;
+        }
+        
         try
         {
-            if (MacrosWindowIsOpen)
-            {
-                return;
-            }
-
             if (MainWindow.Instance == null)
             {
                 throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
-            _macrosVM = _serviceProvider.GetService<Macros_VM>();
+            await using var scope = _serviceProvider.CreateAsyncScope();
 
-            if (_macrosVM == null)
-            {
-                return;
-            }
+            _macrosVM = scope.ServiceProvider.GetRequiredService<Macros_VM>();
 
             var window = new MacrosWindow()
             {
                 DataContext = _macrosVM
             };
 
-            SubscribeOnMainWindowClosed(window, () =>
-            {
-                MacrosWindowIsOpen = false;
-                _macrosVM.Dispose();
-                _macrosVM = null;
-            });
-            
+            SubscribeOnMainWindowClosed(window);
+
             MacrosWindowIsOpen = true;
-            
-            window.Show();
+
+            await Dispatcher.UIThread.Invoke(async () =>
+            {
+                window.Show();
+                await WaitForCloseAsync(window);
+            });
         }
 
         catch (Exception error)
         {
-            MacrosWindowIsOpen = false;
-
             throw new Exception(error.Message);
+        }
+
+        finally
+        {
+            MacrosWindowIsOpen = false;
+            _macrosVM = null;
         }
     }
 
@@ -201,11 +201,6 @@ public class OpenChildWindowService : IOpenChildWindowService
         await using var scope = _serviceProvider.CreateAsyncScope();
 
         _editMacrosVM = scope.ServiceProvider.GetRequiredService<EditMacros_VM>();
-
-        if (_editMacrosVM == null)
-        {
-            return null;
-        }
 
         // Если макрос уже существует заполняем его данными
         if (parameters != null)
@@ -239,11 +234,6 @@ public class OpenChildWindowService : IOpenChildWindowService
         await using var scope = _serviceProvider.CreateAsyncScope();
 
         _editFormulaVM = scope.ServiceProvider.GetRequiredService<EditFormula_VM>();
-
-        if (_editFormulaVM == null)
-        {
-            return null;
-        }
 
         _editFormulaVM.InitWindow(description, formula, isEnable);
 

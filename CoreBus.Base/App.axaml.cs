@@ -42,25 +42,21 @@ public partial class App : Application
     /// 
     /// 2. Главное окно и все его ViewModel создаются как Singleton.
     /// 
-    /// 3. Дочерние окна и все их элементы создаются как Transient.
-    ///    Если есть поддержка IDisposable, то метод Dispose вызывается в событии окна Closed. 
+    /// 3. Простые дочерние окна (без внешних подписок, MessageBus или ресурсов, требующих очистки)
+    ///    создаются как Transient. ViewModel берётся из корневого _serviceProvider.
     ///
-    /// 4. Дочерние окна, в которых создаются подписки на внешние элементы и идет работа с MessageBus
-    ///    создаются как Transient или Scoped и реализовывают интерфейс IDisposable.
-    ///
-    ///    В случае Transient должен быть явный вызов Dispose в событии окна Closed.
-    ///
-    ///    В случае Scope, метод Dispose вызывается автоматически.
-    ///    Scope живёт до закрытия (ShowDialog или Show + ожидание);
+    /// 4. Дочерние окна, в которых создаются подписки на внешние элементы и идет работа с MessageBus,
+    ///    создаются как Scoped и реализуют интерфейс IDisposable.
+    ///    Scope живёт до закрытия окна (ShowDialog или Show + ожидание).
+    ///    Метод Dispose вызывается автоматически.
     ///    Экземпляр ViewModel берется из scope.
     ///    
     ///         await using var scope = _serviceProvider.CreateAsyncScope();
-    ///         _viewModel = scope.ServiceProvider.GetService<ViewModel>();
+    ///         _viewModel = scope.ServiceProvider.GetRequiredService<ViewModelType>();
     ///         ...
     ///         window.ShowDialog();
     ///         
-    /// 5. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService
-    ///    через _serviceProvider.GetService<T>() или через scope.ServiceProvider.GetService<T>().
+    /// 5. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService.
     /// 
     /// 3, 4, 5 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
     /// При каждом открытии нового окна создаются новые экземпляры ViewModel.
@@ -108,7 +104,7 @@ public partial class App : Application
             // Окно Modbus сканнера
             .AddTransient<ModbusScanner_VM>()
             // Окно макросов
-            .AddTransient<Macros_VM>()
+            .AddScoped<Macros_VM>()
             // Окно редактирования макроса
             .AddScoped<EditMacros_VM>()
             // Окно редактирования формулы (режим мониторинга Modbus)

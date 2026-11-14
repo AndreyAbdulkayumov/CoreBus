@@ -275,7 +275,7 @@ public class MainWindow_VM : ReactiveObject
         Command_ProtocolMode_Modbus = ReactiveCommand.Create(SelectModbusMode);
         Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
-        Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
+        Command_OpenMacrosWindow = ReactiveCommand.CreateFromTask(_openChildWindowService.Macros);
         Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.OpenMacrosWindow") + "\n\n" + error.Message, MessageType.Error, error));
 
         Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));

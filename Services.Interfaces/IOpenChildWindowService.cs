@@ -8,7 +8,7 @@ public interface IOpenChildWindowService
     Task<string?> UserInput();
     Task About();
     Task ModbusScanner();
-    void Macros();
+    Task Macros();
     Task<object?> EditMacros(object? parameters);
     Task<string?> EditFormula(string description, string? formula, bool isEnable);
     void Chart();
