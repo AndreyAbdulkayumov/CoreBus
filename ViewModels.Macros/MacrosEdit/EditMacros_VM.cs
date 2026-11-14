@@ -118,7 +118,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
                 return;
             }
 
-            string? validationMessages = GetMacrosValidationMessage();
+            var validationMessages = GetMacrosValidationMessage();
 
             if (!string.IsNullOrEmpty(validationMessages))
             {

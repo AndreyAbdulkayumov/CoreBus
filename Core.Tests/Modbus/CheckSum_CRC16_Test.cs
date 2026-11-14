@@ -4,8 +4,6 @@ namespace Core.Tests.Modbus;
 
 public class CheckSum_CRC16_Test
 {
-    private const UInt16 Polynom = 0xA001;
-
     [Fact]
     public void WriteSingleCoil_Request()
     {
@@ -68,7 +66,7 @@ public class CheckSum_CRC16_Test
 
     private UInt16 GetCheckSum_Actual(byte[] Data)
     {
-        byte[] CheckSumArray = CheckSum.Calculate_CRC16(Data, Polynom);
+        byte[] CheckSumArray = CheckSum.Calculate_CRC16(Data);
 
         Array.Reverse(CheckSumArray);
 
