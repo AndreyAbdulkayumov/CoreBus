@@ -619,10 +619,10 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
 
             var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
 
-            ushort startingAddress = allAddresses.Min();
-            int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
+            var startingAddress = allAddresses.Min();
+            var numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
 
-            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
+            var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
             MessageData data = new ReadTypeMessage(
                 _selectedSlaveID,
@@ -630,7 +630,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                 numberOfRegisters,
                 ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
 
-            ModbusOperationResult result = await _modbusModel.ReadRegister(
+            var result = await _modbusModel.ExecuteModbusTransaction(
                             readFunction,
                             data,
                             ModbusClient_VM.ModbusMessageType);

@@ -30,7 +30,7 @@ public class Model_Modbus
 
     public void Host_DeviceIsConnect(object? sender, IConnection? e)
     {
-        if (e != null && e.IsConnected)
+        if (e?.IsConnected == true)
         {
             _device = e;
         }
@@ -40,8 +40,8 @@ public class Model_Modbus
     {
         _device = null;
     }
-
-    public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
+    
+    public async Task<ModbusOperationResult> ExecuteModbusTransaction(ModbusFunction function, MessageData data, ModbusMessage message)
     {
         await _transactionSemaphore.WaitAsync();
 
@@ -59,23 +59,41 @@ public class Model_Modbus
                 throw new Exception(_localization.Get("Core.HostNotInitialized"));
             }
 
-            TX = message.CreateRequest(writeFunction, dataForWrite, _localization);
+            TX = message.CreateRequest(function, data, _localization);
             
             TX_Info = await _device.Send(TX, TX.Length);
 
             RX_Info = await _device.Receive();
 
-            if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
+            if (RX_Info.ResponseBytes?.Length > 0)
             {
                 RX = RX_Info.ResponseBytes;
                 
-                // Делаем декодирование для запуска проверок.
-                var deviceResponse = message.DecodingResponse(writeFunction, RX, dataForWrite.CheckSum_IsEnable, _localization);
+                var deviceResponse = message.DecodingResponse(function, RX, data.CheckSum_IsEnable, _localization);
 
-                if (deviceResponse.PDU is not (PduResponseWriteSingle or PduResponseWriteMultiple))
+                if (function is ModbusWriteFunction)
+                {
+                    if (deviceResponse.PDU is not (PduResponseWriteSingle or PduResponseWriteMultiple))
+                        throw new Exception(
+                            _localization.Get("Core.Modbus.InvalidPduFormat",
+                                $"{nameof(PduResponseWriteSingle)} | {nameof(PduResponseWriteMultiple)}"));
+                }
+
+                else if (function is ModbusReadFunction)
+                {
+                    if (deviceResponse.PDU is not PduResponseRead pdu)
+                        throw new Exception(
+                            _localization.Get("Core.Modbus.InvalidPduFormat",
+                                $"{nameof(PduResponseRead)}"));
+
+                    result.ReadedData = pdu.Data;
+                }
+
+                else
+                {
                     throw new Exception(
-                        _localization.Get("Core.Modbus.InvalidPduFormat",
-                            $"{nameof(PduResponseWriteSingle)} | {nameof(PduResponseWriteMultiple)}"));
+                        _localization.Get("Core.Modbus.UnsupportedCommandCode", function.Number));
+                }
             }
 
             else
@@ -90,121 +108,8 @@ public class Model_Modbus
                 errorObject: error,
                 requestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
                 responseBytes: GetOutputRX(RX, RX.Length),
-                request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                );
-        }
-
-        catch (TimeoutException)
-        {
-            string errorMessage = _localization.Get("Core.HostNoResponse");
-
-            if (_device != null)
-            {
-                errorMessage += "\n\n" +
-                    _localization.Get("Core.WriteTimeoutMs", _device.WriteTimeout) + "\n" +
-                    _localization.Get("Core.ReadTimeoutMs", _device.ReadTimeout);
-            }
-
-            throw new TimeoutException(errorMessage,
-                new ModbusExceptionInfo()
-                {
-                    Details = new ModbusActionDetails()
-                    {
-                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                        ResponseBytes = GetOutputRX(RX, RX.Length),
-
-                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                    }
-                });
-        }
-
-        catch (Exception error)
-        {
-            throw new Exception(error.Message,
-                new ModbusExceptionInfo()
-                {
-                    Details = new ModbusActionDetails()
-                    {
-                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                        ResponseBytes = GetOutputRX(RX, RX.Length),
-
-                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                    }
-                });
-        }
-
-        finally
-        {
-            result.Details = new ModbusActionDetails()
-            {
-                RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                ResponseBytes = GetOutputRX(RX, RX.Length),
-
-                Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-            };
-
-            _transactionSemaphore.Release();
-        }
-
-        return result;
-    }
-
-    public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
-    {
-        await _transactionSemaphore.WaitAsync();
-
-        var TX = Array.Empty<byte>();
-        var RX = Array.Empty<byte>();
-
-        var result = new ModbusOperationResult();
-
-        ModbusOperationInfo? TX_Info = null, RX_Info = null;
-
-        try
-        {
-            if (_device == null)
-            {
-                throw new Exception(_localization.Get("Core.HostNotInitialized"));
-            }
-
-            TX = message.CreateRequest(readFunction, dataForRead, _localization);
-
-            TX_Info = await _device.Send(TX, TX.Length);
-
-            RX_Info = await _device.Receive();
-
-            if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
-            {
-                RX = RX_Info.ResponseBytes;
-
-                var deviceResponse = message.DecodingResponse(readFunction, RX, dataForRead.CheckSum_IsEnable, _localization);
-
-                if (deviceResponse.PDU is not PduResponseRead pdu)
-                    throw new Exception(
-                        _localization.Get("Core.Modbus.InvalidPduFormat",
-                            $"{nameof(PduResponseRead)}"));
-                
-                result.ReadedData = pdu.Data;
-            }
-
-            else
-            {
-                throw new TimeoutException();
-            }
-        }
-
-        catch (ModbusException error)
-        {
-            throw new ModbusException(
-                errorObject: error,
-                requestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
-                responseBytes: GetOutputRX(RX, RX.Length),
-                request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                request_ExecutionTime: TX_Info?.ExecutionTime ?? new DateTime(),
+                response_ExecutionTime: RX_Info?.ExecutionTime ?? new DateTime()
                 );
         }
 
@@ -227,8 +132,8 @@ public class Model_Modbus
                         RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                         ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                        Request_ExecutionTime = TX_Info?.ExecutionTime ?? new DateTime(),
+                        Response_ExecutionTime = RX_Info?.ExecutionTime ?? new DateTime()
                     }
                 });
         }
@@ -243,8 +148,8 @@ public class Model_Modbus
                         RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                         ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                        Request_ExecutionTime = TX_Info?.ExecutionTime ?? new DateTime(),
+                        Response_ExecutionTime = RX_Info?.ExecutionTime ?? new DateTime()
                     }
                 });
         }
@@ -256,8 +161,8 @@ public class Model_Modbus
                 RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                 ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                Request_ExecutionTime = TX_Info?.ExecutionTime ?? new DateTime(),
+                Response_ExecutionTime = RX_Info?.ExecutionTime ?? new DateTime()
             };
 
             _transactionSemaphore.Release();
