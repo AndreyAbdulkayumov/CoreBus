@@ -96,13 +96,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
-            var newItem = CreateNewItem(null);
-
-            newItem.TypeChanged += MonitoringItem_TypeChanged;
-            newItem.PropertyChanged += MonitoringItem_PropertyChanged;
-
-            Items.Add(newItem);
-
+            Items.Add(CreateNewItem(null));
             AllRowSelected = false;
         });
         Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
@@ -128,7 +122,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     private MonitoringItem_VM CreateNewItem(ModbusMonitoringItemData? initData)
     {
-        int initAddress = initData?.Address ?? (Items.Count > 0 ? Items.Last().SelectedAddress + 1 : 0);
+        var initAddress = initData?.Address ?? (Items.Count > 0 ? Items.Last().SelectedAddress + 1 : 0);
 
         var newItem = new MonitoringItem_VM(initAddress, _numberViewStyle, _settingsModel, _openChildWindowService, _messageBox);
 
