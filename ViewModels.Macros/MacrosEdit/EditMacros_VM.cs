@@ -62,8 +62,6 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         set => this.RaiseAndSetIfChanged(ref _editCommandViewModel, value);
     }
 
-    public string EmptyCommandMessage => _localization.Get("Macros.EmptyCommandMessage");
-
     public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
     public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
     public ReactiveCommand<Unit, Unit> Command_AddCommand { get; }
@@ -85,8 +83,6 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
-
-        _localization.LanguageChanged += (_, _) => this.RaisePropertyChanged(nameof(EmptyCommandMessage));
 
         /****************************************************/
         //
@@ -137,7 +133,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
         Command_AddCommand = ReactiveCommand.Create(() =>
         {
-            string defaultName = (CommandItems.Count() + 1).ToString();
+            var defaultName = (CommandItems.Count() + 1).ToString();
 
             var commandParameters = new EditCommandParameters(defaultName, null);
 
@@ -164,7 +160,22 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
     public void Dispose()
     {
+        CommonSlaveIdFieldViewModel?.UseCommonSlaveIdChanged -= CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged;
+
+        foreach (var commandVM in _allEditCommandVM)
+        {
+            DisposeCommand(commandVM);
+        }
+
         _disposables.Dispose();
+    }
+
+    private static void DisposeCommand(ICommandContent command)
+    {
+        if (command is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 
     private void CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged(object? sender, bool e)
@@ -402,6 +413,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
         CommandItems.Remove(commandItem);
         _allEditCommandVM.Remove(commandVM);
+        DisposeCommand(commandVM);
     }
 
     private void RunCommand(Guid selectedId)

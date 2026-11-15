@@ -15,7 +15,7 @@ using ViewModels.ModbusClient.Manual;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit;
 
-public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, ICommandContent, ICommandValidation
+public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, ICommandContent, ICommandValidation, IDisposable
 {
     private readonly Guid _id;
 
@@ -188,7 +188,7 @@ public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, IComma
         WriteField_SingleCoil_VM = new SingleCoil_VM();
         WriteField_SingleRegister_VM = new SingleRegister_VM();
 
-        _localization.LanguageChanged += (_, _) => RefreshLocalizedFunctionLists();
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
 
         InitUI(parameters);
 
@@ -240,6 +240,16 @@ public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, IComma
                     messageBox.Show(_localization.Get("Message.Error.FormatChange") + "\n\n" + error.Message, MessageType.Error, error);
                 }
             });
+    }
+
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
+    {
+        RefreshLocalizedFunctionLists();
     }
 
     private void InitUI(EditCommandParameters parameters)
@@ -335,24 +345,24 @@ public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, IComma
 
     private void RefreshLocalizedFunctionLists()
     {
-        byte selectedReadFunctionNumber =
+        var selectedReadFunctionNumber =
             Function.AllReadFunctions.FirstOrDefault(f => f.DisplayedName == SelectedReadFunction)?.Number
             ?? _selectedReadFunctionNumber;
 
-        byte selectedWriteFunctionNumber =
+        var selectedWriteFunctionNumber =
             Function.AllWriteFunctions.FirstOrDefault(f => f.DisplayedName == SelectedWriteFunction)?.Number
             ?? _selectedWriteFunctionNumber;
 
         ReadFunctions.Clear();
 
-        foreach (ModbusReadFunction element in Function.AllReadFunctions)
+        foreach (var element in Function.AllReadFunctions)
         {
             ReadFunctions.Add(element.DisplayedName);
         }
 
         WriteFunctions.Clear();
 
-        foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+        foreach (var element in Function.AllWriteFunctions)
         {
             WriteFunctions.Add(element.DisplayedName);
         }
@@ -368,7 +378,7 @@ public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, IComma
             ? _selectedReadFunctionNumber
             : _selectedWriteFunctionNumber;
 
-        ModbusMacrosWriteInfo? writeData = CurrentWriteFieldViewModel?.GetMacrosData();
+        var writeData = CurrentWriteFieldViewModel?.GetMacrosData();
 
         return new MacrosCommandModbus()
         {
