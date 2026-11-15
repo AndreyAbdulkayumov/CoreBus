@@ -399,6 +399,7 @@
       "ClearData": "Erreur lors de l'effacement des données.",
       "SwitchMonitoringMode": "Erreur lors du passage en mode surveillance.",
       "SerialPortPageUpdate": "Erreur lors de la mise à jour des valeurs sur la page SerialPort.",
+      "CreateNewSettingsFile": "Erreur lors de la création du fichier de paramètres.",
       "AddExistingSettingsFile": "Erreur lors de l'ajout d'un fichier existant.",
       "DeleteSettingsFile": "Erreur lors de la suppression du fichier de paramètres.",
       "SaveSettingsFile": "Erreur lors de l'enregistrement du fichier de paramètres.",

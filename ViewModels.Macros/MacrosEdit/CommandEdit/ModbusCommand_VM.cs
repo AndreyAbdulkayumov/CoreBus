@@ -183,8 +183,8 @@ public class ModbusCommand_VM : ValidatedDataInput, IValidationFieldInfo, IComma
 
         UseCommonSlaveId = useCommonSlaveId;
 
-        WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-        WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true, settingsModel);
+        WriteField_MultipleCoils_VM = new MultipleCoils_VM(messageBox, localization);
+        WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true, settingsModel, messageBox, localization);
         WriteField_SingleCoil_VM = new SingleCoil_VM();
         WriteField_SingleRegister_VM = new SingleRegister_VM();
 

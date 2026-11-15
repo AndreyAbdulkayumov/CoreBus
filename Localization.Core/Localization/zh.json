@@ -399,6 +399,7 @@
       "ClearData": "清除数据时出错。",
       "SwitchMonitoringMode": "切换到监视模式时出错。",
       "SerialPortPageUpdate": "更新 SerialPort 页面数值时出错。",
+      "CreateNewSettingsFile": "创建设置文件时出错。",
       "AddExistingSettingsFile": "添加已有文件时出错。",
       "DeleteSettingsFile": "删除设置文件时出错。",
       "SaveSettingsFile": "保存设置文件时出错。",

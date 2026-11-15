@@ -399,6 +399,7 @@
       "ClearData": "Erro ao limpar os dados.",
       "SwitchMonitoringMode": "Erro ao mudar para o modo de monitorização.",
       "SerialPortPageUpdate": "Erro ao atualizar os valores na página SerialPort.",
+      "CreateNewSettingsFile": "Erro ao criar o ficheiro de definições.",
       "AddExistingSettingsFile": "Erro ao adicionar um ficheiro existente.",
       "DeleteSettingsFile": "Erro ao eliminar o ficheiro de definições.",
       "SaveSettingsFile": "Erro ao guardar o ficheiro de definições.",

@@ -3,6 +3,7 @@ using DynamicData;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Core.Models.Settings.DataTypes;
+using MessageBox.Core;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataItems;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
@@ -25,13 +26,19 @@ public class MultipleCoils_VM : ReactiveObject, IWriteField_VM
 
     public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
+    private readonly IMessageBox _messageBox;
+    private readonly ILocalizationService _localization;
 
-    public MultipleCoils_VM()
+    public MultipleCoils_VM(IMessageBox messageBox, ILocalizationService localization)
     {
+        _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        
         Command_AddRegister = ReactiveCommand.Create(() =>
         {
             AddCoilItem(null);
         });
+        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     private void AddCoilItem(bool? value)
@@ -39,7 +46,9 @@ public class MultipleCoils_VM : ReactiveObject, IWriteField_VM
         Items.Add(new MultipleCoils_Item(
             startAddressAddition: Items.Count,
             removeItemHandler: RemoveWriteDataItem,
-            isLogicOne: value
+            isLogicOne: value,
+            _messageBox,
+            _localization
             ));
     }
 

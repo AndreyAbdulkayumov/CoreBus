@@ -1,5 +1,6 @@
 using ReactiveUI.Reactive;
 using System.Reactive;
+using MessageBox.Core;
 
 namespace ViewModels.ModbusClient.Manual.WriteFields.DataItems;
 
@@ -37,7 +38,7 @@ public class MultipleCoils_Item : ReactiveObject
     public readonly Guid Id;
 
 
-    public MultipleCoils_Item(int startAddressAddition, Action<Guid> removeItemHandler, bool? isLogicOne)
+    public MultipleCoils_Item(int startAddressAddition, Action<Guid> removeItemHandler, bool? isLogicOne, IMessageBox messageBox, ILocalizationService localization)
     {
         Id = Guid.NewGuid();
 
@@ -47,6 +48,7 @@ public class MultipleCoils_Item : ReactiveObject
         {
             removeItemHandler?.Invoke(Id);
         });
+        Command_RemoveItem.ThrownExceptions.Subscribe(error => messageBox.Show(localization.Get("Message.Error.RemoveSelectedRegisters") + "\n\n" + error.Message, MessageType.Error, error));
 
         if (isLogicOne != null)
         {

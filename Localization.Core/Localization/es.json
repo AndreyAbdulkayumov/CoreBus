@@ -399,6 +399,7 @@
       "ClearData": "Error al borrar los datos.",
       "SwitchMonitoringMode": "Error al cambiar al modo de supervisión.",
       "SerialPortPageUpdate": "Error al actualizar los valores en la página SerialPort.",
+      "CreateNewSettingsFile": "Error al crear el archivo de ajustes.",
       "AddExistingSettingsFile": "Error al añadir un archivo existente.",
       "DeleteSettingsFile": "Error al eliminar el archivo de ajustes.",
       "SaveSettingsFile": "Error al guardar el archivo de ajustes.",

@@ -399,6 +399,7 @@
       "ClearData": "Fehler beim Löschen der Daten.",
       "SwitchMonitoringMode": "Fehler beim Wechsel in den Überwachungsmodus.",
       "SerialPortPageUpdate": "Fehler beim Aktualisieren der Werte auf der SerialPort-Seite.",
+      "CreateNewSettingsFile": "Fehler beim Erstellen der Einstellungsdatei.",
       "AddExistingSettingsFile": "Fehler beim Hinzufügen einer vorhandenen Datei.",
       "DeleteSettingsFile": "Fehler beim Löschen der Einstellungsdatei.",
       "SaveSettingsFile": "Fehler beim Speichern der Einstellungsdatei.",

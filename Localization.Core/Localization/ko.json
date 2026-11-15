@@ -399,6 +399,7 @@
       "ClearData": "데이터 지우기 오류.",
       "SwitchMonitoringMode": "모니터링 모드로 전환 오류.",
       "SerialPortPageUpdate": "SerialPort 페이지 값 업데이트 오류.",
+      "CreateNewSettingsFile": "설정 파일 생성 오류.",
       "AddExistingSettingsFile": "기존 파일 추가 오류.",
       "DeleteSettingsFile": "설정 파일 삭제 오류.",
       "SaveSettingsFile": "설정 파일 저장 오류.",

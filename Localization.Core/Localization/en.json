@@ -399,6 +399,7 @@
       "ClearData": "Data clear error.",
       "SwitchMonitoringMode": "Error switching to monitoring mode.",
       "SerialPortPageUpdate": "Error refreshing values on the SerialPort page.",
+      "CreateNewSettingsFile": "Error creating the settings file.",
       "AddExistingSettingsFile": "Error adding an existing file.",
       "DeleteSettingsFile": "Error deleting the settings file.",
       "SaveSettingsFile": "Error saving the settings file.",

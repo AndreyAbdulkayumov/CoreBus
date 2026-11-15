@@ -399,6 +399,7 @@
       "ClearData": "Ошибка очистки данных.",
       "SwitchMonitoringMode": "Ошибка переключения в режим мониторинга.",
       "SerialPortPageUpdate": "Ошибка обновления значений на странице SerialPort.",
+      "CreateNewSettingsFile": "Ошибка создания файла настроек.",
       "AddExistingSettingsFile": "Ошибка при добавлении уже существующего файла.",
       "DeleteSettingsFile": "Ошибка удаления файла настроек.",
       "SaveSettingsFile": "Ошибка сохранения файла настроек.",

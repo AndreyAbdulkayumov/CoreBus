@@ -399,6 +399,7 @@
       "ClearData": "डेटा साफ़ करने में त्रुटि।",
       "SwitchMonitoringMode": "मॉनिटरिंग मोड पर स्विच में त्रुटि।",
       "SerialPortPageUpdate": "SerialPort पृष्ठ मान अपडेट में त्रुटि।",
+      "CreateNewSettingsFile": "सेटिंग्स फ़ाइल बनाने में त्रुटि।",
       "AddExistingSettingsFile": "मौजूदा फ़ाइल जोड़ने में त्रुटि।",
       "DeleteSettingsFile": "सेटिंग्स फ़ाइल हटाने में त्रुटि।",
       "SaveSettingsFile": "सेटिंग्स फ़ाइल सहेजने में त्रुटि।",
