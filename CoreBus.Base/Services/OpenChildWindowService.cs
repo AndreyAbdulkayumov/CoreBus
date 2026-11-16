@@ -43,13 +43,11 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task Settings()
     {
-        SettingsWindow? window = null;
-        
         await using var scope = _serviceProvider.CreateAsyncScope();
         
         var settingsVM = scope.ServiceProvider.GetRequiredService<Settings_VM>();
 
-        window = new SettingsWindow()
+        var window = new SettingsWindow()
         {
             DataContext = settingsVM
         };
