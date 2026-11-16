@@ -308,15 +308,15 @@ public class OpenChildWindowService : IOpenChildWindowService
     {
         var tcs = new TaskCompletionSource<object?>();
 
+        window.Closed += Handler;
+
+        return tcs.Task;
+        
         void Handler(object? sender, EventArgs e)
         {
             window.Closed -= Handler;
             tcs.TrySetResult(null);
         }
-
-        window.Closed += Handler;
-
-        return tcs.Task;
     }
 
     private async Task OpenWindowWithDimmer(Window window, Window? owner, Visual? workspace)
@@ -331,16 +331,22 @@ public class OpenChildWindowService : IOpenChildWindowService
             await window.ShowDialog(owner);
             return;
         }
-
+        
         await Dispatcher.UIThread.Invoke(async () =>
         {
             var workspaceOpacityDefault = workspace.Opacity;
-
-            workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
-
-            await window.ShowDialog(owner);
-
-            workspace.Opacity = workspaceOpacityDefault;
+                
+            try
+            {
+                workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
+                
+                await window.ShowDialog(owner);
+            }
+            
+            finally
+            {
+                workspace.Opacity = workspaceOpacityDefault;
+            }
         });
     }
     
