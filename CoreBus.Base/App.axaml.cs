@@ -42,11 +42,11 @@ public partial class App : Application
     /// 
     /// 2. Главное окно и все его ViewModel создаются как Singleton.
     /// 
-    /// 3. Простые дочерние окна (без внешних подписок, MessageBus или ресурсов, требующих очистки)
-    ///    создаются как Transient. ViewModel берётся из корневого _serviceProvider.
+    /// 3. Простые дочерние окна (без внешних подписок, прослушки MessageBus или ресурсов, требующих очистки)
+    ///    создаются как Transient или Scoped. ViewModel берётся из корневого _serviceProvider или из scope.ServiceProvider.
     ///
-    /// 4. Дочерние окна, в которых создаются подписки на внешние элементы и идет работа с MessageBus,
-    ///    создаются как Scoped и реализуют интерфейс IDisposable.
+    /// 4. Дочерние окна, в которых создаются подписки на внешние элементы и прослушка MessageBus,
+    ///    создаются только как Scoped и реализуют интерфейс IDisposable.
     ///    Scope живёт до закрытия окна (ShowDialog или Show + ожидание).
     ///    Метод Dispose вызывается автоматически.
     ///    Экземпляр ViewModel берется из scope.
@@ -91,14 +91,14 @@ public partial class App : Application
             .AddSingleton<ModbusMonitoring_VM>()
             .AddSingleton<MonitoringDataGrid_VM>()
             // Окно настроек
-            .AddTransient<Settings_VM>()
+            .AddScoped<Settings_VM>()
             // Компоненты окна настроек
-            .AddTransient<AppSettings_VM>()
-            .AddTransient<Connection_Ethernet_VM>()
-            .AddTransient<Connection_SerialPort_VM>()
-            .AddTransient<Connection_VM>()
-            .AddTransient<Modbus_VM>()
-            .AddTransient<Settings_NoProtocol_VM>()
+            .AddScoped<AppSettings_VM>()
+            .AddScoped<Connection_Ethernet_VM>()
+            .AddScoped<Connection_SerialPort_VM>()
+            .AddScoped<Connection_VM>()
+            .AddScoped<Modbus_VM>()
+            .AddScoped<Settings_NoProtocol_VM>()
             // Окно "О программе"
             .AddTransient<AboutApp_VM>()
             // Окно Modbus сканнера

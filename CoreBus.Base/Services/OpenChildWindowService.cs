@@ -30,14 +30,6 @@ public class OpenChildWindowService : IOpenChildWindowService
     public bool ChartWindowIsOpen { get; private set; } = false;
     public bool MacrosWindowIsOpen { get; private set; } = false;
 
-    private Settings_VM? _settingsVM;
-    private AboutApp_VM? _aboutAppVM;
-    private Macros_VM? _macrosVM;
-    private EditMacros_VM? _editMacrosVM;
-    private ModbusScanner_VM? _modbusScannerVM;
-    private EditFormula_VM? _editFormulaVM;
-    private Chart_VM? _chartVM;
-
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
     
     private readonly IServiceProvider _serviceProvider;
@@ -51,52 +43,57 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task Settings()
     {
-        _settingsVM = _serviceProvider.GetService<Settings_VM>();
+        SettingsWindow? window = null;
+        
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        
+        var settingsVM = scope.ServiceProvider.GetRequiredService<Settings_VM>();
 
-        if (_settingsVM == null)
+        window = new SettingsWindow()
         {
-            return;
-        }
-
-        var window = new SettingsWindow()
-        {
-            DataContext = _settingsVM
+            DataContext = settingsVM
         };
 
-        window.Loaded += SettingsWindow_Loaded;
-        window.KeyDown += SettingsWindow_KeyDown;
-
-        await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
-
-        window.Loaded -= SettingsWindow_Loaded;
-        window.KeyDown -= SettingsWindow_KeyDown;
-
-        _settingsVM.WindowClosed();
-    }
-
-    private void SettingsWindow_Loaded(object? sender, RoutedEventArgs e)
-    {
-        _settingsVM?.WindowLoaded();
-    }
-
-    private void SettingsWindow_KeyDown(object? sender, KeyEventArgs e)
-    {
-        var settingsWindow = sender as SettingsWindow;
-
-        if (settingsWindow == null)
+        window.Loaded += SettingsWindowLoaded;
+        window.KeyDown += SettingsWindowKeyDown;
+        
+        try
         {
-            return;
+            await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+
+            settingsVM.WindowClosed();
         }
 
-        switch (e.Key)
+        finally
         {
-            case Key.Enter:
-                _settingsVM?.Enter_KeyDownHandler();
-                break;
+            window?.Loaded -= SettingsWindowLoaded;
+            window?.KeyDown -= SettingsWindowKeyDown;
+        }
+        
+        void SettingsWindowLoaded(object? sender, RoutedEventArgs e)
+        {
+            settingsVM.WindowLoaded();
+        }
+        
+        void SettingsWindowKeyDown(object? sender, KeyEventArgs e)
+        {
+            var settingsWindow = sender as SettingsWindow;
 
-            case Key.Escape:
-                settingsWindow.Close();
-                break;
+            if (settingsWindow == null)
+            {
+                return;
+            }
+
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    settingsVM?.Enter_KeyDownHandler();
+                    break;
+
+                case Key.Escape:
+                    settingsWindow.Close();
+                    break;
+            }
         }
     }
 
@@ -111,16 +108,11 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task About()
     {
-        _aboutAppVM = _serviceProvider.GetService<AboutApp_VM>();
-
-        if (_aboutAppVM == null)
-        {
-            return;
-        }
+        var aboutAppVM = _serviceProvider.GetRequiredService<AboutApp_VM>();
 
         var window = new AboutWindow()
         {
-            DataContext = _aboutAppVM
+            DataContext = aboutAppVM
         };
 
         await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
@@ -128,21 +120,16 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task ModbusScanner()
     {
-        _modbusScannerVM = _serviceProvider.GetService<ModbusScanner_VM>();
-
-        if (_modbusScannerVM == null)
-        {
-            return;
-        }
+        var modbusScannerVM = _serviceProvider.GetRequiredService<ModbusScanner_VM>();
 
         var window = new ModbusScannerWindow()
         {
-            DataContext = _modbusScannerVM
+            DataContext = modbusScannerVM
         };
 
         await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
 
-        await _modbusScannerVM.WindowClosed();
+        await modbusScannerVM.WindowClosed();
     }
 
     public async Task Macros()
@@ -161,11 +148,11 @@ public class OpenChildWindowService : IOpenChildWindowService
 
             await using var scope = _serviceProvider.CreateAsyncScope();
 
-            _macrosVM = scope.ServiceProvider.GetRequiredService<Macros_VM>();
+            var macrosVM = scope.ServiceProvider.GetRequiredService<Macros_VM>();
 
             var window = new MacrosWindow()
             {
-                DataContext = _macrosVM
+                DataContext = macrosVM
             };
 
             SubscribeOnMainWindowClosed(window);
@@ -179,15 +166,9 @@ public class OpenChildWindowService : IOpenChildWindowService
             });
         }
 
-        catch (Exception error)
-        {
-            throw new Exception(error.Message);
-        }
-
         finally
         {
             MacrosWindowIsOpen = false;
-            _macrosVM = null;
         }
     }
 
@@ -200,17 +181,17 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         await using var scope = _serviceProvider.CreateAsyncScope();
 
-        _editMacrosVM = scope.ServiceProvider.GetRequiredService<EditMacros_VM>();
+        var editMacrosVM = scope.ServiceProvider.GetRequiredService<EditMacros_VM>();
 
         // Если макрос уже существует заполняем его данными
         if (parameters != null)
         {
-            _editMacrosVM.SetParameters(parameters);
+            editMacrosVM.SetParameters(parameters);
         }
 
         var window = new EditMacrosWindow()
         {
-            DataContext = _editMacrosVM
+            DataContext = editMacrosVM
         };
 
         SubscribeOnMainWindowClosed(window);
@@ -220,8 +201,8 @@ public class OpenChildWindowService : IOpenChildWindowService
             window.Show();
             await WaitForCloseAsync(window);
         });
-        
-        return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
+
+        return editMacrosVM.Saved ? editMacrosVM.GetMacrosContent() : null;
     }
 
     public async Task<string?> EditFormula(string description, string? formula, bool isEnable)
@@ -233,18 +214,18 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         await using var scope = _serviceProvider.CreateAsyncScope();
 
-        _editFormulaVM = scope.ServiceProvider.GetRequiredService<EditFormula_VM>();
+        var editFormulaVM = scope.ServiceProvider.GetRequiredService<EditFormula_VM>();
 
-        _editFormulaVM.InitWindow(description, formula, isEnable);
+        editFormulaVM.InitWindow(description, formula, isEnable);
 
         var window = new EditFormulaWindow()
         {
-            DataContext = _editFormulaVM
+            DataContext = editFormulaVM
         };
-        
+
         await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
 
-        return _editFormulaVM.GetResult();
+        return editFormulaVM.GetResult();
     }
 
     public void Chart()
@@ -261,16 +242,11 @@ public class OpenChildWindowService : IOpenChildWindowService
                 throw new Exception(_localization.Get("CoreBase.WindowOwnerNotSet"));
             }
 
-            _chartVM = _serviceProvider.GetService<Chart_VM>();
-
-            if (_chartVM == null)
-            {
-                return;
-            }
+            var chartVM = _serviceProvider.GetRequiredService<Chart_VM>();
 
             var window = new ChartWindow()
             {
-                DataContext = _chartVM
+                DataContext = chartVM
             };
 
             SubscribeOnMainWindowClosed(window, () =>
@@ -318,11 +294,10 @@ public class OpenChildWindowService : IOpenChildWindowService
             window.Show();
         }
 
-        catch (Exception error)
+        catch (Exception)
         {
             ChartWindowIsOpen = false;
-
-            throw new Exception(error.Message);
+            throw;
         }
     }
 

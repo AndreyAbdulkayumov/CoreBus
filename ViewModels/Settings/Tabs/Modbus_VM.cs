@@ -8,7 +8,7 @@ namespace ViewModels.Settings.Tabs;
 
 public record TimestampFormatItem(TimestampFormat Value, string Display);
 
-public class Modbus_VM : ValidatedDataInput, IValidationFieldInfo
+public class Modbus_VM : ValidatedDataInput, IValidationFieldInfo, IDisposable
 {
     private string _writeTimeout = string.Empty;
 
@@ -64,17 +64,24 @@ public class Modbus_VM : ValidatedDataInput, IValidationFieldInfo
     {
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
-        _localization.LanguageChanged += (_, _) =>
-        {
-            // Перерисовать список при смене языка и сохранить текущий выбор
-            var current = SelectedTimestampFormat?.Value;
-            this.RaisePropertyChanged(nameof(TimestampFormats));
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
+    }
 
-            if (current.HasValue)
-            {
-                SelectedTimestampFormat = TimestampFormats.FirstOrDefault(e => e.Value == current.Value);
-            }
-        };
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+    
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
+    {
+        // Перерисовать список при смене языка и сохранить текущий выбор
+        var current = SelectedTimestampFormat?.Value;
+        this.RaisePropertyChanged(nameof(TimestampFormats));
+        
+        if (current.HasValue)
+        {
+            SelectedTimestampFormat = TimestampFormats.FirstOrDefault(e => e.Value == current.Value);
+        }
     }
 
     public void PresetLogTimestampFormat(TimestampFormat format)
