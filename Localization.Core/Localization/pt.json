@@ -382,6 +382,7 @@
       "OpenChartWindow": "Erro ao abrir a janela do gráfico.",
       "StartLogging": "Erro ao iniciar o registo.",
       "StopLogging": "Erro ao parar o registo.",
+      "WriteLog": "Erro ao escrever no ficheiro. O registo foi interrompido. Prima o botão de parar.",
       "OpenLogFolder": "Erro ao abrir a pasta de registos.",
       "FormatChange": "Erro ao alterar o formato.",
       "Monitoring": "Erro de monitorização.",

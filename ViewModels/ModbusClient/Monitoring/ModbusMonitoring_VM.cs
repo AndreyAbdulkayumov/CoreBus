@@ -223,6 +223,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
         _modbusModel.Model_MonitoringError += Model_MonitoringError;
+        _logger.WriteFailed += Logger_WriteFailed;
 
         _monitoringDataGrid_VM.PropertyChanged += MonitoringDataGrid_VM_PropertyChanged;
                 
@@ -334,7 +335,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _monitoringDataGrid_VM.ClearData();
     }
 
-    public void SetMonitoringParameters(ModbusMonitoringParameters data)
+    private void SetMonitoringParameters(ModbusMonitoringParameters data)
     {
         SlaveID = data.SlaveID.ToString();  // SlaveID приведется к нужному формату после смены RadioButton SelectedNumberFormat_Hex или SelectedNumberFormat_Dec
 
@@ -515,6 +516,14 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
 
         WaitStartLogMessageIsVisible = false;
         StartLogDateIsVisible = false;
+    }
+    
+    private void Logger_WriteFailed(object? sender, Exception e)
+    {
+        // Запуск и остановка логгирования находятся на одной кнопке.
+        // Нельзя запустить повторное логгирование без остановки текущего.
+        // Поэтому тут просто показывается сообщение.
+        _messageBox.Show(_localization.Get("Message.Error.WriteLog") + "\n\n" + e.Message, MessageType.Error, e);
     }
 
     #endregion Логгирование

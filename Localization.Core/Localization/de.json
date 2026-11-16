@@ -382,6 +382,7 @@
       "OpenChartWindow": "Fehler beim Öffnen des Diagrammfensters.",
       "StartLogging": "Fehler beim Starten der Protokollierung.",
       "StopLogging": "Fehler beim Stoppen der Protokollierung.",
+      "WriteLog": "Fehler beim Schreiben in die Datei. Die Protokollierung wurde gestoppt. Drücken Sie die Stopp-Taste.",
       "OpenLogFolder": "Fehler beim Öffnen des Protokollordners.",
       "FormatChange": "Fehler beim Wechseln des Formats.",
       "Monitoring": "Fehler bei der Überwachung.",

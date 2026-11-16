@@ -7,19 +7,25 @@ namespace Core.Models.Logging;
 
 public class FileLogger : IAsyncDisposable
 {
+    public event EventHandler<Exception>? WriteFailed;
+
+    public bool IsRunning { get; private set; }
+
+    private readonly object _syncObj = new();
+
     private Channel<LogEntry>? _channel;
     private Task? _writerTask;
     private StreamWriter? _writer;
+    
     private CancellationTokenSource? _cts;
-
-    private record LogEntry(DateTime Timestamp, string Data);
-
-    public bool IsRunning => _channel != null;
-
+    
     private TimestampFormat _selectedTimestampFormat;
     
+    private record LogEntry(DateTime Timestamp, string Data);
+
     private readonly ILocalizationService _localization;
 
+    
     public FileLogger(ILocalizationService localization)
     {
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
@@ -27,73 +33,143 @@ public class FileLogger : IAsyncDisposable
 
     public void Start(string filePath, string columnNames, TimestampFormat logTimestampFormat)
     {
-        if (IsRunning)
-            return;
-
-        _selectedTimestampFormat = logTimestampFormat;
-
-        _cts = new CancellationTokenSource();
-
-        _channel = Channel.CreateUnbounded<LogEntry>(
-            new UnboundedChannelOptions
-            {
-                SingleReader = true,
-                SingleWriter = false
-            });
-
-        var fileStream = new FileStream(
-            filePath,
-            FileMode.Create,
-            FileAccess.Write,
-            FileShare.Read,
-            bufferSize: 4096,
-            options: FileOptions.Asynchronous | FileOptions.WriteThrough);
-
-        _writer = new StreamWriter(fileStream, Encoding.UTF8)
+        lock (_syncObj)
         {
-            AutoFlush = true
-        };
+            if (IsRunning || _writerTask != null)
+                return;
 
-        _writer.WriteLine($"{(_selectedTimestampFormat != TimestampFormat.None ? _localization.Get("Common.Time") + "\t" : string.Empty)}{columnNames}");
+            _selectedTimestampFormat = logTimestampFormat;
 
-        _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token));
+            StreamWriter? writer = null;
+
+            try
+            {
+                var fileStream = new FileStream(
+                    filePath,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.Read,
+                    bufferSize: 4096,
+                    options: FileOptions.Asynchronous | FileOptions.WriteThrough);
+
+                writer = new StreamWriter(fileStream, Encoding.UTF8)
+                {
+                    AutoFlush = true
+                };
+
+                writer.WriteLine(
+                    $"{(_selectedTimestampFormat != TimestampFormat.None ? _localization.Get("Common.Time") + "\t" : string.Empty)}{columnNames}");
+
+                _cts = new CancellationTokenSource();
+
+                _channel = Channel.CreateUnbounded<LogEntry>(
+                    new UnboundedChannelOptions
+                    {
+                        SingleReader = true,
+                        SingleWriter = false
+                    });
+
+                _writer = writer;
+                writer = null;
+
+                _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token), _cts.Token);
+                IsRunning = true;
+            }
+            
+            catch
+            {
+                writer?.Dispose();
+                _writer?.Dispose();
+                _cts?.Dispose();
+
+                _channel = null;
+                _writer = null;
+                _writerTask = null;
+                _cts = null;
+                IsRunning = false;
+                
+                throw;
+            }
+        }
     }
-
+    
     public void WriteLine(string data)
     {
-        if (!IsRunning)
-            return;
+        lock (_syncObj)
+        {
+            if (!IsRunning)
+                return;
 
-        _channel!.Writer.TryWrite(new LogEntry(DateTime.Now, data));
+            _channel!.Writer.TryWrite(new LogEntry(DateTime.Now, data));
+        }
     }
 
     public async Task StopAsync()
     {
-        if (!IsRunning)
-            return;
+        lock (_syncObj)
+        {
+            if (_writerTask == null)
+                return;
 
-        _channel!.Writer.Complete();
+            IsRunning = false;
+            _cts?.Cancel();
+        }
 
-        if (_writerTask != null)
-            await _writerTask;
+        _channel?.Writer.TryComplete();
 
-        await _writer!.FlushAsync();
-        await _writer.DisposeAsync();
+        await _writerTask!;
 
-        _cts!.Dispose();
+        if (_writer != null)
+        {
+            try
+            {
+                await _writer.FlushAsync();
+            }
+            
+            catch (Exception)
+            {
+                // Для перестраховки, как и сам FlushAsync()
+            }
 
-        _channel = null;
-        _writer = null;
-        _writerTask = null;
-        _cts = null;
+            await _writer.DisposeAsync();
+        }
+
+        _cts?.Dispose();
+
+        lock (_syncObj)
+        {
+            _channel = null;
+            _writer = null;
+            _writerTask = null;
+            _cts = null;
+        }
     }
 
     private async Task WriteLoopAsync(CancellationToken token)
     {
-        await foreach (var entry in _channel!.Reader.ReadAllAsync(token))
+        try
         {
-            await _writer!.WriteLineAsync(
-                $"{GetTimestamp(entry)}{entry.Data}");
+            await foreach (var entry in _channel!.Reader.ReadAllAsync(token))
+            {
+                await _writer!.WriteLineAsync(
+                    $"{GetTimestamp(entry)}{entry.Data}");
+            }
+        }
+        
+        catch (OperationCanceledException)
+        {
+            
+        }
+        
+        catch (Exception error)
+        {
+            lock (_syncObj)
+            {
+                IsRunning = false;
+                _channel?.Writer.TryComplete();
+            }
+
+            WriteFailed?.Invoke(this, error);
         }
     }
 

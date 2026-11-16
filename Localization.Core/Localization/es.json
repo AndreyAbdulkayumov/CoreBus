@@ -382,6 +382,7 @@
       "OpenChartWindow": "Error al abrir la ventana del gráfico.",
       "StartLogging": "Error al iniciar el registro.",
       "StopLogging": "Error al detener el registro.",
+      "WriteLog": "Error al escribir en el archivo. El registro se ha detenido. Pulse el botón de detener.",
       "OpenLogFolder": "Error al abrir la carpeta de registros.",
       "FormatChange": "Error al cambiar el formato.",
       "Monitoring": "Error en la supervisión.",

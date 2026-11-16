@@ -382,6 +382,7 @@
       "OpenChartWindow": "打开图表窗口时出错。",
       "StartLogging": "开始记录时出错。",
       "StopLogging": "停止记录时出错。",
+      "WriteLog": "写入文件时出错。日志记录已停止。请按下停止按钮。",
       "OpenLogFolder": "打开日志文件夹时出错。",
       "FormatChange": "切换格式时出错。",
       "Monitoring": "监视时出错。",
