@@ -158,7 +158,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadCoilStatus,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -169,7 +169,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadDiscreteInputs,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -180,7 +180,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadHoldingRegisters,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -191,7 +191,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadInputRegisters,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );

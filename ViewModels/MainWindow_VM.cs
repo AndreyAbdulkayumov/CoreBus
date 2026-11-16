@@ -79,7 +79,7 @@ public class MainWindow_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
     }
 
-    public bool _macrosButtonIsEnabled = true;
+    private bool _macrosButtonIsEnabled = true;
 
     public bool MacrosButtonIsEnabled
     {
@@ -385,15 +385,13 @@ public class MainWindow_VM : ReactiveObject
         {
             var appVersion = _uiServices.GetAppVersion();
 
-            char[] appVersion_Chars = new char[20];
-
             if (appVersion != null)
             {
-                LastestVersionInfo? info = await _appUpdateSystemModel.IsUpdateAvailable(appVersion);
+                var info = await _appUpdateSystemModel.IsUpdateAvailable(appVersion);
 
                 if (info != null)
                 {
-                    string downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
+                    var downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
 
                     if (!string.IsNullOrEmpty(info.Version) && _settingsModel.AppData.SkippedAppVersion != info.Version)
                     {
