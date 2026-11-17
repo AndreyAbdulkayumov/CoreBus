@@ -382,7 +382,7 @@
       "OpenChartWindow": "차트 창 열기 오류.",
       "StartLogging": "로깅 시작 오류.",
       "StopLogging": "로깅 중지 오류.",
-      "WriteLog": "파일 쓰기 오류. 로깅이 중지되었습니다. 중지 버튼을 누르세요.",
+      "WriteLog": "파일 쓰기 오류. 로깅이 중지되었습니다.\n중지 버튼을 누르세요.",
       "OpenLogFolder": "로그 폴더 열기 오류.",
       "FormatChange": "형식 변경 오류.",
       "Monitoring": "모니터링 오류.",

@@ -382,7 +382,7 @@
       "OpenChartWindow": "Erreur lors de l'ouverture de la fenêtre du graphique.",
       "StartLogging": "Erreur lors du démarrage de la journalisation.",
       "StopLogging": "Erreur lors de l'arrêt de la journalisation.",
-      "WriteLog": "Erreur d'écriture dans le fichier. La journalisation a été arrêtée. Appuyez sur le bouton d'arrêt.",
+      "WriteLog": "Erreur d'écriture dans le fichier. La journalisation a été arrêtée.\nAppuyez sur le bouton d'arrêt.",
       "OpenLogFolder": "Erreur lors de l'ouverture du dossier des journaux.",
       "FormatChange": "Erreur lors du changement de format.",
       "Monitoring": "Erreur de surveillance.",

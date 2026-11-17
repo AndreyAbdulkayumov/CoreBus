@@ -382,7 +382,7 @@
       "OpenChartWindow": "Error opening the chart window.",
       "StartLogging": "Error starting logging.",
       "StopLogging": "Error stopping logging.",
-      "WriteLog": "Error writing to the file. Logging has been stopped. Press the stop button.",
+      "WriteLog": "Error writing to the file. Logging has been stopped.\nPress the stop button.",
       "OpenLogFolder": "Error opening the logs folder.",
       "FormatChange": "Format change error.",
       "Monitoring": "Monitoring error.",
