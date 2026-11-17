@@ -177,8 +177,8 @@ public class RequestBuilder_VM : ValidatedDataInput, IValidationFieldInfo
         _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-        WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-        WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false, _settingsModel);
+        WriteField_MultipleCoils_VM = new MultipleCoils_VM(messageBox, localization);
+        WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false, _settingsModel, messageBox, localization);
         WriteField_SingleCoil_VM = new SingleCoil_VM();
         WriteField_SingleRegister_VM = new SingleRegister_VM();
 

@@ -422,7 +422,7 @@ public class ModbusManualMode_VM : ReactiveObject
             numberOfRegisters,
             ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-        var result = await _modbusModel.ReadRegister(
+        var result = await _modbusModel.ExecuteModbusTransaction(
                         readFunction,
                         data,
                         ModbusClient_VM.ModbusMessageType);
@@ -465,7 +465,7 @@ public class ModbusManualMode_VM : ReactiveObject
             numberOfRegisters,
             ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-        var result = await _modbusModel.WriteRegister(
+        var result = await _modbusModel.ExecuteModbusTransaction(
             writeFunction,
             data,
             ModbusClient_VM.ModbusMessageType);

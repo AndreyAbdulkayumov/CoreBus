@@ -19,6 +19,7 @@
 		ExtendClientAreaToDecorationsHint="True"
 		WindowDecorations="BorderOnly"
 		Background="Transparent"
+        Closed="Window_OnClosed"
 		KeyDown="Window_KeyDown">
 
 	<Window.Resources>

@@ -9,7 +9,6 @@ using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Text;
 using ViewModels.ModbusClient;
 using ViewModels.Validation;
@@ -159,7 +158,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadCoilStatus,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -170,7 +169,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadDiscreteInputs,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -181,7 +180,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadHoldingRegisters,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -192,7 +191,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         ReadFunction: Function.ReadInputRegisters,
         Message: new ReadTypeMessage(
                 slaveID: 0,
-                address: 0,
+                address: 1,
                 numberOfRegisters: 2,
                 checkSum_IsEnable: true)
         );
@@ -209,13 +208,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
         _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
-        _localization.LanguageChanged += (_, _) =>
-        {
-            this.RaisePropertyChanged(nameof(ActionButtonContent));
-            this.RaisePropertyChanged(nameof(DeviceReadTimeout));
-            this.RaisePropertyChanged(nameof(ErrorMessageInUI));
-        };
-
+        
         _messageType = ModbusClient_VM.ModbusMessageType ?? throw new ArgumentNullException("ModbusClient_VM.ModbusMessageType");
 
         _availableFunctions.AddRange(AllSearchFunctions.Select(e => e.DisplayedName));
@@ -389,7 +382,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 
                     CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    await _modbusModel.ReadRegister(searchFunction.ReadFunction, searchFunction.Message, _messageType);
+                    await _modbusModel.ExecuteModbusTransaction(searchFunction.ReadFunction, searchFunction.Message, _messageType);
 
                     ViewSlaveAddress(i);
                 }

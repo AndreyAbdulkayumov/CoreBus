@@ -181,7 +181,12 @@ public class NoProtocol_VM : ReactiveObject
                 await Receive_ListMessage_Handler(macros);
             });
 
-        Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
+        Command_ClearRX = ReactiveCommand.Create(() =>
+        {
+            RX?.Clear(); 
+            RX_String = string.Empty;
+        });
+        Command_ClearRX.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
 
         SelectedSendMode = AllSendModes.FirstOrDefault(mode => mode.Value == SendModeType.Normal);
 

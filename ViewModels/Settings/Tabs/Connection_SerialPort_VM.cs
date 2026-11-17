@@ -2,7 +2,6 @@ using ReactiveUI.Reactive;
 using MessageBox.Core;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Globalization;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
@@ -12,7 +11,7 @@ using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs;
 
-public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo
+public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo, IDisposable
 {
     /************************************/
     //
@@ -185,7 +184,7 @@ public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
-        _localization.LanguageChanged += (_, _) => UpdatePortNotFoundMessage();
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
 
         Command_ReScan_SerialPorts = ReactiveCommand.Create(() =>
         {
@@ -196,11 +195,15 @@ public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo
 
             ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
         });
-
         Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
     }
 
-    private void UpdatePortNotFoundMessage()
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+    
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
     {
         switch (_portMessageMode)
         {
@@ -211,7 +214,7 @@ public class Connection_SerialPort_VM : ValidatedDataInput, IValidationFieldInfo
                 Message_PortNotFound = _localization.Get("SerialPort.PortNotFound", _portMessageArg);
                 break;
         }
-    }    
+    }   
 
     public void SettingsFileChanged()
     {

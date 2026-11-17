@@ -2,6 +2,7 @@ using ReactiveUI.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using MessageBox.Core;
 using ViewModels.ModbusClient.Manual.WriteFields.DataTypes;
 using ViewModels.Validation;
 
@@ -78,7 +79,9 @@ public class MultipleRegisters_Item : ModbusDataFormatter
         int startAddressAddition,
         UInt16? initWordValue,
         float? initFloatValue,
-        Action<Guid> removeItemHandler)
+        Action<Guid> removeItemHandler,
+        IMessageBox messageBox,
+        ILocalizationService localization)
     {
         Id = Guid.NewGuid();
 
@@ -105,6 +108,7 @@ public class MultipleRegisters_Item : ModbusDataFormatter
         {
             removeItemHandler?.Invoke(Id);
         });
+        Command_RemoveItem.ThrownExceptions.Subscribe(error => messageBox.Show(localization.Get("Message.Error.RemoveSelectedRegisters") + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     public override void SetDataFormat(string? newFormat)

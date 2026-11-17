@@ -223,6 +223,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
         _modbusModel.Model_MonitoringError += Model_MonitoringError;
+        _logger.WriteFailed += Logger_WriteFailed;
 
         _monitoringDataGrid_VM.PropertyChanged += MonitoringDataGrid_VM_PropertyChanged;
                 
@@ -334,7 +335,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _monitoringDataGrid_VM.ClearData();
     }
 
-    public void SetMonitoringParameters(ModbusMonitoringParameters data)
+    private void SetMonitoringParameters(ModbusMonitoringParameters data)
     {
         SlaveID = data.SlaveID.ToString();  // SlaveID приведется к нужному формату после смены RadioButton SelectedNumberFormat_Hex или SelectedNumberFormat_Dec
 
@@ -516,6 +517,14 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         WaitStartLogMessageIsVisible = false;
         StartLogDateIsVisible = false;
     }
+    
+    private void Logger_WriteFailed(object? sender, Exception e)
+    {
+        // Запуск и остановка логгирования находятся на одной кнопке.
+        // Нельзя запустить повторное логгирование без остановки текущего.
+        // Поэтому тут просто показывается сообщение.
+        _messageBox.Show(_localization.Get("Message.Error.WriteLog") + "\n\n" + e.Message, MessageType.Error, e);
+    }
 
     #endregion Логгирование
 
@@ -619,10 +628,10 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
 
             var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
 
-            ushort startingAddress = allAddresses.Min();
-            int numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
+            var startingAddress = allAddresses.Min();
+            var numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
 
-            ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
+            var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
             MessageData data = new ReadTypeMessage(
                 _selectedSlaveID,
@@ -630,7 +639,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                 numberOfRegisters,
                 ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
 
-            ModbusOperationResult result = await _modbusModel.ReadRegister(
+            var result = await _modbusModel.ExecuteModbusTransaction(
                             readFunction,
                             data,
                             ModbusClient_VM.ModbusMessageType);

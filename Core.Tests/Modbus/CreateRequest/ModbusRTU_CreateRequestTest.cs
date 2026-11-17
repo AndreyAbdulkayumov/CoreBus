@@ -192,7 +192,7 @@ public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 
         if (checkSum_IsEnable)
         {
-            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected, 0xA001);
+            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected);
             bytesArray_Expected[6] = checkSumBytes[0];
             bytesArray_Expected[7] = checkSumBytes[1];
         }
@@ -233,7 +233,7 @@ public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 
         if (checkSum_IsEnable)
         {
-            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected, 0xA001);
+            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected);
             bytesArray_Expected[6] = checkSumBytes[0];
             bytesArray_Expected[7] = checkSumBytes[1];
         }
@@ -262,7 +262,7 @@ public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 
         if (checkSum_IsEnable)
         {
-            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected, 0xA001);
+            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected);
             bytesArray_Expected[bytesArray_Expected.Length - 2] = checkSumBytes[0];
             bytesArray_Expected[bytesArray_Expected.Length - 1] = checkSumBytes[1];
         }
@@ -305,7 +305,7 @@ public class ModbusRTU_CreateRequestTest : BaseProtocolCreateRequestTest
 
         if (checkSum_IsEnable)
         {
-            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected, 0xA001);
+            byte[] checkSumBytes = CheckSum.Calculate_CRC16(bytesArray_Expected);
             bytesArray_Expected[bytesArray_Expected.Length - 2] = checkSumBytes[0];
             bytesArray_Expected[bytesArray_Expected.Length - 1] = checkSumBytes[1];
         }

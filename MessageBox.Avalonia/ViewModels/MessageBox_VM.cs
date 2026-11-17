@@ -27,7 +27,7 @@ public class ButtonContent
     }
 }
 
-public class MessageBox_VM : ReactiveObject
+public class MessageBox_VM : ReactiveObject, IDisposable
 {
     private string? _title;
 
@@ -84,15 +84,15 @@ public class MessageBox_VM : ReactiveObject
 
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
-        _localization.LanguageChanged += (_, _) => RefreshLocalizedState();
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
 
         if (error != null)
         {
             ErrorReportIsVisible = true;
+            
+            var reportDate = DateTime.Now;
 
-            DateTime reportDate = DateTime.Now;
-
-            string report = GetFullExceptionInfo(reportDate, error);
+            var report = GetFullExceptionInfo(reportDate, error);
 
             Command_ViewError = ReactiveCommand.Create(() =>
             {
@@ -108,14 +108,14 @@ public class MessageBox_VM : ReactiveObject
 
             Command_CopyErrorToFile = ReactiveCommand.CreateFromTask(async () =>
             {
-                string? folderPath = await getFolderPath(_localization.Get("Dialog.MessageBox.ErrorReportSelectFolder"));
+                var folderPath = await getFolderPath(_localization.Get("Dialog.MessageBox.ErrorReportSelectFolder"));
 
                 if (folderPath == null)
                 {
                     return;
                 }
 
-                string fileName = Path.Combine(folderPath, _localization.Get("Dialog.MessageBox.ErrorReportFileName", reportDate));
+                var fileName = Path.Combine(folderPath, _localization.Get("Dialog.MessageBox.ErrorReportFileName", reportDate));
 
                 File.WriteAllText(fileName, report);
             });
@@ -125,7 +125,12 @@ public class MessageBox_VM : ReactiveObject
         RebuildButtons();
     }
 
-    private void RefreshLocalizedState()
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+    
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
     {
         RebuildButtons();
     }

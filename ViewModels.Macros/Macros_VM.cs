@@ -8,7 +8,6 @@ using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros;
@@ -109,6 +108,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
     public void Dispose()
     {
+        MainWindow_VM.ApplicationWorkModeChanged -= CommonUI_VM_ApplicationWorkModeChanged;
         _disposables.Dispose();
     }
 
@@ -177,7 +177,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
     private MacrosNoProtocol BuildNoProtocolMacros()
     {
-        MacrosNoProtocol macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
+        var macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
 
         if (macros.Items == null)
         {
@@ -199,7 +199,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
     private MacrosModbus BuildModbusMacros()
     {
-        MacrosModbus macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosModbus>();
+        var macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosModbus>();
 
         if (macros.Items == null)
         {
@@ -276,7 +276,7 @@ public class Macros_VM : ReactiveObject, IDisposable
                 throw new NotImplementedException();
         }
 
-        object? content = await OpenEditMacrosWindow(initData);
+        var content = await OpenEditMacrosWindow(initData);
 
         if (content == null)
         {
@@ -318,9 +318,9 @@ public class Macros_VM : ReactiveObject, IDisposable
 
     private async Task ImportMacros()
     {
-        ApplicationWorkMode workMode = MainWindow_VM.CurrentApplicationWorkMode;
+        var workMode = MainWindow_VM.CurrentApplicationWorkMode;
 
-        string modeName = GetModeName(workMode);
+        var modeName = GetModeName(workMode);
 
         if (await _messageBox.ShowYesNoDialog(
             _localization.Get("Message.Confirm.ImportMacrosWarning", modeName),
@@ -329,14 +329,14 @@ public class Macros_VM : ReactiveObject, IDisposable
             return;
         }
 
-        string? macrosFilePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Macros.ImportTitle", modeName), _localization.Get("Dialog.Macros.FileFilterLabel"), ["*.json"]);
+        var macrosFilePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Macros.ImportTitle", modeName), _localization.Get("Dialog.Macros.FileFilterLabel"), ["*.json"]);
 
         if (macrosFilePath != null)
         {
-            string fileName = Path.GetFileName(macrosFilePath);
+            var fileName = Path.GetFileName(macrosFilePath);
 
-            string macrosValidFilePath = GetValidMacrosFileName();
-            string validFileName = Path.GetFileName(macrosValidFilePath);
+            var macrosValidFilePath = GetValidMacrosFileName();
+            var validFileName = Path.GetFileName(macrosValidFilePath);
 
             if (fileName != validFileName)
             {
@@ -381,13 +381,13 @@ public class Macros_VM : ReactiveObject, IDisposable
 
     private async Task ExportMacros()
     {
-        string? outputFilePath = await _fileSystemService.GetFolderPath(_localization.Get("Dialog.Macros.ExportTitle"));
+        var outputFilePath = await _fileSystemService.GetFolderPath(_localization.Get("Dialog.Macros.ExportTitle"));
 
         if (outputFilePath != null)
         {
-            string macrosFileName = GetValidMacrosFileName();
+            var macrosFileName = GetValidMacrosFileName();
 
-            string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
+            var outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
 
             _settingsModel.CopyFile(macrosFileName, outputFileName);
 

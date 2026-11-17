@@ -88,8 +88,14 @@ public class Settings_VM : ReactiveObject
         _tab_AppSettings_VM = appSettingsVM ?? throw new ArgumentNullException(nameof(appSettingsVM));
 
         Command_File_AddNew = ReactiveCommand.CreateFromTask(File_CreateNew_Handler);
+        Command_File_AddNew.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.CreateNewSettingsFile") + "\n\n" + error.Message, MessageType.Error, error));
+        
         Command_File_AddExisting = ReactiveCommand.CreateFromTask(File_AddExisting_Handler);
+        Command_File_AddExisting.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddExistingSettingsFile") + "\n\n" + error.Message, MessageType.Error, error));
+        
         Command_File_Delete = ReactiveCommand.CreateFromTask(File_Delete_Handler);
+        Command_File_Delete.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.DeleteSettingsFile") + "\n\n" + error.Message, MessageType.Error, error));
+
         Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
         this.WhenAnyValue(x => x.SelectedPreset)
@@ -100,7 +106,7 @@ public class Settings_VM : ReactiveObject
 
     private void UpdateUI(string fileName)
     {
-        DeviceData settings = _settingsModel.ReadPreset(fileName);
+        var settings = _settingsModel.ReadPreset(fileName);
 
         Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
 
@@ -144,11 +150,11 @@ public class Settings_VM : ReactiveObject
 
     private void UpdateListOfPresets()
     {
-        string[] fileNames = _settingsModel.FindFilesOfPresets();
+        var fileNames = _settingsModel.FindFilesOfPresets();
 
         Presets.Clear();
 
-        foreach (string element in fileNames)
+        foreach (var element in fileNames)
         {
             Presets.Add(element);
         }
@@ -156,77 +162,59 @@ public class Settings_VM : ReactiveObject
 
     private async Task File_CreateNew_Handler()
     {
-        string? fileName = await _openChildWindowService.UserInput();
+        var fileName = await _openChildWindowService.UserInput();
 
-        if (!string.IsNullOrEmpty(fileName))
-        {
-            _settingsModel.SavePreset(fileName, DeviceData.GetDefault());
+        if (string.IsNullOrEmpty(fileName))
+            return;
+        
+        _settingsModel.SavePreset(fileName, DeviceData.GetDefault());
 
-            UpdateListOfPresets();
+        UpdateListOfPresets();
 
-            SelectedPreset = Presets.Single(x => x == fileName);
-        }
+        SelectedPreset = Presets.Single(x => x == fileName);
     }
 
     private async Task File_AddExisting_Handler()
     {
-        try
-        {
-            string? filePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Settings.AddExistingFile.Title"), _localization.Get("Dialog.Settings.AddExistingFile.FilterLabel"), ["*.json"]);
+        var filePath = await _fileSystemService.GetFilePath(_localization.Get("Dialog.Settings.AddExistingFile.Title"), _localization.Get("Dialog.Settings.AddExistingFile.FilterLabel"), ["*.json"]);
 
-            if (string.IsNullOrEmpty(filePath))
-            {
-                return;
-            }
+        if (string.IsNullOrEmpty(filePath))
+            return;
 
-            string fileName = _settingsModel.CopyInPresetFolderFrom(filePath);
+        var fileName = _settingsModel.CopyInPresetFolderFrom(filePath);
 
-            UpdateListOfPresets();
+        UpdateListOfPresets();
 
-            SelectedPreset = Presets.Single(x => x == fileName);
-        }
-
-        catch (Exception error)
-        {
-            _messageBox.Show(_localization.Get("Message.Error.AddExistingSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
-        }
+        SelectedPreset = Presets.Single(x => x == fileName);
     }
 
     private async Task File_Delete_Handler()
     {
-        try
+        if (Presets.Count <= 1)
         {
-            if (Presets.Count <= 1)
-            {
-                _messageBox.Show(_localization.Get("Message.Warning.CannotDeleteLastFile"), MessageType.Warning);
-                return;
-            }
-
-            MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.DeletePresetFile", SelectedPreset), MessageType.Warning);
-
-            if (dialogResult != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-            _settingsModel.DeletePreset(SelectedPreset);
-
-            UpdateListOfPresets();
-
-            SelectedPreset = Presets.First();
+            _messageBox.Show(_localization.Get("Message.Warning.CannotDeleteLastFile"), MessageType.Warning);
+            return;
         }
 
-        catch (Exception error)
+        var dialogResult = await _messageBox.ShowYesNoDialog(_localization.Get("Message.Confirm.DeletePresetFile", SelectedPreset), MessageType.Warning);
+
+        if (dialogResult != MessageBoxResult.Yes)
         {
-            _messageBox.Show(_localization.Get("Message.Error.DeleteSettingsFile") + "\n\n" + error.Message, MessageType.Error, error);
+            return;
         }
+
+        _settingsModel.DeletePreset(SelectedPreset);
+
+        UpdateListOfPresets();
+
+        SelectedPreset = Presets.First();
     }
 
     private void File_Save_Handler()
     {
         try
         {
-            string? validationMessage = CheckTabFields();
+            var validationMessage = CheckTabFields();
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
@@ -234,7 +222,7 @@ public class Settings_VM : ReactiveObject
                 return;
             }
 
-            string floatFormat = string.Empty;
+            var floatFormat = string.Empty;
 
             switch (Tab_Modbus_VM.FloatFormat)
             {
@@ -295,7 +283,7 @@ public class Settings_VM : ReactiveObject
 
     private string? CheckTabFields()
     {
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
         IEnumerable<ReactiveObject> neededTabs = [
             Tab_Connection_VM.GetActiveTab(),

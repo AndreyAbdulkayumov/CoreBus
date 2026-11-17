@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Localization.Interfaces\Localization.Interfaces.csproj" />
-    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 
@@ -127,19 +126,9 @@ public class Model_Settings
     /// <param name="fileName"></param>
     public void DeletePreset(string fileName)
     {
-        string[] arrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
-
-        string selectedFile_FullPath = Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName + FileExtension);
-
-        if (arrayOfFiles.Contains(selectedFile_FullPath))
-        {
-            FileIO.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName) + FileExtension);
-        }
-
-        else
-        {
-            throw new Exception(_localization.Get("Core.FileNotFoundInFolder", fileName, DirectoryManager.SettingsFiles_Directory));
-        }
+        var path = Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName + FileExtension);
+        
+        FileIO.Delete(path);
     }
 
     /// <summary>

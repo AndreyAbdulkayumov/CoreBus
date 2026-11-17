@@ -1,6 +1,4 @@
 using ReactiveUI.Reactive;
-using System;
-using System.Collections.Generic;
 using System.Reactive;
 using MessageBox.Core;
 using Core.Models.Settings;
@@ -9,7 +7,7 @@ using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs;
 
-public class AppSettings_VM : ReactiveObject
+public class AppSettings_VM : ReactiveObject, IDisposable
 {
     public ReactiveCommand<Unit, Unit> Select_Dark_Theme { get; }
     public ReactiveCommand<Unit, Unit> Select_Light_Theme { get; }
@@ -78,11 +76,18 @@ public class AppSettings_VM : ReactiveObject
                 _localization.Get("Message.Error.ThemeSwitchLight") + "\n\n" + error.Message,
                 MessageType.Error, error));
 
-        // При смене языка перечитать все свойства, зависящие от локализации.
-        _localization.LanguageChanged += (_, _) =>
-        {
-            this.RaisePropertyChanged(nameof(SelectedLanguage));
-        };
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
+    }
+
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
+    {
+        // При смене языка пересчитать все свойства, зависящие от локализации.
+        this.RaisePropertyChanged(nameof(SelectedLanguage));
     }
 
     private void SetDarkTheme()

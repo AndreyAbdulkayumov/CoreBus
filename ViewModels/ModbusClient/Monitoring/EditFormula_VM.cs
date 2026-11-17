@@ -4,7 +4,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.Monitoring;
 
-public class EditFormula_VM : ValidatedDataInput
+public class EditFormula_VM : ValidatedDataInput, IDisposable
 {
     private bool _ui_IsEnable;
 
@@ -52,6 +52,7 @@ public class EditFormula_VM : ValidatedDataInput
 
 
     private bool _saved;
+    private bool _isEditable;
 
     private readonly ILocalizationService _localization;
 
@@ -59,18 +60,21 @@ public class EditFormula_VM : ValidatedDataInput
     {
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
+        _localization.LanguageChanged += Localization_LanguageChanged;
         ErrorsChanged += EditFormula_VM_ErrorsChanged;
-
-        _localization.LanguageChanged += (_, _) => UpdateLocalizedStrings();
+    }
+    
+    public void Dispose()
+    {
+        _localization.LanguageChanged -= Localization_LanguageChanged;
+        ErrorsChanged -= EditFormula_VM_ErrorsChanged;
     }
 
-    private bool _isEditable;
-
-    private void UpdateLocalizedStrings()
+    private void Localization_LanguageChanged(object? sender, EventArgs e)
     {
         WindowTitle = _isEditable ? _localization.Get("Monitoring.EditFormulaTitle") : _localization.Get("Monitoring.ViewFormulaTitle");
     }
-
+    
     private void EditFormula_VM_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
     {
         SaveIsEnabled = ActualErrors.Count == 0;

@@ -92,6 +92,15 @@ public partial class MessageBoxWindow : Window
         }
     }
 
+    private void Window_OnClosed(object? sender, EventArgs e)
+    {
+        if (DataContext is IDisposable disposable)
+        {
+            disposable.Dispose();
+            DataContext = null;
+        }
+    }
+    
     private void Window_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape ||

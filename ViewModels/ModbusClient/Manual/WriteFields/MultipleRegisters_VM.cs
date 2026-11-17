@@ -5,6 +5,7 @@ using System.Reactive;
 using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
+using MessageBox.Core;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.Manual.DataTypes;
 using ViewModels.ModbusClient.Manual.WriteFields.DataItems;
@@ -66,10 +67,14 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
     private List<int> _floatStartByteIndices = new List<int>();
 
     private readonly Model_Settings _settingsModel;
+    private readonly IMessageBox _messageBox;
+    private readonly ILocalizationService _localization;
 
-    public MultipleRegisters_VM(bool floatFormatChangeIsEnabled, Model_Settings settingsModel)
+    public MultipleRegisters_VM(bool floatFormatChangeIsEnabled, Model_Settings settingsModel, IMessageBox messageBox, ILocalizationService localization)
     {
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+        _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _localization = localization ?? throw new ArgumentNullException(nameof(localization));
 
         FloatFormatChangeIsEnabled = floatFormatChangeIsEnabled;
 
@@ -81,11 +86,14 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
                 startAddressAddition: GetAddressAddition(),
                 initWordValue: null,
                 initFloatValue: null,
-                removeItemHandler: RemoveWriteDataItem
+                removeItemHandler: RemoveWriteDataItem,
+                _messageBox, 
+                _localization
                 ));
 
             WriteDataCollection.Last().RequestToUpdateAddresses += Item_RequestToUpdateAddresses;
         });
+        Command_AddRegister.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.AddRegister") + "\n\n" + error.Message, MessageType.Error, error));
     }
 
     private int GetAddressAddition()
@@ -171,7 +179,9 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
                     startAddressAddition: GetAddressAddition(),
                     initWordValue: null,
                     initFloatValue: floatValue,
-                    removeItemHandler: RemoveWriteDataItem
+                    removeItemHandler: RemoveWriteDataItem,
+                    _messageBox, 
+                    _localization
                     ));
 
                 byteCounter += 4;
@@ -184,7 +194,9 @@ public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
                 startAddressAddition: GetAddressAddition(),
                 initWordValue: wordValue,
                 initFloatValue: null,
-                removeItemHandler: RemoveWriteDataItem
+                removeItemHandler: RemoveWriteDataItem,
+                _messageBox, 
+                _localization
                 ));
 
             byteCounter += 2;

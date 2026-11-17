@@ -1,6 +1,5 @@
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Models.Settings;
-using Services.Interfaces;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -29,7 +28,10 @@ public class Model_AppUpdateSystem
     /// <exception cref="Exception"></exception>
     public async Task<LastestVersionInfo?> IsUpdateAvailable(Version currentVersion)
     {
-        var client = new HttpClient();
+        using var client = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(20)
+        };
 
         var response = await client.GetStringAsync(UrlLastestVersion);
 

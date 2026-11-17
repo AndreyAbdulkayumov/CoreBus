@@ -22,7 +22,7 @@ public class ModbusRTU_Message : ModbusMessage
         // CRC16
         if (data.CheckSum_IsEnable)
         {
-            var CRC16 = CheckSum.Calculate_CRC16(TX, data.Polynom);
+            var CRC16 = CheckSum.Calculate_CRC16(TX);
             
             TX[^2] = CRC16[0];  // Предпоследний элемент
             TX[^1] = CRC16[1];  // Последний элемент

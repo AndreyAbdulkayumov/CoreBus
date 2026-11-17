@@ -7,18 +7,7 @@ namespace MessageBox.Avalonia.Views;
 
 public partial class ViewErrorWindow : Window
 {
-    private readonly ILocalizationService? _localization;
-
-    public ViewErrorWindow()
-    {
-        InitializeComponent();
-
-        // Чтобы убрать белую рамку вокруг окна на Linux (проблема появилась с миграцией на Avalonia 12.1)
-        if (OperatingSystem.IsLinux())
-        {
-            WindowDecorations = WindowDecorations.None;
-        }
-    }
+    private readonly ILocalizationService _localization;
 
     public ViewErrorWindow(ILocalizationService localization)
     {
@@ -34,7 +23,12 @@ public partial class ViewErrorWindow : Window
 
         UpdateLocalization();
 
-        _localization.LanguageChanged += (_, _) => UpdateLocalization();
+        _localization.LanguageChanged += LocalizationOnLanguageChanged;
+    }
+
+    private void LocalizationOnLanguageChanged(object? sender, EventArgs e)
+    {
+        UpdateLocalization();
     }
 
     public void SetErrorReport(string errorReport)
@@ -42,6 +36,11 @@ public partial class ViewErrorWindow : Window
         TextBlock_ErrorReport.Text = errorReport;
     }
 
+    private void Window_OnClosed(object? sender, EventArgs e)
+    {
+        _localization.LanguageChanged -= LocalizationOnLanguageChanged;
+    }
+    
     private void Window_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape ||
@@ -70,9 +69,6 @@ public partial class ViewErrorWindow : Window
 
     private void UpdateLocalization()
     {
-        if (_localization == null)
-            return;
-
         Title = _localization.Get("Dialog.MessageBox.ErrorReport");
         ToolTip.SetTip(Button_Close, _localization.Get("Common.Close"));
     }

@@ -175,7 +175,7 @@
 								
 								<ContentControl Content="{Binding EditCommandViewModel}"/>
 								
-								<TextBlock Text="{Binding EmptyCommandMessage, Mode=OneTime}"
+								<TextBlock Text="{l:Loc Macros.EmptyCommandMessage}"
 										   IsVisible="{Binding !IsEdit, Mode=OneWay}"
 										   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
