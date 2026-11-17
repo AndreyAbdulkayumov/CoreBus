@@ -72,7 +72,7 @@ public class FileLogger : IAsyncDisposable
                 _writer = writer;
                 writer = null;
 
-                _writerTask = Task.Run(() => WriteLoopAsync(_cts.Token), _cts.Token);
+                _writerTask = Task.Run(() => WriteLoopAsync(_channel.Reader, _writer, _cts.Token), _cts.Token);
                 IsRunning = true;
             }
             
@@ -112,26 +112,30 @@ public class FileLogger : IAsyncDisposable
                 return;
 
             IsRunning = false;
-            _cts?.Cancel();
         }
 
         _channel?.Writer.TryComplete();
 
-        await _writerTask!;
+        try
+        {
+            await _writerTask.WaitAsync(TimeSpan.FromSeconds(3));
+        }
+        
+        catch (Exception)
+        {
+            lock (_syncObj)
+            {
+                _cts?.Cancel();
+            }
+        }
 
         if (_writer != null)
         {
-            try
-            {
-                await _writer.FlushAsync();
-            }
-            
-            catch (Exception)
-            {
-                // Для перестраховки, как и сам FlushAsync()
-            }
+            try { await _writer.FlushAsync(); }
+            catch (Exception) { /* Для перестраховки */ }
 
-            await _writer.DisposeAsync();
+            try { await _writer.DisposeAsync(); }
+            catch (Exception) { /* Для перестраховки */ }
         }
 
         _cts?.Dispose();
@@ -145,13 +149,13 @@ public class FileLogger : IAsyncDisposable
         }
     }
 
-    private async Task WriteLoopAsync(CancellationToken token)
+    private async Task WriteLoopAsync(ChannelReader<LogEntry> reader, StreamWriter writer, CancellationToken token)
     {
         try
         {
-            await foreach (var entry in _channel!.Reader.ReadAllAsync(token))
+            await foreach (var entry in reader.ReadAllAsync(token))
             {
-                await _writer!.WriteLineAsync(
+                await writer.WriteLineAsync(
                     $"{GetTimestamp(entry)}{entry.Data}");
             }
         }

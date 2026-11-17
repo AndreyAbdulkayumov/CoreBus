@@ -64,8 +64,8 @@ public class OpenChildWindowService : IOpenChildWindowService
 
         finally
         {
-            window?.Loaded -= SettingsWindowLoaded;
-            window?.KeyDown -= SettingsWindowKeyDown;
+            window.Loaded -= SettingsWindowLoaded;
+            window.KeyDown -= SettingsWindowKeyDown;
         }
         
         void SettingsWindowLoaded(object? sender, RoutedEventArgs e)
