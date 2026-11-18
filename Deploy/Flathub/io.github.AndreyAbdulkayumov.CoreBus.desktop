@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=CoreBus
+GenericName=Modbus and serial terminal
+Comment=Terminal for COM ports and TCP sockets with Modbus TCP/RTU/ASCII
+Exec=CoreBus
+Icon=io.github.AndreyAbdulkayumov.CoreBus
+Terminal=false
+Categories=Development;Electronics;Utility;
+Keywords=Modbus;Serial;COM;TCP;RTU;ASCII;UART;PLC;
+StartupNotify=true

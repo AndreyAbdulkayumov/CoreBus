@@ -1,0 +1,7 @@
+nuget-sources.json
+.nuget-sources.*.json
+.flatpak-dotnet-generator.py
+manifest.resolved.json
+build-dir/
+repo/
+.flatpak-builder/
