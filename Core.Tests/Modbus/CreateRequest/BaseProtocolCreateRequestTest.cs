@@ -35,7 +35,7 @@ public abstract class BaseProtocolCreateRequestTest
 
     protected void CheckReadFunction(ModbusReadFunction selectedFunction, byte slaveID, UInt16 address, UInt16 numberOfRegisters, bool checkSum_IsEnable = false)
     {
-        var data = new ReadTypeMessage(slaveID, address, numberOfRegisters, checkSum_IsEnable);
+        var data = new ModbusReadRequestData(slaveID, address, numberOfRegisters, checkSum_IsEnable);
 
         var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
@@ -48,7 +48,7 @@ public abstract class BaseProtocolCreateRequestTest
     {
         var bytes = BitConverter.GetBytes(writeData);
 
-        var data = new WriteTypeMessage(slaveID, address, bytes, 1, checkSum_IsEnable);
+        var data = new ModbusWriteRequestData(slaveID, address, bytes, 1, checkSum_IsEnable);
 
         var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
@@ -63,7 +63,7 @@ public abstract class BaseProtocolCreateRequestTest
 
         (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
 
-        var data = new WriteTypeMessage(slaveID, address, writeBytes, numberOfCoils, checkSum_IsEnable);
+        var data = new ModbusWriteRequestData(slaveID, address, writeBytes, numberOfCoils, checkSum_IsEnable);
 
         var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 
@@ -78,7 +78,7 @@ public abstract class BaseProtocolCreateRequestTest
 
         var bytes = writeData.SelectMany(BitConverter.GetBytes).ToArray();
 
-        var data = new WriteTypeMessage(slaveID, address, bytes, writeData.Length, checkSum_IsEnable);
+        var data = new ModbusWriteRequestData(slaveID, address, bytes, writeData.Length, checkSum_IsEnable);
 
         var bytesArrayActual = _message.CreateRequest(selectedFunction, data, _localization);
 

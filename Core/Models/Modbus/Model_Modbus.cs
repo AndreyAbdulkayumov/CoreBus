@@ -41,7 +41,7 @@ public class Model_Modbus
         _device = null;
     }
     
-    public async Task<ModbusOperationResult> ExecuteModbusTransaction(ModbusFunction function, MessageData data, ModbusMessage message)
+    public async Task<ModbusOperationResult> ExecuteModbusTransaction(ModbusFunction function, ModbusRequestData data, ModbusMessage message)
     {
         await _transactionSemaphore.WaitAsync();
 
@@ -68,8 +68,10 @@ public class Model_Modbus
             if (RX_Info.ResponseBytes?.Length > 0)
             {
                 RX = RX_Info.ResponseBytes;
+
+                var rawResponse = new RawResponse(RX, data.SlaveID, data.CheckSum_IsEnable);
                 
-                var deviceResponse = message.DecodingResponse(function, RX, data.CheckSum_IsEnable, _localization);
+                var deviceResponse = message.DecodingResponse(function, rawResponse, _localization);
 
                 if (function is ModbusWriteFunction)
                 {

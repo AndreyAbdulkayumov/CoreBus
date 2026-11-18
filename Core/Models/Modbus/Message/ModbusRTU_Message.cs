@@ -6,7 +6,7 @@ public class ModbusRTU_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus RTU";
 
-    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization)
     {
         var PDU = Modbus_PDU.Create(function, data, localization);
 
@@ -31,27 +31,35 @@ public class ModbusRTU_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, RawResponse rawResponse, ILocalizationService localization)
     {
+        const int slaveIdIndex = 0;
+        
+        var responseBytes = rawResponse.ResponseBytes;
+        var checkSumIsEnable = rawResponse.CheckSumIsEnable;
+        
         // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
         // Сообщение с кодом ошибки - 3 байта
         // Контрольная сумма CRC16 - 2 байта
-        if (sourceArray.Length < 3 || (checkSumIsEnable && sourceArray.Length < 5))
+        if (responseBytes.Length < 3 || (checkSumIsEnable && responseBytes.Length < 5))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        if (checkSumIsEnable && !ValidateCheckSum(sourceArray))
+        if (checkSumIsEnable && !ValidateCheckSum(responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
+        if (!ValidateSlaveId(slaveIdIndex, rawResponse))
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+
         // SlaveID - 1 байт, CRC16 - 2 байта
-        var pduArraySize = checkSumIsEnable ? sourceArray.Length - 3 : sourceArray.Length - 1;
+        var pduArraySize = checkSumIsEnable ? responseBytes.Length - 3 : responseBytes.Length - 1;
         
         var pduArray = new byte[pduArraySize];
         
-        Array.Copy(sourceArray, 1, pduArray, 0, pduArray.Length);
+        Array.Copy(responseBytes, 1, pduArray, 0, pduArray.Length);
         
         return new ModbusResponse
         {
-            SlaveID = sourceArray[0],
+            SlaveID = responseBytes[slaveIdIndex],
             PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }

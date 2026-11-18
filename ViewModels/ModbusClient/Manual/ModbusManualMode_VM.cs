@@ -416,7 +416,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
         _currentFunction = readFunction;
 
-        MessageData data = new ReadTypeMessage(
+        ModbusRequestData data = new ModbusReadRequestData(
             slaveID,
             address,
             numberOfRegisters,
@@ -458,7 +458,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
         _currentFunction = writeFunction;
 
-        MessageData data = new WriteTypeMessage(
+        ModbusRequestData data = new ModbusWriteRequestData(
             slaveID,
             address,
             modbusWriteData,

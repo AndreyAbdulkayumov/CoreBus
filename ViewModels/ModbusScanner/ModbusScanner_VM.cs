@@ -150,13 +150,13 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 
     private uint _pauseBetweenRequests_ForWork;
 
-    private record SearchFunctionType(string DisplayedName, string DisplayedBytes, ModbusReadFunction ReadFunction, ReadTypeMessage Message);
+    private record SearchFunctionType(string DisplayedName, string DisplayedBytes, ModbusReadFunction ReadFunction, ModbusReadRequestData RequestData);
 
     private static SearchFunctionType Func_01 = new SearchFunctionType(
         DisplayedName: $"0x{Function.ReadCoilStatus.Number.ToString("X2")}",
         DisplayedBytes: "01 00 01 00 02",
         ReadFunction: Function.ReadCoilStatus,
-        Message: new ReadTypeMessage(
+        RequestData: new ModbusReadRequestData(
                 slaveID: 0,
                 address: 1,
                 numberOfRegisters: 2,
@@ -167,7 +167,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         DisplayedName: $"0x{Function.ReadDiscreteInputs.Number.ToString("X2")}",
         DisplayedBytes: "02 00 01 00 02",
         ReadFunction: Function.ReadDiscreteInputs,
-        Message: new ReadTypeMessage(
+        RequestData: new ModbusReadRequestData(
                 slaveID: 0,
                 address: 1,
                 numberOfRegisters: 2,
@@ -178,7 +178,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         DisplayedName: $"0x{Function.ReadHoldingRegisters.Number.ToString("X2")}",
         DisplayedBytes: "03 00 01 00 02",
         ReadFunction: Function.ReadHoldingRegisters,
-        Message: new ReadTypeMessage(
+        RequestData: new ModbusReadRequestData(
                 slaveID: 0,
                 address: 1,
                 numberOfRegisters: 2,
@@ -189,7 +189,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
         DisplayedName: $"0x{Function.ReadInputRegisters.Number.ToString("X2")}",
         DisplayedBytes: "04 00 01 00 02",
         ReadFunction: Function.ReadInputRegisters,
-        Message: new ReadTypeMessage(
+        RequestData: new ModbusReadRequestData(
                 slaveID: 0,
                 address: 1,
                 numberOfRegisters: 2,
@@ -378,11 +378,12 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
             {
                 try
                 {
-                    searchFunction.Message.SlaveID = (byte)i;
+                    searchFunction.RequestData.SlaveID = (byte)i;
 
                     CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    await _modbusModel.ExecuteModbusTransaction(searchFunction.ReadFunction, searchFunction.Message, _messageType);
+                    await _modbusModel.ExecuteModbusTransaction(searchFunction.ReadFunction, searchFunction.RequestData,
+                        _messageType);
 
                     ViewSlaveAddress(i);
                 }
@@ -395,6 +396,11 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
                 catch (ModbusException)
                 {
                     ViewSlaveAddress(i);
+                }
+
+                catch (Exception)
+                {
+                    continue;
                 }
 
                 finally

@@ -112,7 +112,7 @@ public class PDU_Test
 
     private void CheckReadFunction(ModbusReadFunction SelectedFunction, UInt16 Address, UInt16 NumberOfRegisters)
     {
-        MessageData Data = new ReadTypeMessage(
+        ModbusRequestData Data = new ModbusReadRequestData(
                 16,
                 Address,
                 NumberOfRegisters,
@@ -142,7 +142,7 @@ public class PDU_Test
 
         byte[] bytes = BitConverter.GetBytes(WriteData);
 
-        MessageData Data = new WriteTypeMessage(
+        ModbusRequestData Data = new ModbusWriteRequestData(
             16,
             Address,
             bytes,
@@ -178,7 +178,7 @@ public class PDU_Test
 
         (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
 
-        MessageData data = new WriteTypeMessage(
+        ModbusRequestData data = new ModbusWriteRequestData(
             16,
             address,
             writeBytes,
@@ -211,7 +211,7 @@ public class PDU_Test
 
         byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
 
-        MessageData Data = new WriteTypeMessage(
+        ModbusRequestData Data = new ModbusWriteRequestData(
             16,
             Address,
             bytes,
