@@ -48,7 +48,7 @@ public class ModbusRTU_Message : ModbusMessage
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
         if (!ValidateSlaveId(slaveIdIndex, rawResponse))
-            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+            throw new Exception(localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, currentFunction.Number));
 
         // SlaveID - 1 байт, CRC16 - 2 байта
         var pduArraySize = checkSumIsEnable ? responseBytes.Length - 3 : responseBytes.Length - 1;

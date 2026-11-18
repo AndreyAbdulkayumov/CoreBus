@@ -320,6 +320,7 @@
       "InvalidMessageSizeSimple": "Violación de la integridad del paquete {0}.",
       "InvalidMessageSize": "Violación de la integridad del paquete {0}.\nCódigo de función: {1}",
       "InvalidCheckSum": "Violación de la integridad del paquete {0}.\nSuma de verificación incorrecta.\nCódigo de función: {1}",
+      "InvalidSlaveId": "Violación de la integridad del paquete {0}.\nEl Slave ID de la respuesta no coincide con el esperado.\nCódigo de función: {1}",
       "InvalidDataLength": "Violación de la integridad del paquete {0}.\nCantidad incorrecta de bytes de datos.\nCódigo de función: {1}",
       "InvalidFunctionNumberResponse": "Se recibió una respuesta para otra función Modbus.\nSe esperaba una respuesta para la función {0}\nSe recibió una respuesta para la función {1}",
       "UnsupportedCommandCode": "Código de comando Modbus no soportado (código: {0})",

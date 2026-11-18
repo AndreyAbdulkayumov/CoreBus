@@ -300,7 +300,7 @@ public class ModbusTCP_DecodingResponseTest
     }
     
     [Fact]
-    public void SlaveId_WrongSlaveIdInResponse_Throws()
+    public void SlaveId_InvalidSlaveIdInResponse_Throws()
     {
         const byte actualSlaveId = 54;
         const byte expectedSlaveId = 10;

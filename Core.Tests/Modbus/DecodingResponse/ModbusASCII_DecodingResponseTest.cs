@@ -396,7 +396,7 @@ public class ModbusASCII_DecodingResponseTest
     }
 
     [Fact]
-    public void SlaveId_WrongSlaveIdInResponse_Throws()
+    public void SlaveId_InvalidSlaveIdInResponse_Throws()
     {
         const byte actualSlaveId = 4;
         const byte expectedSlaveId = 1;
