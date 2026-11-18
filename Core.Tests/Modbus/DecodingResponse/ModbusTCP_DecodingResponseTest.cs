@@ -300,6 +300,34 @@ public class ModbusTCP_DecodingResponseTest
     }
     
     [Fact]
+    public void SlaveId_WrongSlaveIdInResponse_Throws()
+    {
+        const byte actualSlaveId = 54;
+        const byte expectedSlaveId = 10;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x12, 0x34 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var pdu = new byte[] { selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        var rawResponse = new RawResponse(
+            CreateTcpMessage(actualSlaveId, pdu),
+            expectedSlaveId,
+            true);
+        
+        Assert.Throws<Exception>(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction, 
+                rawResponse,
+                _localization));
+    }
+    
+    [Fact]
     public void TCPSpecific_WrongLengthOfPDU_Throws()
     {
         const byte slaveId = 16;

@@ -396,6 +396,34 @@ public class ModbusASCII_DecodingResponseTest
     }
 
     [Fact]
+    public void SlaveId_WrongSlaveIdInResponse_Throws()
+    {
+        const byte actualSlaveId = 4;
+        const byte expectedSlaveId = 1;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x12, 0x34 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var message = new byte[] { actualSlaveId, selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true),
+            expectedSlaveId,
+            true);
+        
+        Assert.Throws<Exception>(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction, 
+                rawResponse,
+                _localization));
+    }
+    
+    [Fact]
     public void ASCIISpecific_MessageWithoutFrameBytes_Throws()
     {
         var selectedFunction = Function.PresetSingleRegister;

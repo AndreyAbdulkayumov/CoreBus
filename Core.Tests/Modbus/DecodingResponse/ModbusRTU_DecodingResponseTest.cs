@@ -327,6 +327,34 @@ public class ModbusRTU_DecodingResponseTest
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(selectedFunction, rawResponse, _localization));
     }
+
+    [Fact]
+    public void SlaveId_WrongSlaveIdInResponse_Throws()
+    {
+        const byte actualSlaveId = 7;
+        const byte expectedSlaveId = 15;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x12, 0x34 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var message = new byte[] { actualSlaveId, selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        var rawResponse = new RawResponse(
+            GetMessageWithCheckSum(message), 
+            expectedSlaveId,
+            true);
+        
+        Assert.Throws<Exception>(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction, 
+                rawResponse,
+                _localization));
+    }
     
     private static byte[] GetMessageWithCheckSum(byte[] data)
     {
