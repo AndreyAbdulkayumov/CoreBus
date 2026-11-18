@@ -33,11 +33,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(addressBytes)
             .Concat(dataBytes)
             .ToArray();
+
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, checkSumIsEnable), 
+            slaveId,
+            checkSumIsEnable);
         
         var result = _modbusMessage.DecodingResponse(
             selectedFunction, 
-            CreateAsciiMessageFromBytes(message, checkSumIsEnable),
-            checkSumIsEnable,
+            rawResponse,
             _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
@@ -73,10 +77,14 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(registerCountBytes)
             .ToArray();
 
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         var result = _modbusMessage.DecodingResponse(
             selectedFunction, 
-            CreateAsciiMessageFromBytes(message, true),
-            true,
+            rawResponse,
             _localization);
 
         Assert.Equal(slaveId, result.SlaveID);
@@ -106,10 +114,14 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         var result = _modbusMessage.DecodingResponse(
             selectedFunction, 
-            CreateAsciiMessageFromBytes(message, true),
-            true,
+            rawResponse,
             _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
@@ -139,11 +151,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
 
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
-                CreateAsciiMessageFromBytes(message, true),
-                true,
+                rawResponse,
                 _localization));
     }
     
@@ -162,11 +178,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
 
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
-                CreateAsciiMessageFromBytes(message, true),
-                true,
+                rawResponse,
                 _localization));
     }
     
@@ -187,11 +207,15 @@ public class ModbusASCII_DecodingResponseTest
             
             var message = new byte[] { slaveId, (byte)selectedFunctionErrorNumber, errorCode };
         
+            var rawResponse = new RawResponse(
+                CreateAsciiMessageFromBytes(message, true), 
+                slaveId,
+                true);
+            
             var exception = Record.Exception(() => 
                 _modbusMessage.DecodingResponse(
                     selectedFunction, 
-                    CreateAsciiMessageFromBytes(message, true),
-                    true,
+                    rawResponse,
                     _localization));
         
             Assert.IsType<ModbusException>(exception);
@@ -214,11 +238,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
-                CreateAsciiMessageFromBytes(message, true),
-                true,
+                rawResponse,
                 _localization));
     }
 
@@ -237,11 +265,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
-                CreateAsciiMessageFromBytes(message, true),
-                true,
+                rawResponse,
                 _localization));
     }
     
@@ -255,11 +287,15 @@ public class ModbusASCII_DecodingResponseTest
 
         var message = new byte[] { slaveId, actualFunctionNumber, 0x00, 0x01, 0x10, 0xFF };
 
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, true), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 expectedFunction, 
-                CreateAsciiMessageFromBytes(message, false),
-                false, 
+                rawResponse,
                 _localization));
     }
     
@@ -284,10 +320,14 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(dataBytes)
             .ToArray();
         
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, false), 
+            slaveId,
+            false);
+        
         var result = _modbusMessage.DecodingResponse(
             selectedFunction, 
-            CreateAsciiMessageFromBytes(message, false),
-            false,
+            rawResponse,
             _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
@@ -318,8 +358,13 @@ public class ModbusASCII_DecodingResponseTest
             0x0D, 0x0A                    // CR LF
         ];
 
+        var rawResponse = new RawResponse(
+            message, 
+            1,
+            true);
+        
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
+            _modbusMessage.DecodingResponse(selectedFunction, rawResponse, _localization));
     }
     
     [Fact]
@@ -338,11 +383,15 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
+        var rawResponse = new RawResponse(
+            CreateAsciiMessageFromBytes(message, false), 
+            slaveId,
+            true);
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
-                CreateAsciiMessageFromBytes(message, false),
-                true,
+                rawResponse,
                 _localization));
     }
 
@@ -359,8 +408,13 @@ public class ModbusASCII_DecodingResponseTest
             0x30, 0x38, 0x39, 0x46,       // '0','8','9','F'  Data = 0x089F
         ];
 
+        var rawResponse = new RawResponse(
+            message, 
+            15,
+            true);
+        
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
+            _modbusMessage.DecodingResponse(selectedFunction, rawResponse, _localization));
     }
     
     [Fact]
@@ -380,11 +434,15 @@ public class ModbusASCII_DecodingResponseTest
             0x0D, 0x0A,                   // CR LF
             0xFD, 0xFA, 0x22              // Мусор
         ];
+        
+        var rawResponse = new RawResponse(
+            message, 
+            1,
+            true);
 
         var result = _modbusMessage.DecodingResponse(
             selectedFunction, 
-            message, 
-            true, 
+            rawResponse, 
             _localization);
         
         Assert.Equal(1, result.SlaveID);
