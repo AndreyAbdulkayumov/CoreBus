@@ -342,7 +342,7 @@ public class ModbusTCP_DecodingResponseTest
         message[2] = protocolIndetifierArray[1];
         message[3] = protocolIndetifierArray[0];
         // PDU length
-        ushort length = 6;
+        ushort length = 5;
         message[4] = (byte)(length >> 8);
         message[5] = (byte)length;
         // PDU начинается тут
