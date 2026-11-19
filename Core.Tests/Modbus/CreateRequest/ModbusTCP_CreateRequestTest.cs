@@ -162,7 +162,7 @@ public class ModbusTCP_CreateRequestTest : BaseProtocolCreateRequestTest
 
         byte[] bytesArray_Expected = new byte[12];
 
-        // PackageNumber всегда в тестах 0
+        // _transactionIdentifier всегда в тестах 0
         bytesArray_Expected[0] = 0;
         bytesArray_Expected[1] = 0;
         // Modbus ID
@@ -197,7 +197,7 @@ public class ModbusTCP_CreateRequestTest : BaseProtocolCreateRequestTest
 
         byte[] bytesArray_Expected = new byte[12];
 
-        // PackageNumber всегда в тестах 0
+        // _transactionIdentifier всегда в тестах 0
         bytesArray_Expected[0] = 0;
         bytesArray_Expected[1] = 0;
         // Modbus ID
@@ -230,7 +230,7 @@ public class ModbusTCP_CreateRequestTest : BaseProtocolCreateRequestTest
         byte[] addressBytes = ModbusField.Get_Address(address);
         byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)numberOfCoils);
 
-        // PackageNumber всегда в тестах 0
+        // _transactionIdentifier всегда в тестах 0
         bytesArray_Expected[0] = 0;
         bytesArray_Expected[1] = 0;
         // Modbus ID
@@ -270,7 +270,7 @@ public class ModbusTCP_CreateRequestTest : BaseProtocolCreateRequestTest
 
         byte[] bytesArray_Expected = new byte[13 + writeDataBytes.Length];
 
-        // PackageNumber всегда в тестах 0
+        // _transactionIdentifier всегда в тестах 0
         bytesArray_Expected[0] = 0;
         bytesArray_Expected[1] = 0;
         // Modbus ID

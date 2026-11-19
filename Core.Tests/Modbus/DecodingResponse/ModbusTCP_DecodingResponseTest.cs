@@ -315,7 +315,7 @@ public class ModbusTCP_DecodingResponseTest
         var rawResponse = new RawResponse(
             CreateTcpMessage(actualSlaveId, pdu),
             expectedSlaveId,
-            true);
+            false);
         
         Assert.Throws<Exception>(() => 
             _modbusMessage.DecodingResponse(
