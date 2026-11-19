@@ -41,7 +41,6 @@ public class ModbusTCP_DecodingResponseTest
             rawResponse,
             _localization);
 
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseWriteSingle>(result.PDU);
@@ -85,7 +84,6 @@ public class ModbusTCP_DecodingResponseTest
             rawResponse,
             _localization);
 
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseWriteMultiple>(result.PDU);
@@ -123,7 +121,6 @@ public class ModbusTCP_DecodingResponseTest
             rawResponse,
             _localization);
         
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseRead>(result.PDU);

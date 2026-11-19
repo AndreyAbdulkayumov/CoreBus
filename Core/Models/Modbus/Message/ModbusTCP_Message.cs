@@ -11,6 +11,8 @@ public class ModbusTCP_Message : ModbusMessage
     /// Идентификатор протокола Modbus TCP согласно официальной документации
     /// </summary>
     private const ushort ProtocolIdentifier = 0;
+    
+    private ushort _transactionIdentifier;
 
     public override byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization)
     {
@@ -18,12 +20,10 @@ public class ModbusTCP_Message : ModbusMessage
 
         var TX = new byte[7 + PDU.Length];
 
-        var packageNumberArray = BitConverter.GetBytes(PackageNumber);
+        var packageNumberArray = BitConverter.GetBytes(_transactionIdentifier);
         var protocolIndetifierArray = BitConverter.GetBytes(ProtocolIdentifier);
         // 1 байт SlaveID + байты PDU
         var SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
-
-        PackageNumber++;
 
         // Номер транзакции
         TX[0] = packageNumberArray[1];
@@ -39,6 +39,8 @@ public class ModbusTCP_Message : ModbusMessage
 
         Array.Copy(PDU, 0, TX, 7, PDU.Length);
 
+        _transactionIdentifier++;
+        
         return TX;
     }
 
@@ -52,32 +54,29 @@ public class ModbusTCP_Message : ModbusMessage
         // Сервисные поля - 6 байт, сообщение с кодом ошибки - 3 байта,
         if (responseBytes.Length < 9) 
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
+
+        var protocolIdentifier = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(2, 2));
         
-        var decodingResponse = new ModbusResponse
-        {
-            OperationNumber = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(0, 2)),
-            ProtocolID = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(2, 2)),
-            Length = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(4, 2))
-        };
-        
-        if (decodingResponse.ProtocolID != ProtocolIdentifier)
+        if (protocolIdentifier != ProtocolIdentifier)
             throw new Exception(localization.Get("Core.Modbus.InvalidProtocolIdentifier", ProtocolName, ProtocolIdentifier));
         
-        if (!CheckLength(decodingResponse.Length, responseBytes))
+        var length = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(4, 2));
+        
+        if (!CheckLength(length, responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
         if (!ValidateSlaveId(slaveIdIndex, rawResponse))
             throw new Exception(localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, currentFunction.Number));
-
-        decodingResponse.SlaveID = responseBytes[slaveIdIndex];
         
         var pduArray = new byte[responseBytes.Length - 7];
         
         Array.Copy(responseBytes, 7, pduArray, 0, pduArray.Length);
         
-        decodingResponse.PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization);
-        
-        return decodingResponse;
+        return new ModbusResponse()
+        {
+            SlaveID = responseBytes[slaveIdIndex],
+            PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
+        };
     }
 
     private static bool CheckLength(ushort expectedLength, byte[] data)
