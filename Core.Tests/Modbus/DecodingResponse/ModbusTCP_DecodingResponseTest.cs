@@ -328,6 +328,45 @@ public class ModbusTCP_DecodingResponseTest
     }
     
     [Fact]
+    public void TCPSpecific_InvalidProtocolIdentifier_Throws()
+    {
+        const byte slaveId = 16;
+        const short protocolIdentifier = 34;
+
+        var protocolIndetifierArray = BitConverter.GetBytes(protocolIdentifier);
+        var selectedFunction = Function.ReadCoilStatus;
+
+        var message = new byte[11];
+
+        // Operation number
+        message[0] = 0;
+        message[1] = 0;
+        // Protocol ID
+        message[2] = protocolIndetifierArray[1];
+        message[3] = protocolIndetifierArray[0];
+        // PDU length
+        ushort length = 6;
+        message[4] = (byte)(length >> 8);
+        message[5] = (byte)length;
+        // PDU начинается тут
+        message[6] = slaveId;
+        message[7] = selectedFunction.Number;
+        // Количество байт данных
+        message[8] = 2;
+        // Данные
+        message[9] = 0x00;
+        message[10] = 0xFF;
+
+        var rawResponse = new RawResponse(
+            message, 
+            slaveId,
+            false);
+        
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(selectedFunction, rawResponse, _localization));
+    }
+    
+    [Fact]
     public void TCPSpecific_WrongLengthOfPDU_Throws()
     {
         const byte slaveId = 16;

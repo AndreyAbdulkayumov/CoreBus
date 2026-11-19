@@ -319,6 +319,7 @@
       "InvalidPduFormat": "La réponse contient un format PDU incorrect.\nFormat attendu : {0}",
       "InvalidMessageSizeSimple": "Violation de l'intégrité du paquet {0}.",
       "InvalidMessageSize": "Violation de l'intégrité du paquet {0}.\nCode de fonction : {1}",
+      "InvalidProtocolIdentifier": "Violation de l'intégrité du paquet {0}.\nL'identifiant de protocole de la réponse ne correspond pas à la valeur attendue.\nIdentifiant attendu : {1}",
       "InvalidCheckSum": "Violation de l'intégrité du paquet {0}.\nSomme de contrôle incorrecte.\nCode de fonction : {1}",
       "InvalidSlaveId": "Violation de l'intégrité du paquet {0}.\nLe Slave ID de la réponse ne correspond pas à la valeur attendue.\nCode de fonction : {1}",
       "InvalidDataLength": "Violation de l'intégrité du paquet {0}.\nNombre incorrect d'octets de données.\nCode de fonction : {1}",

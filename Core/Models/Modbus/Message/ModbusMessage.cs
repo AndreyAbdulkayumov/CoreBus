@@ -17,6 +17,7 @@ public abstract class ModbusMessage
 
     /***********************************************/
 
+    // TODO: это копия того что уже есть в VM ?
     protected ulong PackageNumber = 0;
 
     protected static bool ValidateSlaveId(int indexOfSlaveIdByte, RawResponse rawResponse)

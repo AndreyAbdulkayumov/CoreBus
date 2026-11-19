@@ -7,6 +7,11 @@ public class ModbusTCP_Message : ModbusMessage
 {
     public override string ProtocolName { get; } = "Modbus TCP";
 
+    /// <summary>
+    /// Идентификатор протокола Modbus TCP согласно официальной документации
+    /// </summary>
+    private const ushort ProtocolIdentifier = 0;
+
     public override byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization)
     {
         var PDU = Modbus_PDU.Create(function, data, localization);
@@ -14,7 +19,7 @@ public class ModbusTCP_Message : ModbusMessage
         var TX = new byte[7 + PDU.Length];
 
         var packageNumberArray = BitConverter.GetBytes(PackageNumber);
-
+        var protocolIndetifierArray = BitConverter.GetBytes(ProtocolIdentifier);
         // 1 байт SlaveID + байты PDU
         var SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
 
@@ -23,9 +28,9 @@ public class ModbusTCP_Message : ModbusMessage
         // Номер транзакции
         TX[0] = packageNumberArray[1];
         TX[1] = packageNumberArray[0];
-        // Modbus ID
-        TX[2] = 0x00;
-        TX[3] = 0x00;
+        // Идентификатор протокола Modbus TCP
+        TX[2] = protocolIndetifierArray[1];
+        TX[3] = protocolIndetifierArray[0];
         // Количество байт далее (SlaveID + PDU)
         TX[4] = SlaveID_PDU_Length_Array[1];
         TX[5] = SlaveID_PDU_Length_Array[0];
@@ -54,6 +59,9 @@ public class ModbusTCP_Message : ModbusMessage
             ProtocolID = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(2, 2)),
             Length = BinaryPrimitives.ReadUInt16BigEndian(responseBytes.AsSpan(4, 2))
         };
+        
+        if (decodingResponse.ProtocolID != ProtocolIdentifier)
+            throw new Exception(localization.Get("Core.Modbus.InvalidProtocolIdentifier", ProtocolName, ProtocolIdentifier));
         
         if (!CheckLength(decodingResponse.Length, responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));

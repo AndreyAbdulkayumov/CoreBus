@@ -319,6 +319,7 @@
       "InvalidPduFormat": "响应包含不正确的 PDU 格式。\n预期格式：{0}",
       "InvalidMessageSizeSimple": "数据包 {0} 完整性被破坏。",
       "InvalidMessageSize": "数据包 {0} 完整性被破坏。\n功能码：{1}",
+      "InvalidProtocolIdentifier": "数据包 {0} 完整性被破坏。\n响应中的协议标识符与预期不符。\n预期标识符：{1}",
       "InvalidCheckSum": "数据包 {0} 完整性被破坏。\n校验和无效。\n功能码：{1}",
       "InvalidSlaveId": "数据包 {0} 完整性被破坏。\n响应中的从站地址与预期不符。\n功能码：{1}",
       "InvalidDataLength": "数据包 {0} 完整性被破坏。\n数据字节数不正确。\n功能码：{1}",

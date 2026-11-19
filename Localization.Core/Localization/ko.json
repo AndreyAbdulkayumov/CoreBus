@@ -319,6 +319,7 @@
       "InvalidPduFormat": "응답에 잘못된 PDU 형식이 포함되어 있습니다.\n예상 형식: {0}",
       "InvalidMessageSizeSimple": "{0} 패킷 무결성 위반.",
       "InvalidMessageSize": "{0} 패킷 무결성 위반.\n기능 코드: {1}",
+      "InvalidProtocolIdentifier": "{0} 패킷 무결성 위반.\n응답의 프로토콜 식별자가 예상 값과 일치하지 않습니다.\n예상 식별자: {1}",
       "InvalidCheckSum": "{0} 패킷 무결성 위반.\n잘못된 체크섬.\n기능 코드: {1}",
       "InvalidSlaveId": "{0} 패킷 무결성 위반.\n응답의 Slave ID가 예상 값과 일치하지 않습니다.\n기능 코드: {1}",
       "InvalidDataLength": "{0} 패킷 무결성 위반.\n잘못된 데이터 바이트 수.\n기능 코드: {1}",
