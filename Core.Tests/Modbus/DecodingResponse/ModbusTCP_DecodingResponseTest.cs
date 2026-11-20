@@ -288,7 +288,7 @@ public class ModbusTCP_DecodingResponseTest
     public void TCPSpecific_InvalidProtocolIdentifier_Throws()
     {
         const byte slaveId = 16;
-        const short protocolIdentifier = 34;
+        const ushort protocolIdentifier = 34;
 
         var protocolIdentifierArray = BitConverter.GetBytes(protocolIdentifier);
         var selectedFunction = Function.ReadCoilStatus;
