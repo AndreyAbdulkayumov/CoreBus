@@ -330,7 +330,7 @@ public class ModbusTCP_DecodingResponseTest
         const byte slaveId = 16;
         const short protocolIdentifier = 34;
 
-        var protocolIndetifierArray = BitConverter.GetBytes(protocolIdentifier);
+        var protocolIdentifierArray = BitConverter.GetBytes(protocolIdentifier);
         var selectedFunction = Function.ReadCoilStatus;
 
         var message = new byte[11];
@@ -339,8 +339,8 @@ public class ModbusTCP_DecodingResponseTest
         message[0] = 0;
         message[1] = 0;
         // Protocol ID
-        message[2] = protocolIndetifierArray[1];
-        message[3] = protocolIndetifierArray[0];
+        message[2] = protocolIdentifierArray[1];
+        message[3] = protocolIdentifierArray[0];
         // PDU length
         ushort length = 5;
         message[4] = (byte)(length >> 8);

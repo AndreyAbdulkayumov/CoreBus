@@ -21,7 +21,7 @@ public class ModbusTCP_Message : ModbusMessage
         var TX = new byte[7 + PDU.Length];
 
         var transactionIdentifierArray = BitConverter.GetBytes(_transactionIdentifier);
-        var protocolIndetifierArray = BitConverter.GetBytes(ProtocolIdentifier);
+        var protocolIdentifierArray = BitConverter.GetBytes(ProtocolIdentifier);
         // 1 байт SlaveID + байты PDU
         var SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
 
@@ -29,8 +29,8 @@ public class ModbusTCP_Message : ModbusMessage
         TX[0] = transactionIdentifierArray[1];
         TX[1] = transactionIdentifierArray[0];
         // Идентификатор протокола Modbus TCP
-        TX[2] = protocolIndetifierArray[1];
-        TX[3] = protocolIndetifierArray[0];
+        TX[2] = protocolIdentifierArray[1];
+        TX[3] = protocolIdentifierArray[0];
         // Количество байт далее (SlaveID + PDU)
         TX[4] = SlaveID_PDU_Length_Array[1];
         TX[5] = SlaveID_PDU_Length_Array[0];

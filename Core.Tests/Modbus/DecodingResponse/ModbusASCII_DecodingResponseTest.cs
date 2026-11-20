@@ -288,9 +288,9 @@ public class ModbusASCII_DecodingResponseTest
         var message = new byte[] { slaveId, actualFunctionNumber, 0x00, 0x01, 0x10, 0xFF };
 
         var rawResponse = new RawResponse(
-            CreateAsciiMessageFromBytes(message, true), 
+            CreateAsciiMessageFromBytes(message, false), 
             slaveId,
-            true);
+            false);
         
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
