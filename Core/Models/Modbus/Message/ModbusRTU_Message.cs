@@ -31,12 +31,13 @@ public class ModbusRTU_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, RawResponse rawResponse, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(
+        ModbusFunction currentFunction, byte[] responseBytes, 
+        ExpectedResponseData expectedResponseData, ILocalizationService localization)
     {
         const int slaveIdIndex = 0;
         
-        var responseBytes = rawResponse.ResponseBytes;
-        var checkSumIsEnable = rawResponse.CheckSumIsEnable;
+        var checkSumIsEnable = expectedResponseData.CheckSumIsEnable;
         
         // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
         // Сообщение с кодом ошибки - 3 байта
@@ -47,7 +48,7 @@ public class ModbusRTU_Message : ModbusMessage
         if (checkSumIsEnable && !ValidateCheckSum(responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
         
-        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, rawResponse, localization);
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, responseBytes, expectedResponseData.SlaveId, localization);
         
         // SlaveID - 1 байт, CRC16 - 2 байта
         var pduArraySize = checkSumIsEnable ? responseBytes.Length - 3 : responseBytes.Length - 1;

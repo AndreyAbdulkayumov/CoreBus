@@ -62,12 +62,13 @@ public class ModbusASCII_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, RawResponse rawResponse, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(
+        ModbusFunction currentFunction, byte[] responseBytes, 
+        ExpectedResponseData expectedResponseData, ILocalizationService localization)
     {
         const int slaveIdIndex = 0;
         
-        var responseBytes = rawResponse.ResponseBytes;
-        var checkSumIsEnable = rawResponse.CheckSumIsEnable;
+        var checkSumIsEnable = expectedResponseData.CheckSumIsEnable;
         
         // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
         // Символ начала сообщения - 1 байт, сообщение с кодом ошибки ASCII-формате - 6 байт, символы конца сообщения 2 байта
@@ -82,10 +83,8 @@ public class ModbusASCII_Message : ModbusMessage
         
         if (checkSumIsEnable && !ValidateCheckSum(convertedArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
-
-        rawResponse.ResponseBytes = convertedArray;
         
-        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, rawResponse, localization);
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, convertedArray, expectedResponseData.SlaveId, localization);
         
         // SlaveID - 1 байт, LRC8 - 1 байт
         var pduArraySize = checkSumIsEnable ? convertedArray.Length - 2 : convertedArray.Length - 1;

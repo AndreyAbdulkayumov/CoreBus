@@ -44,11 +44,11 @@ public class ModbusTCP_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, RawResponse rawResponse, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(
+        ModbusFunction currentFunction, byte[] responseBytes, 
+        ExpectedResponseData expectedResponseData, ILocalizationService localization)
     {
         const int slaveIdIndex = 6;
-        
-        var responseBytes = rawResponse.ResponseBytes;
         
         // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
         // Сервисные поля - 6 байт, сообщение с кодом ошибки - 3 байта,
@@ -65,7 +65,7 @@ public class ModbusTCP_Message : ModbusMessage
         if (!CheckLength(length, responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, rawResponse, localization);
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, responseBytes, expectedResponseData.SlaveId, localization);
         
         var pduArray = new byte[responseBytes.Length - 7];
         

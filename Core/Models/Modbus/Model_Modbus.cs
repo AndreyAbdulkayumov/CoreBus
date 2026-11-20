@@ -69,9 +69,9 @@ public class Model_Modbus
             {
                 RX = RX_Info.ResponseBytes;
 
-                var rawResponse = new RawResponse(RX, data.SlaveID, data.CheckSum_IsEnable);
+                var rawResponse = new ExpectedResponseData(data.SlaveID, data.CheckSum_IsEnable);
                 
-                var deviceResponse = message.DecodingResponse(function, rawResponse, _localization);
+                var deviceResponse = message.DecodingResponse(function, RX, rawResponse, _localization);
 
                 if (function is ModbusWriteFunction)
                 {

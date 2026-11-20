@@ -13,22 +13,22 @@ public abstract class ModbusMessage
     public abstract string ProtocolName { get; }
 
     public abstract byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization);
-    public abstract ModbusResponse DecodingResponse(ModbusFunction function, RawResponse rawResponse, ILocalizationService localization);
+    public abstract ModbusResponse DecodingResponse(ModbusFunction function, byte[] responseBytes, ExpectedResponseData expectedResponseData, ILocalizationService localization);
 
     /***********************************************/
 
-    protected byte ValidateAndGetSlaveId(int indexOfSlaveIdByte, RawResponse rawResponse, ILocalizationService localization)
+    protected byte ValidateAndGetSlaveId(int indexOfSlaveIdByte, byte[] responseBytes, byte expectedSlaveId, ILocalizationService localization)
     {
-        if (indexOfSlaveIdByte >= rawResponse.ResponseBytes.Length)
+        if (indexOfSlaveIdByte >= responseBytes.Length)
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
 
-        var actualSlaveId = rawResponse.ResponseBytes[indexOfSlaveIdByte];
+        var actualSlaveId = responseBytes[indexOfSlaveIdByte];
         
-        if (actualSlaveId != rawResponse.ExpectedSlaveID)
+        if (actualSlaveId != expectedSlaveId)
             throw new Exception(
                 localization.Get("Core.Modbus.InvalidSlaveId", 
                     ProtocolName,
-                    rawResponse.ExpectedSlaveID,
+                    expectedSlaveId,
                     actualSlaveId));
 
         return actualSlaveId;
