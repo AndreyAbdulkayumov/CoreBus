@@ -65,8 +65,7 @@ public class ModbusTCP_Message : ModbusMessage
         if (!CheckLength(length, responseBytes))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        if (!ValidateSlaveId(slaveIdIndex, rawResponse))
-            throw new Exception(localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, currentFunction.Number));
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, rawResponse, localization);
         
         var pduArray = new byte[responseBytes.Length - 7];
         
@@ -74,7 +73,7 @@ public class ModbusTCP_Message : ModbusMessage
         
         return new ModbusResponse()
         {
-            SlaveID = responseBytes[slaveIdIndex],
+            SlaveID = actualSlaveId,
             PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }

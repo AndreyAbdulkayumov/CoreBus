@@ -85,9 +85,8 @@ public class ModbusASCII_Message : ModbusMessage
 
         rawResponse.ResponseBytes = convertedArray;
         
-        if (!ValidateSlaveId(slaveIdIndex, rawResponse))
-            throw new Exception(localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, currentFunction.Number));
-
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, rawResponse, localization);
+        
         // SlaveID - 1 байт, LRC8 - 1 байт
         var pduArraySize = checkSumIsEnable ? convertedArray.Length - 2 : convertedArray.Length - 1;
         
@@ -97,7 +96,7 @@ public class ModbusASCII_Message : ModbusMessage
         
         return new ModbusResponse
         {
-            SlaveID = convertedArray[slaveIdIndex],
+            SlaveID = actualSlaveId,
             PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }

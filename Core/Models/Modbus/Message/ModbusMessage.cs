@@ -17,14 +17,21 @@ public abstract class ModbusMessage
 
     /***********************************************/
 
-    protected static bool ValidateSlaveId(int indexOfSlaveIdByte, RawResponse rawResponse)
+    protected byte ValidateAndGetSlaveId(int indexOfSlaveIdByte, RawResponse rawResponse, ILocalizationService localization)
     {
         if (indexOfSlaveIdByte >= rawResponse.ResponseBytes.Length)
-            return false;
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
 
         var actualSlaveId = rawResponse.ResponseBytes[indexOfSlaveIdByte];
+        
+        if (actualSlaveId != rawResponse.ExpectedSlaveID)
+            throw new Exception(
+                localization.Get("Core.Modbus.InvalidSlaveId", 
+                    ProtocolName,
+                    rawResponse.ExpectedSlaveID,
+                    actualSlaveId));
 
-        return actualSlaveId == rawResponse.ExpectedSlaveID;
+        return actualSlaveId;
     }
     
     protected PduResponse DecodingPduResponse(int expectedFunctionNumber, byte[] pduArray, ILocalizationService localization)

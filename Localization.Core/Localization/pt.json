@@ -321,7 +321,7 @@
       "InvalidMessageSize": "Violação da integridade do pacote {0}.\nCódigo de função: {1}",
       "InvalidProtocolIdentifier": "Violação da integridade do pacote {0}.\nO identificador de protocolo da resposta não coincide com o esperado.\nIdentificador esperado: {1}",
       "InvalidCheckSum": "Violação da integridade do pacote {0}.\nSoma de verificação inválida.\nCódigo de função: {1}",
-      "InvalidSlaveId": "Violação da integridade do pacote {0}.\nO Slave ID da resposta não coincide com o esperado.\nCódigo de função: {1}",
+      "InvalidSlaveId": "Violação da integridade do pacote {0}.\nO Slave ID da resposta não coincide com o esperado.\nEsperado: {1}\nRecebido: {2}",
       "InvalidDataLength": "Violação da integridade do pacote {0}.\nQuantidade inválida de bytes de dados.\nCódigo de função: {1}",
       "InvalidFunctionNumberResponse": "Foi recebida uma resposta para outra função Modbus.\nEsperava-se uma resposta para a função {0}\nFoi recebida uma resposta para a função {1}",
       "UnsupportedCommandCode": "Código de comando Modbus não suportado (código: {0})",

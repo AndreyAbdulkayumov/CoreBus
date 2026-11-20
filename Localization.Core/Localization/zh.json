@@ -321,7 +321,7 @@
       "InvalidMessageSize": "数据包 {0} 完整性被破坏。\n功能码：{1}",
       "InvalidProtocolIdentifier": "数据包 {0} 完整性被破坏。\n响应中的协议标识符与预期不符。\n预期标识符：{1}",
       "InvalidCheckSum": "数据包 {0} 完整性被破坏。\n校验和无效。\n功能码：{1}",
-      "InvalidSlaveId": "数据包 {0} 完整性被破坏。\n响应中的从站地址与预期不符。\n功能码：{1}",
+      "InvalidSlaveId": "数据包 {0} 完整性被破坏。\n响应中的从站地址与预期不符。\n预期：{1}\n实际：{2}",
       "InvalidDataLength": "数据包 {0} 完整性被破坏。\n数据字节数不正确。\n功能码：{1}",
       "InvalidFunctionNumberResponse": "收到了针对其他 Modbus 功能的响应。\n预期功能 {0} 的响应\n收到功能 {1} 的响应",
       "UnsupportedCommandCode": "不支持的 Modbus 命令码（码：{0}）",
