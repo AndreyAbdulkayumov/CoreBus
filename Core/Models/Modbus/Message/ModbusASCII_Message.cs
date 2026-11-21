@@ -23,7 +23,7 @@ public class ModbusASCII_Message : ModbusMessage
     public static byte EndByteLF => 0x0A;
     
 
-    public override byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public override byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization)
     {
         var PDU = Modbus_PDU.Create(function, data, localization);
 
@@ -62,21 +62,29 @@ public class ModbusASCII_Message : ModbusMessage
         return TX;
     }
 
-    public override ModbusResponse DecodingResponse(ModbusFunction currentFunction, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization)
+    public override ModbusResponse DecodingResponse(
+        ModbusFunction currentFunction, byte[] responseBytes, 
+        ExpectedResponseData expectedResponseData, ILocalizationService localization)
     {
+        const int slaveIdIndex = 0;
+        
+        var checkSumIsEnable = expectedResponseData.CheckSumIsEnable;
+        
         // Сообщение с кодом ошибки - это сообщение с минимальным количеством байт (SlaveID, код функции, код ошибки)
         // Символ начала сообщения - 1 байт, сообщение с кодом ошибки ASCII-формате - 6 байт, символы конца сообщения 2 байта
         // Контрольная сумма LRC8 в ASCII-формате - 2 байта
-        if (sourceArray.Length < 9 || (checkSumIsEnable && sourceArray.Length < 11))
+        if (responseBytes.Length < 9 || (checkSumIsEnable && responseBytes.Length < 11))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
         
-        if (!TryExtractFrame(sourceArray, out var asciiFrame))
+        if (!TryExtractFrame(responseBytes, out var asciiFrame))
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSize", ProtocolName, currentFunction.Number));
 
         var convertedArray = GetBytesArrayFromCharArray(asciiFrame);
-
+        
         if (checkSumIsEnable && !ValidateCheckSum(convertedArray))
             throw new Exception(localization.Get("Core.Modbus.InvalidCheckSum", ProtocolName, currentFunction.Number));
+        
+        var actualSlaveId = ValidateAndGetSlaveId(slaveIdIndex, convertedArray, expectedResponseData.SlaveId, localization);
         
         // SlaveID - 1 байт, LRC8 - 1 байт
         var pduArraySize = checkSumIsEnable ? convertedArray.Length - 2 : convertedArray.Length - 1;
@@ -87,7 +95,7 @@ public class ModbusASCII_Message : ModbusMessage
         
         return new ModbusResponse
         {
-            SlaveID = convertedArray[0],
+            SlaveID = actualSlaveId,
             PDU = DecodingPduResponse(currentFunction.Number, pduArray, localization)
         };
     }

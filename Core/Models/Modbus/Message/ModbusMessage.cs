@@ -12,13 +12,28 @@ public abstract class ModbusMessage
 
     public abstract string ProtocolName { get; }
 
-    public abstract byte[] CreateRequest(ModbusFunction function, MessageData data, ILocalizationService localization);
-    public abstract ModbusResponse DecodingResponse(ModbusFunction function, byte[] sourceArray, bool checkSumIsEnable, ILocalizationService localization);
+    public abstract byte[] CreateRequest(ModbusFunction function, ModbusRequestData data, ILocalizationService localization);
+    public abstract ModbusResponse DecodingResponse(ModbusFunction function, byte[] responseBytes, ExpectedResponseData expectedResponseData, ILocalizationService localization);
 
     /***********************************************/
 
-    protected ulong PackageNumber = 0;
+    protected byte ValidateAndGetSlaveId(int indexOfSlaveIdByte, byte[] responseBytes, byte expectedSlaveId, ILocalizationService localization)
+    {
+        if (indexOfSlaveIdByte >= responseBytes.Length)
+            throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
 
+        var actualSlaveId = responseBytes[indexOfSlaveIdByte];
+
+        if (actualSlaveId != expectedSlaveId)
+        {
+            var errorMessage = localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, expectedSlaveId, actualSlaveId);
+            
+            throw new UnexpectedSlaveIdException(errorMessage, expectedSlaveId, actualSlaveId);
+        }
+        
+        return actualSlaveId;
+    }
+    
     protected PduResponse DecodingPduResponse(int expectedFunctionNumber, byte[] pduArray, ILocalizationService localization)
     {
         if (pduArray.Length < 2)

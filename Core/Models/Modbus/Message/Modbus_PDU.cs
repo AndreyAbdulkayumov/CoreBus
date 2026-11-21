@@ -4,10 +4,10 @@ namespace Core.Models.Modbus.Message;
 
 public static class Modbus_PDU
 {
-    public static byte[] Create(ModbusFunction function, MessageData data, ILocalizationService localization)
+    public static byte[] Create(ModbusFunction function, ModbusRequestData data, ILocalizationService localization)
     {
-        var dataForWrite = data as WriteTypeMessage;
-        var dataForRead = data as ReadTypeMessage;
+        var dataForWrite = data as ModbusWriteRequestData;
+        var dataForRead = data as ModbusReadRequestData;
 
         if (dataForRead != null && function.Number >= 1 && function.Number <= 4)
         {
@@ -32,7 +32,7 @@ public static class Modbus_PDU
         throw new Exception(localization.Get("Core.Modbus.PduBuildErrorUnsupportedFunction", function.Number));
     }
 
-    private static byte[] Create_Read(ModbusFunction readFunction, ReadTypeMessage data)
+    private static byte[] Create_Read(ModbusFunction readFunction, ModbusReadRequestData data)
     {
         var PDU = new byte[5];
 
@@ -51,7 +51,7 @@ public static class Modbus_PDU
         return PDU;
     }
 
-    private static byte[] Create_Write(ModbusFunction writeFunction, WriteTypeMessage data)
+    private static byte[] Create_Write(ModbusFunction writeFunction, ModbusWriteRequestData data)
     {
         var PDU = new byte[5];
 
@@ -69,7 +69,7 @@ public static class Modbus_PDU
         return PDU;
     }
 
-    private static byte[] Create_WriteMultipleCoils(ModbusFunction writeFunction, WriteTypeMessage data)
+    private static byte[] Create_WriteMultipleCoils(ModbusFunction writeFunction, ModbusWriteRequestData data)
     {
         var offsetPDU = 6;
         var PDU = new byte[offsetPDU + data.WriteData.Length];
@@ -96,7 +96,7 @@ public static class Modbus_PDU
         return PDU;
     }
 
-    private static byte[] Create_WriteMultipleRegisters(ModbusFunction writeFunction, WriteTypeMessage data)
+    private static byte[] Create_WriteMultipleRegisters(ModbusFunction writeFunction, ModbusWriteRequestData data)
     {
         const int offsetPDU = 6;
         var PDU = new byte[offsetPDU + data.WriteData.Length];

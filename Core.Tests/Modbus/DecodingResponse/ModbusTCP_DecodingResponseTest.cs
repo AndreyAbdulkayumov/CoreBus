@@ -30,14 +30,13 @@ public class ModbusTCP_DecodingResponseTest
             .Concat(addressBytes)
             .Concat(dataBytes)
             .ToArray();
-
+        
         var result = _modbusMessage.DecodingResponse(
             selectedFunction,
             CreateTcpMessage(slaveId, pdu),
-            false,
+            new ExpectedResponseData(slaveId, false),
             _localization);
 
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseWriteSingle>(result.PDU);
@@ -74,10 +73,9 @@ public class ModbusTCP_DecodingResponseTest
         var result = _modbusMessage.DecodingResponse(
             selectedFunction,
             CreateTcpMessage(slaveId, pdu),
-            false,
+            new ExpectedResponseData(slaveId, false),
             _localization);
 
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseWriteMultiple>(result.PDU);
@@ -108,10 +106,9 @@ public class ModbusTCP_DecodingResponseTest
         var result = _modbusMessage.DecodingResponse(
             selectedFunction,
             CreateTcpMessage(slaveId, pdu),
-            false,
+            new ExpectedResponseData(slaveId, false),
             _localization);
         
-        Assert.Equal(0, result.ProtocolID);
         Assert.Equal(slaveId, result.SlaveID);
         
         Assert.IsType<PduResponseRead>(result.PDU);
@@ -138,12 +135,12 @@ public class ModbusTCP_DecodingResponseTest
         var pdu = new byte[] { selectedFunction.Number, declaredByteCount }
             .Concat(data)
             .ToArray();
-
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction,
                 CreateTcpMessage(slaveId, pdu),
-                false,
+                new ExpectedResponseData(slaveId, false),
                 _localization));
     }
 
@@ -161,12 +158,12 @@ public class ModbusTCP_DecodingResponseTest
         var pdu = new byte[] { selectedFunction.Number, declaredByteCount }
             .Concat(data)
             .ToArray();
-
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction,
                 CreateTcpMessage(slaveId, pdu),
-                false,
+                new ExpectedResponseData(slaveId, false),
                 _localization));
     }
 
@@ -191,7 +188,7 @@ public class ModbusTCP_DecodingResponseTest
                 _modbusMessage.DecodingResponse(
                     selectedFunction,
                     CreateTcpMessage(slaveId, pdu),
-                    false,
+                    new ExpectedResponseData(slaveId, false),
                     _localization));
 
             Assert.IsType<ModbusException>(exception);
@@ -213,12 +210,12 @@ public class ModbusTCP_DecodingResponseTest
             .Concat(address)
             .Concat(data)
             .ToArray();
-
+        
         Assert.Throws<Exception>(() =>
             _modbusMessage.DecodingResponse(
                 selectedFunction,
                 CreateTcpMessage(slaveId, pdu),
-                false,
+                new ExpectedResponseData(slaveId, false),
                 _localization));
     }
 
@@ -241,7 +238,7 @@ public class ModbusTCP_DecodingResponseTest
             _modbusMessage.DecodingResponse(
                 selectedFunction,
                 CreateTcpMessage(slaveId, pdu),
-                false,
+                new ExpectedResponseData(slaveId, false),
                 _localization));
     }
     
@@ -259,7 +256,71 @@ public class ModbusTCP_DecodingResponseTest
             _modbusMessage.DecodingResponse(
                 expectedFunction, 
                 CreateTcpMessage(slaveId, pdu),
-                false, 
+                new ExpectedResponseData(slaveId, false),
+                _localization));
+    }
+    
+    [Fact]
+    public void SlaveId_InvalidSlaveIdInResponse_Throws()
+    {
+        const byte actualSlaveId = 54;
+        const byte expectedSlaveId = 10;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x12, 0x34 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var pdu = new byte[] { selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        var exception = Record.Exception(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction, 
+                CreateTcpMessage(actualSlaveId, pdu),
+                new ExpectedResponseData(expectedSlaveId, false),
+                _localization));
+        
+        Assert.IsType<UnexpectedSlaveIdException>(exception);
+    }
+    
+    [Fact]
+    public void TCPSpecific_InvalidProtocolIdentifier_Throws()
+    {
+        const byte slaveId = 16;
+        const ushort protocolIdentifier = 34;
+
+        var protocolIdentifierArray = BitConverter.GetBytes(protocolIdentifier);
+        var selectedFunction = Function.ReadCoilStatus;
+
+        var message = new byte[11];
+
+        // Operation number
+        message[0] = 0;
+        message[1] = 0;
+        // Protocol ID
+        message[2] = protocolIdentifierArray[1];
+        message[3] = protocolIdentifierArray[0];
+        // PDU length
+        ushort length = 5;
+        message[4] = (byte)(length >> 8);
+        message[5] = (byte)length;
+        // PDU начинается тут
+        message[6] = slaveId;
+        message[7] = selectedFunction.Number;
+        // Количество байт данных
+        message[8] = 2;
+        // Данные
+        message[9] = 0x00;
+        message[10] = 0xFF;
+
+        Assert.Throws<Exception>(() =>
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                message,
+                new ExpectedResponseData(slaveId, false),
                 _localization));
     }
     
@@ -292,7 +353,11 @@ public class ModbusTCP_DecodingResponseTest
         message[10] = 0xFF;
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, message, false, _localization));
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                message,
+                new ExpectedResponseData(slaveId, false),
+                _localization));
     }
 
     private static byte[] CreateTcpMessage(byte slaveId, byte[] pdu)

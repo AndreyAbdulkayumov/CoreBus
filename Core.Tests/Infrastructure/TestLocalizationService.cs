@@ -4,7 +4,7 @@ namespace Core.Tests.Infrastructure;
 
 internal sealed class TestLocalizationService : ILocalizationService
 {
-    private static readonly LanguageInfo DefaultLanguage = new("en", "English", "English");
+    private static readonly LanguageInfo DefaultLanguage = new("ru", "Русский", "Russian");
 
     public IReadOnlyList<LanguageInfo> AvailableLanguages { get; } = new[] { DefaultLanguage };
     public LanguageInfo CurrentLanguage => DefaultLanguage;

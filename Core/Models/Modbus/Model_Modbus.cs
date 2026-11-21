@@ -41,7 +41,7 @@ public class Model_Modbus
         _device = null;
     }
     
-    public async Task<ModbusOperationResult> ExecuteModbusTransaction(ModbusFunction function, MessageData data, ModbusMessage message)
+    public async Task<ModbusOperationResult> ExecuteModbusTransaction(ModbusFunction function, ModbusRequestData data, ModbusMessage message)
     {
         await _transactionSemaphore.WaitAsync();
 
@@ -68,8 +68,10 @@ public class Model_Modbus
             if (RX_Info.ResponseBytes?.Length > 0)
             {
                 RX = RX_Info.ResponseBytes;
+
+                var expectedResponseData = new ExpectedResponseData(data.SlaveID, data.CheckSum_IsEnable);
                 
-                var deviceResponse = message.DecodingResponse(function, RX, data.CheckSum_IsEnable, _localization);
+                var deviceResponse = message.DecodingResponse(function, RX, expectedResponseData, _localization);
 
                 if (function is ModbusWriteFunction)
                 {
@@ -110,7 +112,23 @@ public class Model_Modbus
                 responseBytes: GetOutputRX(RX, RX.Length),
                 request_ExecutionTime: TX_Info?.ExecutionTime ?? new DateTime(),
                 response_ExecutionTime: RX_Info?.ExecutionTime ?? new DateTime()
-                );
+            );
+        }
+
+        catch (UnexpectedSlaveIdException error)
+        {
+            throw new UnexpectedSlaveIdException(error, 
+                new ModbusExceptionInfo()
+                {
+                    Details = new ModbusActionDetails()
+                    {
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                        Request_ExecutionTime = TX_Info?.ExecutionTime ?? new DateTime(),
+                        Response_ExecutionTime = RX_Info?.ExecutionTime ?? new DateTime()
+                    }
+                });
         }
 
         catch (TimeoutException)

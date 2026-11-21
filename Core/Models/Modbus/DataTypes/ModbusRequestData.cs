@@ -1,6 +1,6 @@
 ﻿namespace Core.Models.Modbus.DataTypes;
 
-public abstract class MessageData
+public abstract class ModbusRequestData
 {
     public byte SlaveID;
     public ushort Address;
@@ -8,9 +8,9 @@ public abstract class MessageData
     public int NumberOfRegisters;
 }
 
-public class ReadTypeMessage : MessageData
+public class ModbusReadRequestData : ModbusRequestData
 {
-    public ReadTypeMessage(byte slaveID, ushort address, int numberOfRegisters, bool checkSum_IsEnable)
+    public ModbusReadRequestData(byte slaveID, ushort address, int numberOfRegisters, bool checkSum_IsEnable)
     {
         SlaveID = slaveID;
         Address = address;
@@ -19,11 +19,11 @@ public class ReadTypeMessage : MessageData
     }
 }
 
-public class WriteTypeMessage : MessageData
+public class ModbusWriteRequestData : ModbusRequestData
 {
     public byte[] WriteData;
 
-    public WriteTypeMessage(byte slaveID, ushort address, byte[] writeData, int numberOfRegisters, bool checkSum_IsEnable)
+    public ModbusWriteRequestData(byte slaveID, ushort address, byte[] writeData, int numberOfRegisters, bool checkSum_IsEnable)
     {
         SlaveID = slaveID;
         Address = address;

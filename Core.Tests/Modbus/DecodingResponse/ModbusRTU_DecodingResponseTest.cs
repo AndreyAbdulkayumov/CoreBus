@@ -32,7 +32,11 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(dataBytes)
             .ToArray();
         
-        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction, 
+            GetMessageWithCheckSum(message),
+            new ExpectedResponseData(slaveId, true),
+            _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
         
@@ -66,8 +70,12 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(addressBytes)
             .Concat(registerCountBytes)
             .ToArray();
-
-        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
+        
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction,
+            GetMessageWithCheckSum(message),
+            new ExpectedResponseData(slaveId, true),
+            _localization);
 
         Assert.Equal(slaveId, result.SlaveID);
         
@@ -96,7 +104,11 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        var result = _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization);
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction,
+            GetMessageWithCheckSum(message),
+            new ExpectedResponseData(slaveId, true),
+            _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
         
@@ -126,7 +138,11 @@ public class ModbusRTU_DecodingResponseTest
             .ToArray();
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                GetMessageWithCheckSum(message),
+                new ExpectedResponseData(slaveId, true),
+                _localization));
     }
     
     [Fact]
@@ -145,7 +161,11 @@ public class ModbusRTU_DecodingResponseTest
             .ToArray();
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                GetMessageWithCheckSum(message),
+                new ExpectedResponseData(slaveId, true),
+                _localization));
     }
     
     [Fact]
@@ -164,9 +184,13 @@ public class ModbusRTU_DecodingResponseTest
                 continue;
             
             var message = new byte[] { slaveId, (byte)selectedFunctionErrorNumber, errorCode };
-        
+            
             var exception = Record.Exception(() => 
-                _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+                _modbusMessage.DecodingResponse(
+                    selectedFunction,
+                    GetMessageWithCheckSum(message),
+                    new ExpectedResponseData(slaveId, true),
+                    _localization));
         
             Assert.IsType<ModbusException>(exception);
         }
@@ -188,7 +212,12 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+        Assert.Throws<Exception>(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                GetMessageWithCheckSum(message),
+                new ExpectedResponseData(slaveId, true),
+                _localization));
     }
 
     [Fact]
@@ -206,7 +235,12 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => _modbusMessage.DecodingResponse(selectedFunction, GetMessageWithCheckSum(message), true, _localization));
+        Assert.Throws<Exception>(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                GetMessageWithCheckSum(message),
+                new ExpectedResponseData(slaveId, true),
+                _localization));
     }
     
     [Fact]
@@ -220,7 +254,11 @@ public class ModbusRTU_DecodingResponseTest
         var message = new byte[] { slaveId, actualFunctionNumber, 0x00, 0x01, 0x10, 0xFF };
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(expectedFunction, message, false, _localization));
+            _modbusMessage.DecodingResponse(
+                expectedFunction,
+                message,
+                new ExpectedResponseData(slaveId, false),
+                _localization));
     }
     
     [Fact]
@@ -238,7 +276,11 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        var result = _modbusMessage.DecodingResponse(selectedFunction, message, false, _localization);
+        var result = _modbusMessage.DecodingResponse(
+            selectedFunction,
+            message,
+            new ExpectedResponseData(slaveId, false),
+            _localization);
         
         Assert.Equal(slaveId, result.SlaveID);
         Assert.Equal(selectedFunction.Number, result.PDU.FunctionNumber);
@@ -253,7 +295,11 @@ public class ModbusRTU_DecodingResponseTest
         var message = new byte[] { slaveId, selectedFunction.Number, 0x00, 0x01, 0x10, 0xFF, 0x33, 0x12 };
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                message,
+                new ExpectedResponseData(slaveId, true),
+                _localization));
     }
     
     [Fact]
@@ -265,7 +311,37 @@ public class ModbusRTU_DecodingResponseTest
         var message = new byte[] { slaveId, selectedFunction.Number, 0x00, 0x01, 0x10, 0xFF };
 
         Assert.Throws<Exception>(() =>
-            _modbusMessage.DecodingResponse(selectedFunction, message, true, _localization));
+            _modbusMessage.DecodingResponse(
+                selectedFunction,
+                message,
+                new ExpectedResponseData(slaveId, true),
+                _localization));
+    }
+
+    [Fact]
+    public void SlaveId_InvalidSlaveIdInResponse_Throws()
+    {
+        const byte actualSlaveId = 7;
+        const byte expectedSlaveId = 15;
+        
+        var selectedFunction = Function.ReadHoldingRegisters;
+        
+        var data = new byte[] { 0x12, 0x34 };
+
+        var lengthOfData = (byte)data.Length;
+        
+        var message = new byte[] { actualSlaveId, selectedFunction.Number, lengthOfData }
+            .Concat(data)
+            .ToArray();
+        
+        var exception = Record.Exception(() => 
+            _modbusMessage.DecodingResponse(
+                selectedFunction, 
+                GetMessageWithCheckSum(message),
+                new ExpectedResponseData(expectedSlaveId, true),
+                _localization));
+        
+        Assert.IsType<UnexpectedSlaveIdException>(exception);
     }
     
     private static byte[] GetMessageWithCheckSum(byte[] data)

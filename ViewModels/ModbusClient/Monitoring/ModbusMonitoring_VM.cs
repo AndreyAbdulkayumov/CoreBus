@@ -633,7 +633,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
 
             var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
 
-            MessageData data = new ReadTypeMessage(
+            ModbusRequestData data = new ModbusReadRequestData(
                 _selectedSlaveID,
                 startingAddress,
                 numberOfRegisters,
