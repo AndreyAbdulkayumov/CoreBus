@@ -112,7 +112,23 @@ public class Model_Modbus
                 responseBytes: GetOutputRX(RX, RX.Length),
                 request_ExecutionTime: TX_Info?.ExecutionTime ?? new DateTime(),
                 response_ExecutionTime: RX_Info?.ExecutionTime ?? new DateTime()
-                );
+            );
+        }
+
+        catch (UnexpectedSlaveIdException error)
+        {
+            throw new UnexpectedSlaveIdException(error, 
+                new ModbusExceptionInfo()
+                {
+                    Details = new ModbusActionDetails()
+                    {
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                        Request_ExecutionTime = TX_Info?.ExecutionTime ?? new DateTime(),
+                        Response_ExecutionTime = RX_Info?.ExecutionTime ?? new DateTime()
+                    }
+                });
         }
 
         catch (TimeoutException)
