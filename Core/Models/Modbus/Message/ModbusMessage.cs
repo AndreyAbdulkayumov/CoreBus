@@ -23,14 +23,14 @@ public abstract class ModbusMessage
             throw new Exception(localization.Get("Core.Modbus.InvalidMessageSizeSimple", ProtocolName));
 
         var actualSlaveId = responseBytes[indexOfSlaveIdByte];
-        
-        if (actualSlaveId != expectedSlaveId)
-            throw new Exception(
-                localization.Get("Core.Modbus.InvalidSlaveId", 
-                    ProtocolName,
-                    expectedSlaveId,
-                    actualSlaveId));
 
+        if (actualSlaveId != expectedSlaveId)
+        {
+            var errorMessage = localization.Get("Core.Modbus.InvalidSlaveId", ProtocolName, expectedSlaveId, actualSlaveId);
+            
+            throw new UnexpectedSlaveIdException(errorMessage, expectedSlaveId, actualSlaveId);
+        }
+        
         return actualSlaveId;
     }
     

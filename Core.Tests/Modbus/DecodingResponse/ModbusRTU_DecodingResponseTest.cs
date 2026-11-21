@@ -334,12 +334,14 @@ public class ModbusRTU_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => 
+        var exception = Record.Exception(() => 
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
                 GetMessageWithCheckSum(message),
                 new ExpectedResponseData(expectedSlaveId, true),
                 _localization));
+        
+        Assert.IsType<UnexpectedSlaveIdException>(exception);
     }
     
     private static byte[] GetMessageWithCheckSum(byte[] data)

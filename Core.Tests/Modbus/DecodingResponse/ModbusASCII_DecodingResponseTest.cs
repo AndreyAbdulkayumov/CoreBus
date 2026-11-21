@@ -386,12 +386,14 @@ public class ModbusASCII_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => 
+        var exception = Record.Exception(() => 
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
                 CreateAsciiMessageFromBytes(message, checkSumIsEnable),
                 new ExpectedResponseData(expectedSlaveId, checkSumIsEnable),
                 _localization));
+        
+        Assert.IsType<UnexpectedSlaveIdException>(exception);
     }
     
     [Fact]

@@ -374,7 +374,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
             //ViewSlaveAddress(98);
             //ViewSlaveAddress(182);
 
-            for (int i = ProgressBar_Minimum; i <= ProgressBar_Maximum; i++)
+            for (var i = ProgressBar_Minimum; i <= ProgressBar_Maximum; i++)
             {
                 try
                 {
@@ -398,9 +398,9 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
                     ViewSlaveAddress(i);
                 }
 
-                catch (Exception)
+                catch (UnexpectedSlaveIdException error)
                 {
-                    continue;
+                    ViewSlaveAddress(error.ActualSlaveId);
                 }
 
                 finally

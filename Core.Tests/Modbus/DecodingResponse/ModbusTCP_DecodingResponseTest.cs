@@ -276,12 +276,14 @@ public class ModbusTCP_DecodingResponseTest
             .Concat(data)
             .ToArray();
         
-        Assert.Throws<Exception>(() => 
+        var exception = Record.Exception(() => 
             _modbusMessage.DecodingResponse(
                 selectedFunction, 
                 CreateTcpMessage(actualSlaveId, pdu),
                 new ExpectedResponseData(expectedSlaveId, false),
                 _localization));
+        
+        Assert.IsType<UnexpectedSlaveIdException>(exception);
     }
     
     [Fact]
