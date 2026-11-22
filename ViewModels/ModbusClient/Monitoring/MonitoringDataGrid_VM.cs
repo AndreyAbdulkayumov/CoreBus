@@ -144,7 +144,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         var lastIndex = Items.Count - 1;
 
-        for (int i = 0; i < lastIndex; i++)
+        for (var i = 0; i < lastIndex; i++)
         {
             Items[i].SetAsLast(false);
         }
@@ -218,7 +218,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     public void RemoveSelectedItems()
     {
-        for (int i = Items.Count - 1; i >= 0; i--)
+        for (var i = Items.Count - 1; i >= 0; i--)
         {
             if (Items[i].IsSelected)
             {

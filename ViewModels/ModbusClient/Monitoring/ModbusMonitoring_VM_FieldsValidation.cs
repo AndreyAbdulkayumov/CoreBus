@@ -11,17 +11,17 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         var validationMessages = new StringBuilder();
 
         // Проверка полей в настройках мониторинга
-        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        foreach (var element in ActualErrors)
         {
             validationMessages.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
         }
 
         // Проверка полей в таблице
-        for (int i = 0; i < _monitoringDataGrid_VM.Items.Count; i++)
+        for (var i = 0; i < _monitoringDataGrid_VM.Items.Count; i++)
         {
             var checkedItem = _monitoringDataGrid_VM.Items[i];
 
-            foreach (KeyValuePair<string, ValidateMessage> itemElement in checkedItem.ActualErrors)
+            foreach (var itemElement in checkedItem.ActualErrors)
             {
                 validationMessages.AppendLine($"[{_localization.Get("Validation.ItemFieldLabel", i + 1, checkedItem.GetFieldViewName(itemElement.Key))}]\n{checkedItem.GetFullErrorMessage(itemElement.Key)}\n");
             }

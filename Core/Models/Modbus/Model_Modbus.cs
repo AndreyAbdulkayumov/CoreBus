@@ -117,8 +117,8 @@ public class Model_Modbus
 
         catch (UnexpectedSlaveIdException error)
         {
-            throw new UnexpectedSlaveIdException(error, 
-                new ModbusExceptionInfo()
+            throw new UnexpectedSlaveIdException(error,
+                new ModbusExceptionInfo(error)
                 {
                     Details = new ModbusActionDetails()
                     {
@@ -131,7 +131,7 @@ public class Model_Modbus
                 });
         }
 
-        catch (TimeoutException)
+        catch (TimeoutException error)
         {
             var errorMessage = _localization.Get("Core.HostNoResponse");
 
@@ -143,7 +143,7 @@ public class Model_Modbus
             }
 
             throw new TimeoutException(errorMessage,
-                new ModbusExceptionInfo()
+                new ModbusExceptionInfo(error)
                 {
                     Details = new ModbusActionDetails()
                     {
@@ -159,7 +159,7 @@ public class Model_Modbus
         catch (Exception error)
         {
             throw new Exception(error.Message,
-                new ModbusExceptionInfo()
+                new ModbusExceptionInfo(error)
                 {
                     Details = new ModbusActionDetails()
                     {

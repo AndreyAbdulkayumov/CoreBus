@@ -79,7 +79,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Core.SettingsSaveError") + "\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.SettingsSaveError") + "\n\n" + error.Message, error);
         }
     }
 
@@ -107,7 +107,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Core.SettingsReadErrorDetailed") + "\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.SettingsReadErrorDetailed") + "\n\n" + error.Message, error);
         }
     }
 
@@ -190,7 +190,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Core.AppSettingsSaveError") + "\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.AppSettingsSaveError") + "\n\n" + error.Message, error);
         }
     }
 
@@ -235,7 +235,7 @@ public class Model_Settings
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Core.MonitoringRegistersSaveError") + "\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.MonitoringRegistersSaveError") + "\n\n" + error.Message, error);
         }
     }
 

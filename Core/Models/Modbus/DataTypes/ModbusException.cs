@@ -16,27 +16,9 @@ public class ModbusException : Exception
         Message = message;
     }
 
-    public ModbusException(ModbusException errorObject)
-    {
-        FunctionCode = errorObject.FunctionCode;
-        ErrorCode = errorObject.ErrorCode;
-        Message = errorObject.Message;
-        Details.RequestBytes = errorObject.Details.RequestBytes;
-        Details.ResponseBytes = errorObject.Details.ResponseBytes;
-    }
-
-    public ModbusException(byte functionCode, byte errorCode, string message,
-        byte[] requestBytes, byte[] responseBytes)
-    {
-        FunctionCode = functionCode;
-        ErrorCode = errorCode;
-        Message = message;
-        Details.RequestBytes = requestBytes;
-        Details.ResponseBytes = responseBytes;
-    }
-
     public ModbusException(ModbusException errorObject, byte[] requestBytes, byte[] responseBytes,
         DateTime request_ExecutionTime, DateTime response_ExecutionTime)
+        : base(errorObject.Message, errorObject)
     {
         FunctionCode = errorObject.FunctionCode;
         ErrorCode = errorObject.ErrorCode;
@@ -51,4 +33,9 @@ public class ModbusException : Exception
 public class ModbusExceptionInfo : Exception
 {
     public ModbusActionDetails? Details;
+
+    public ModbusExceptionInfo(Exception innerException)
+        : base(innerException.Message, innerException)
+    {
+    }
 }

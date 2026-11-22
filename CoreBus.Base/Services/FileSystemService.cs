@@ -92,7 +92,7 @@ public class FileSystemService : IFileSystemService
             return;
         }
 
-        else if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux())
         {
             Process.Start(new ProcessStartInfo
             {

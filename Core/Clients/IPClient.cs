@@ -219,7 +219,8 @@ public class IPClient : IConnection
             throw new Exception(_localization.Get("Message.Error.SendData") + "\n\n" + error.Message + "\n\n" +
                 _localization.Get("Core.WriteTimeoutPrefix") +
                 (_stream.WriteTimeout == Timeout.Infinite ?
-                _localization.Get("Core.TimeoutInfinite") : _stream.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")));
+                _localization.Get("Core.TimeoutInfinite") : _stream.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")),
+                error);
         }
     }
 
@@ -255,9 +256,9 @@ public class IPClient : IConnection
                         numberOfReceivedBytes = await _stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
                     }
 
-                    catch (OperationCanceledException)
+                    catch (OperationCanceledException error)
                     {
-                        throw new Exception(_localization.Get("Core.HostNoResponseInTimeout"));
+                        throw new Exception(_localization.Get("Core.HostNoResponseInTimeout"), error);
                     }
 
                     if (isFirstPackage)
@@ -288,7 +289,8 @@ public class IPClient : IConnection
             throw new Exception(_localization.Get("Core.ReceiveDataError") + "\n\n" + error.Message + "\n\n" +
                 _localization.Get("Core.ReadTimeoutPrefix") +
                 (_stream.ReadTimeout == Timeout.Infinite ?
-                _localization.Get("Core.TimeoutInfinite") : _stream.ReadTimeout.ToString() + " " + _localization.Get("Common.Ms")));
+                _localization.Get("Core.TimeoutInfinite") : _stream.ReadTimeout.ToString() + " " + _localization.Get("Common.Ms")),
+                error);
         }
     }
 

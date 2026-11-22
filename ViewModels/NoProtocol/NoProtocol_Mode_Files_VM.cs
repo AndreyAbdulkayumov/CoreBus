@@ -135,8 +135,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
         catch (Exception error)
         {
             IsSending = false;
-
-            throw new Exception(error.Message);
+            throw;
         }
     }
 
