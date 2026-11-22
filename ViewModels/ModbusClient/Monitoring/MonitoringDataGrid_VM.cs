@@ -71,8 +71,8 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     private bool _ignorePropertyChanged;
 
-    public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, IMessageBoxMainWindow messageBox,
-        ILocalizationService localization)
+    public MonitoringDataGrid_VM(Model_Settings settingsModel, IOpenChildWindowService openChildWindowService, 
+        IMessageBoxMainWindow messageBox, ILocalizationService localization)
     {
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
@@ -293,14 +293,16 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
         foreach (var item in Items)
         {
-            if (readRegisters.TryGetValue(item.SelectedAddress, out UInt16 registerValue))
+            if (!readRegisters.TryGetValue(item.SelectedAddress, out var registerValue))
             {
-                item.SetReadedValue(registerValue, registers, chartIncrementX);
+                continue;
+            }
+                
+            item.SetReadedValue(registerValue, registers, chartIncrementX);
 
-                if (item.ItemShowOnChartAndLog)
-                {
-                    logString.Append($"{item.FullConvertedValue}\t");
-                }
+            if (item.ItemShowOnChartAndLog)
+            {
+                logString.Append($"{item.FullConvertedValue}\t");
             }
         }
 
@@ -322,11 +324,11 @@ public class MonitoringDataGrid_VM : ReactiveObject
     {
         var result = new List<UInt16>();
 
-        int registerCounter = 0;
+        var registerCounter = 0;
 
-        foreach (byte element in modbusData)
+        foreach (var element in modbusData)
         {
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 if (registerCounter == numberOfRegisters) break;
 
@@ -342,7 +344,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
     {
         var result = new List<UInt16>();
 
-        for (int i = 0; i < modbusData.Length - 1; i += 2)
+        for (var i = 0; i < modbusData.Length - 1; i += 2)
         {
             result.Add((UInt16)((modbusData[i + 1] << 8) | modbusData[i]));
         }

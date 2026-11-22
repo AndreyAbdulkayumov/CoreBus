@@ -195,12 +195,13 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
     private readonly Chart_VM _chart_VM;
     private readonly FileLogger _logger;
     private readonly ILocalizationService _localization;
+    private readonly IUIService _uiService;
 
 
     public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         Model_Settings settingsModel, ConnectedHost connectedHostModel,
         Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM,
-        FileLogger logger, ILocalizationService localization)
+        FileLogger logger, ILocalizationService localization, IUIService uiService)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
@@ -212,6 +213,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _chart_VM = chart_VM ?? throw new ArgumentNullException(nameof(chart_VM));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
         _localization.LanguageChanged += (_, _) =>
         {
@@ -647,7 +649,12 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
             if (result.ReadedData == null || !IsMonitoringRunning)
                 return;
 
-            var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
+            var logString = string.Empty;
+            
+            await _uiService.RunInUIThread(() =>
+            {
+                logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
+            });
 
             if (_logger.IsRunning)
                 _logger.WriteLine(logString);
