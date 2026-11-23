@@ -543,10 +543,7 @@ public class ModbusManualMode_VM : ReactiveObject
                 {
                     BinaryRepresentationItems.AddRange(binaryItems);
                 }
-            });
-
-            await _uiServices.RunInUIThread(() =>
-            {
+                
                 FloatRepresentationItems.Clear();
 
                 var floatItems = FloatRepresentation.GetData(data);
@@ -567,16 +564,16 @@ public class ModbusManualMode_VM : ReactiveObject
             {
                 RequestResponseItems.Clear();
                 RequestResponseItems.AddRange(LastRequestRepresentation.GetData(request.Bytes, response.Bytes));
+                
+                if (LogData != string.Empty)
+                {
+                    LogData += "\n\n";
+                }
+
+                LogData += LogRepresentation.GetData(
+                    details.Request_ExecutionTime, request.LogString,
+                    details.Response_ExecutionTime, response.LogString);
             });
-
-            if (LogData != string.Empty)
-            {
-                LogData += "\n\n";
-            }
-
-            LogData += LogRepresentation.GetData(
-                details.Request_ExecutionTime, request.LogString,
-                details.Response_ExecutionTime, response.LogString);
         }
 
         _packageNumber++;

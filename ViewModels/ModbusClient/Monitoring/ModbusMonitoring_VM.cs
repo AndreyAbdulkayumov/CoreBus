@@ -548,7 +548,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                 return;
             }
 
-            string? validationMessage = CheckFields();
+            var validationMessage = CheckFields();
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
@@ -622,14 +622,17 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
             if (_connectedHostModel.DisconnectedByClient)
                 return;
 
-            if (_connectedHostModel.HostIsConnect == false)
+            if (!_connectedHostModel.HostIsConnect)
                 throw new Exception(_localization.Get("Exception.ClientDisconnected"));
 
             if (ModbusClient_VM.ModbusMessageType == null)
                 throw new Exception(_localization.Get("Exception.ModbusTypeNotSet"));
 
-            var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
-
+            var allAddresses = await _uiService.RunInUIThread(() => 
+                _monitoringDataGrid_VM.Items
+                    .Select(e => e.SelectedAddress)
+                    .ToList());
+            
             var startingAddress = allAddresses.Min();
             var numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
 
@@ -649,12 +652,13 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
             if (result.ReadedData == null || !IsMonitoringRunning)
                 return;
 
-            var logString = string.Empty;
-            
-            await _uiService.RunInUIThread(() =>
-            {
-                logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
-            });
+            var logString = await _uiService.RunInUIThread(() => 
+                _monitoringDataGrid_VM.DisplayData(
+                    result.ReadedData, 
+                    readFunction, 
+                    startingAddress, 
+                    numberOfRegisters, 
+                    _selectedPeriod));
 
             if (_logger.IsRunning)
                 _logger.WriteLine(logString);
