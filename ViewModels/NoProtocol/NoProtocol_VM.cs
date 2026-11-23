@@ -124,6 +124,8 @@ public class NoProtocol_VM : ReactiveObject
 
     // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
     private readonly StringBuilder _rx = new StringBuilder(MaxCapacity, MaxCapacity);
+    
+    private readonly object _rxLock = new object();
 
     private const string BytesSeparator = " ";
     private const string ElementSeparatorInCycleMode = "  ";
@@ -185,7 +187,11 @@ public class NoProtocol_VM : ReactiveObject
 
         Command_ClearRX = ReactiveCommand.Create(() =>
         {
-            _rx.Clear(); 
+            lock (_rxLock)
+            {
+                _rx.Clear(); 
+            }
+            
             RX_String = string.Empty;
         });
         Command_ClearRX.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
@@ -378,29 +384,36 @@ public class NoProtocol_VM : ReactiveObject
             stringData += Environment.NewLine;
         }
 
-        // Если входные данные слишком длинные, то оставляем только хвост
-        if (stringData.Length > _rx.MaxCapacity)
-        {            
-            stringData = stringData.Substring(stringData.Length - _rx.MaxCapacity);
-            _rx.Clear();
-        }
-
-        else
+        string snapshot;
+        
+        lock (_rxLock)
         {
-            int totalLength = _rx.Length + stringData.Length;
-
-            if (totalLength > _rx.MaxCapacity)
-            {
-                int removeCount = totalLength - _rx.MaxCapacity;
-                _rx.Remove(0, Math.Min(removeCount, _rx.Length));
+            // Если входные данные слишком длинные, то оставляем только хвост
+            if (stringData.Length > _rx.MaxCapacity)
+            {            
+                stringData = stringData.Substring(stringData.Length - _rx.MaxCapacity);
+                _rx.Clear();
             }
-        }
 
-        _rx.Append(stringData);
+            else
+            {
+                int totalLength = _rx.Length + stringData.Length;
+
+                if (totalLength > _rx.MaxCapacity)
+                {
+                    int removeCount = totalLength - _rx.MaxCapacity;
+                    _rx.Remove(0, Math.Min(removeCount, _rx.Length));
+                }
+            }
+
+            _rx.Append(stringData);
+
+            snapshot = _rx.ToString();
+        }
 
         await _uiService.RunInUIThread(() =>
         {
-            RX_String = _rx.ToString();
+            RX_String = snapshot;
         });
     }
 
