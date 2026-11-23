@@ -382,8 +382,12 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 
                     CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    await _modbusModel.ExecuteModbusTransaction(searchFunction.ReadFunction, searchFunction.RequestData,
-                        _messageType);
+                    await Task.Run(
+                        () => _modbusModel.ExecuteModbusTransaction(
+                            searchFunction.ReadFunction,
+                            searchFunction.RequestData,
+                            _messageType),
+                        taskCancel);
 
                     ViewSlaveAddress(i);
                 }
