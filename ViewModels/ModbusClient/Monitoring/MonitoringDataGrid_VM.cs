@@ -192,28 +192,13 @@ public class MonitoringDataGrid_VM : ReactiveObject
 
     private void MonitoringItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (_ignorePropertyChanged)
+        if (_ignorePropertyChanged || 
+            sender is not MonitoringItem_VM ||
+            e.PropertyName != nameof(MonitoringItem_VM.IsSelected))
             return;
-
-        if (sender is not MonitoringItem_VM)
-            return;
-
-        if (e.PropertyName == nameof(MonitoringItem_VM.IsSelected))
-        {
-            AllRowSelected = Items.Count > 0 &&
-                             Items.All(x => x.IsSelected);
-        }
-
-        foreach (var item in Items)
-        {
-            if (item.IsSelected)
-            {
-                HasSelectedItems = true;
-                return;
-            }
-        }
-
-        HasSelectedItems = false;
+        
+        AllRowSelected = Items.Count > 0 && Items.All(item => item.IsSelected);
+        HasSelectedItems = Items.Any(item => item.IsSelected);
     }
 
     public void RemoveSelectedItems()
