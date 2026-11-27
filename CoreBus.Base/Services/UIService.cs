@@ -17,11 +17,6 @@ public class UIService : IUIService
     {
         await Dispatcher.UIThread.InvokeAsync(action);
     }
-    
-    public async Task<T> RunInUIThread<T>(Func<T> func)
-    {
-        return await Dispatcher.UIThread.InvokeAsync(func);
-    }
 
     public async Task CopyToClipboard(string data)
     {

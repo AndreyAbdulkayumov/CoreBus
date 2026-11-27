@@ -645,19 +645,21 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
 
             var result = await _modbusModel.ExecuteModbusTransaction(function, data, ModbusClient_VM.ModbusMessageType);
 
-            if (result.ReadedData == null || !IsMonitoringRunning)
-                return;
-
-            var logString = await _uiService.RunInUIThread(() => 
-                _monitoringDataGrid_VM.DisplayData(
-                    result.ReadedData, 
-                    function, 
-                    data.Address, 
-                    data.NumberOfRegisters, 
-                    _selectedPeriod));
-
-            if (_logger.IsRunning)
-                _logger.WriteLine(logString);
+            await _uiService.RunInUIThread(() =>
+            {
+                if (result.ReadedData == null || !IsMonitoringRunning)
+                    return;
+                
+                var logString = _monitoringDataGrid_VM.DisplayData(
+                    result.ReadedData,
+                    function,
+                    data.Address,
+                    data.NumberOfRegisters,
+                    _selectedPeriod);
+                
+                if (_logger.IsRunning)
+                    _logger.WriteLine(logString);
+            });
         }
         
         catch (Exception)
