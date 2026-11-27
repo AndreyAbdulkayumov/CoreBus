@@ -132,7 +132,7 @@ public class NoProtocol_Mode_Files_VM : ReactiveObject
             IsSending = false;
         }
         
-        catch (Exception error)
+        catch (Exception)
         {
             IsSending = false;
             throw;
