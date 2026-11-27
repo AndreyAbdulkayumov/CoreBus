@@ -242,10 +242,10 @@ public class SerialPortClient : IConnection
                     "Parity: " + portInfo.Parity + "\n" +
                     "DataBits: " + portInfo.DataBits + "\n" +
                     "StopBits: " + portInfo.StopBits + "\n\n" +
-                    error.Message);
+                    error.Message, error);
             }
 
-            throw new Exception(commonMessage + error.Message);
+            throw new Exception(commonMessage + error.Message, error);
         }
     }
 
@@ -277,7 +277,7 @@ public class SerialPortClient : IConnection
 
         catch (Exception error)
         {
-            throw new Exception(_localization.Get("Core.SerialDisconnectError") + "\n\n" + error.Message);
+            throw new Exception(_localization.Get("Core.SerialDisconnectError") + "\n\n" + error.Message, error);
         }
     }
 
@@ -316,7 +316,8 @@ public class SerialPortClient : IConnection
             throw new Exception(_localization.Get("Message.Error.SendData") + "\n\n" + error.Message + "\n\n" +
                 _localization.Get("Core.WriteTimeoutPrefix") +
                 (_deviceSerialPort.WriteTimeout == Timeout.Infinite ?
-                _localization.Get("Core.TimeoutInfinite") : _deviceSerialPort.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")));
+                _localization.Get("Core.TimeoutInfinite") : _deviceSerialPort.WriteTimeout.ToString() + " " + _localization.Get("Common.Ms")),
+                error);
         }
     }
 
@@ -374,15 +375,15 @@ public class SerialPortClient : IConnection
             return new ModbusOperationInfo(executionTime, receivedBytes.ToArray());
         }
 
-        catch (TimeoutException error)
+        catch (TimeoutException)
         {
-            throw new TimeoutException(error.Message);
+            throw;
         }
 
         catch (Exception error)
         {
             throw new Exception(_localization.Get("Core.ReceiveDataError") + "\n\n" + error.Message + "\n\n" +
-                _localization.Get("Core.ReadTimeoutMs", _deviceSerialPort.ReadTimeout));
+                _localization.Get("Core.ReadTimeoutMs", _deviceSerialPort.ReadTimeout), error);
         }
     }
 

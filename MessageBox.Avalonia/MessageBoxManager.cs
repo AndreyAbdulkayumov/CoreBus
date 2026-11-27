@@ -68,6 +68,8 @@ public class MessageBoxManager : IMessageBox
 
     private async Task CallMessageBox(Window window)
     {
+        // Мы должны отобразить сообщение пользователю любым доступным способом.
+        // Вариант с window.Show(); сделан как запасной.
         if (Owner != null && Owner.IsVisible)
         {
             await window.ShowDialog(Owner);

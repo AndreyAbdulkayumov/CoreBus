@@ -287,7 +287,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
             return;
         }
 
-        string? validationMessage = CheckFields();
+        var validationMessage = CheckFields();
 
         if (!string.IsNullOrEmpty(validationMessage))
         {
@@ -305,7 +305,7 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 
         _searchCancel = new CancellationTokenSource();
 
-        _searchTask = Task.Run(() => SearchDevices(_searchCancel.Token));
+        _searchTask = SearchDevices(_searchCancel.Token);
     }
 
     private void ViewSlaveAddress(int slaveId)
@@ -323,9 +323,9 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
             return null;
         }
 
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
 
-        foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+        foreach (var element in ActualErrors)
         {
             message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
         }
@@ -382,8 +382,12 @@ public class ModbusScanner_VM : ValidatedDataInput, IValidationFieldInfo
 
                     CurrentSlaveID = $"{i} (0x{i.ToString("X2")})";
 
-                    await _modbusModel.ExecuteModbusTransaction(searchFunction.ReadFunction, searchFunction.RequestData,
-                        _messageType);
+                    await Task.Run(
+                        () => _modbusModel.ExecuteModbusTransaction(
+                            searchFunction.ReadFunction,
+                            searchFunction.RequestData,
+                            _messageType),
+                        taskCancel);
 
                     ViewSlaveAddress(i);
                 }

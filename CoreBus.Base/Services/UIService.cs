@@ -13,9 +13,9 @@ namespace CoreBus.Base.Services;
 
 public class UIService : IUIService
 {
-    public async Task RunInUIThread(Action runnedAction)
+    public async Task RunInUIThread(Action action)
     {
-        await Dispatcher.UIThread.InvokeAsync(runnedAction);
+        await Dispatcher.UIThread.InvokeAsync(action);
     }
 
     public async Task CopyToClipboard(string data)

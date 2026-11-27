@@ -362,7 +362,7 @@ public class Macros_VM : ReactiveObject, IDisposable
 
             catch (Exception error)
             {
-                throw new Exception(_localization.Get("Exception.FileReadError") + "\n\n" + error.Message);
+                throw new Exception(_localization.Get("Exception.FileReadError") + "\n\n" + error.Message, error);
             }
 
             _settingsModel.DeleteFile(macrosValidFilePath);

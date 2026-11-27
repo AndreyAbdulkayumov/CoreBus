@@ -321,7 +321,7 @@ public class ModbusManualMode_VM : ReactiveObject
 
             catch (ModbusException error)
             {
-                if (currentCommand == null || currentCommand.Content == null)
+                if (currentCommand?.Content == null)
                     continue;
 
                 var exceptionMessage = await ModbusErrorHandler(currentCommand.Content.Address, error);
@@ -354,7 +354,7 @@ public class ModbusManualMode_VM : ReactiveObject
         {
             var message = await ModbusErrorHandler(address, error);
 
-            throw new Exception(message);
+            throw new Exception(message, error);
         }
 
         catch (Exception error)
@@ -366,7 +366,7 @@ public class ModbusManualMode_VM : ReactiveObject
                 await AddDataOnView(null, info.Details);
             }
 
-            throw new Exception(error.Message);
+            throw;
         }
     }
 
@@ -381,7 +381,7 @@ public class ModbusManualMode_VM : ReactiveObject
         {
             var message = await ModbusErrorHandler(address, error);
 
-            throw new Exception(message);
+            throw new Exception(message, error);
         }
 
         catch (Exception error)
@@ -393,7 +393,7 @@ public class ModbusManualMode_VM : ReactiveObject
                 await AddDataOnView(null, info.Details);
             }
 
-            throw new Exception(error.Message);
+            throw;
         }
     }
 
@@ -543,10 +543,7 @@ public class ModbusManualMode_VM : ReactiveObject
                 {
                     BinaryRepresentationItems.AddRange(binaryItems);
                 }
-            });
-
-            await _uiServices.RunInUIThread(() =>
-            {
+                
                 FloatRepresentationItems.Clear();
 
                 var floatItems = FloatRepresentation.GetData(data);
@@ -567,16 +564,16 @@ public class ModbusManualMode_VM : ReactiveObject
             {
                 RequestResponseItems.Clear();
                 RequestResponseItems.AddRange(LastRequestRepresentation.GetData(request.Bytes, response.Bytes));
+                
+                if (LogData != string.Empty)
+                {
+                    LogData += "\n\n";
+                }
+
+                LogData += LogRepresentation.GetData(
+                    details.Request_ExecutionTime, request.LogString,
+                    details.Response_ExecutionTime, response.LogString);
             });
-
-            if (LogData != string.Empty)
-            {
-                LogData += "\n\n";
-            }
-
-            LogData += LogRepresentation.GetData(
-                details.Request_ExecutionTime, request.LogString,
-                details.Response_ExecutionTime, response.LogString);
         }
 
         _packageNumber++;

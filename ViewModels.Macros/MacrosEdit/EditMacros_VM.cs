@@ -420,7 +420,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
     {
         var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
-        string? validationMessage = GetCommandValidationMessage(commandVM);
+        var validationMessage = GetCommandValidationMessage(commandVM);
 
         if (!string.IsNullOrEmpty(validationMessage))
         {
@@ -512,7 +512,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
         if (CommonSlaveIdFieldViewModel != null)
         {
-            string? message = CommonSlaveIdFieldViewModel.GetErrorMessage();
+            var message = CommonSlaveIdFieldViewModel.GetErrorMessage();
 
             if (!string.IsNullOrEmpty(message))
             {
@@ -522,7 +522,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
 
         foreach (var command in _allEditCommandVM)
         {
-            string? message = GetCommandValidationMessage(command);
+            var message = GetCommandValidationMessage(command);
 
             if (!string.IsNullOrEmpty(message))
             {
@@ -544,7 +544,7 @@ public class EditMacros_VM : ReactiveObject, IDisposable
         {
             var uncheckedFields = CommonSlaveIdFieldViewModel?.UseCommonSlaveId == true ? [ FieldNames.SlaveID ] : Array.Empty<FieldNames>();
 
-            string? message = validatedCommand.GetValidationMessage(uncheckedFields);
+            var message = validatedCommand.GetValidationMessage(uncheckedFields);
 
             if (!string.IsNullOrEmpty(message))
             {

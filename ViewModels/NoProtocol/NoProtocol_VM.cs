@@ -123,7 +123,7 @@ public class NoProtocol_VM : ReactiveObject
     private const int MaxCapacity = 3000;
 
     // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
-    private readonly StringBuilder RX = new StringBuilder(MaxCapacity, MaxCapacity);
+    private readonly StringBuilder _rx = new StringBuilder(MaxCapacity, MaxCapacity);
 
     private const string BytesSeparator = " ";
     private const string ElementSeparatorInCycleMode = "  ";
@@ -183,7 +183,7 @@ public class NoProtocol_VM : ReactiveObject
 
         Command_ClearRX = ReactiveCommand.Create(() =>
         {
-            RX?.Clear(); 
+            _rx.Clear();
             RX_String = string.Empty;
         });
         Command_ClearRX.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
@@ -361,7 +361,7 @@ public class NoProtocol_VM : ReactiveObject
 
     private void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
     {
-        string stringData = RX_IsByteView ?
+        var stringData = RX_IsByteView ?
             BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator :
             ConnectedHost.GlobalEncoding.GetString(e.RawData);
 
@@ -377,26 +377,26 @@ public class NoProtocol_VM : ReactiveObject
         }
 
         // Если входные данные слишком длинные, то оставляем только хвост
-        if (stringData.Length > RX.MaxCapacity)
+        if (stringData.Length > _rx.MaxCapacity)
         {            
-            stringData = stringData.Substring(stringData.Length - RX.MaxCapacity);
-            RX.Clear();
+            stringData = stringData.Substring(stringData.Length - _rx.MaxCapacity);
+            _rx.Clear();
         }
 
         else
         {
-            int totalLength = RX.Length + stringData.Length;
+            int totalLength = _rx.Length + stringData.Length;
 
-            if (totalLength > RX.MaxCapacity)
+            if (totalLength > _rx.MaxCapacity)
             {
-                int removeCount = totalLength - RX.MaxCapacity;
-                RX.Remove(0, Math.Min(removeCount, RX.Length));
+                int removeCount = totalLength - _rx.MaxCapacity;
+                _rx.Remove(0, Math.Min(removeCount, _rx.Length));
             }
         }
 
-        RX.Append(stringData);
+        _rx.Append(stringData);
 
-        RX_String = RX.ToString();
+        RX_String = _rx.ToString();
     }
 
     private void NoProtocol_Model_ErrorInReadThread(object? sender, Exception e)

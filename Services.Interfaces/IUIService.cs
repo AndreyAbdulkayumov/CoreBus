@@ -2,7 +2,7 @@
 
 public interface IUIService
 {
-    Task RunInUIThread(Action runnedAction);
+    Task RunInUIThread(Action action);
     Task CopyToClipboard(string data);
     void Set_Dark_Theme();
     void Set_Light_Theme();

@@ -1,7 +1,6 @@
 using Core.Models.Settings.FileTypes;
 using MessageBox.Core;
 using ReactiveUI.Reactive;
-using Services.Interfaces;
 using System.Globalization;
 using System.Text;
 using ViewModels.Validation;
@@ -109,19 +108,19 @@ namespace ViewModels.Macros.MacrosEdit
             if (!UseCommonSlaveId) 
                 return null;
 
-            string errorSource = LocalizationProvider.Get("Macros.AdditionalSettingsErrors") + "\n\n";
+            var errorSource = LocalizationProvider.Get("Macros.AdditionalSettingsErrors") + "\n\n";
 
             if (string.IsNullOrWhiteSpace(CommonSlaveId))
             {
                 return errorSource + LocalizationProvider.Get("Macros.CommonSlaveIdNotSet");
             }
 
-            StringBuilder message = new StringBuilder();
+            var message = new StringBuilder();
 
             if (!HasErrors) 
                 return null;
 
-            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            foreach (var element in ActualErrors)
             {
                 message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
             }

@@ -195,12 +195,13 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
     private readonly Chart_VM _chart_VM;
     private readonly FileLogger _logger;
     private readonly ILocalizationService _localization;
+    private readonly IUIService _uiService;
 
 
     public ModbusMonitoring_VM(IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox,
         Model_Settings settingsModel, ConnectedHost connectedHostModel,
         Model_Modbus modbusModel, MonitoringDataGrid_VM monitoringDataGrid_VM, Chart_VM chart_VM,
-        FileLogger logger, ILocalizationService localization)
+        FileLogger logger, ILocalizationService localization, IUIService uiService)
     {
         _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
@@ -212,6 +213,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         _chart_VM = chart_VM ?? throw new ArgumentNullException(nameof(chart_VM));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
+        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
         _localization.LanguageChanged += (_, _) =>
         {
@@ -546,7 +548,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                 return;
             }
 
-            string? validationMessage = CheckFields();
+            var validationMessage = CheckFields();
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
@@ -560,6 +562,19 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                 return;
             }
 
+            var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress).ToList();
+            
+            var startingAddress = allAddresses.Min();
+            var numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
+            
+            ModbusRequestData data = new ModbusReadRequestData(
+                _selectedSlaveID,
+                startingAddress,
+                numberOfRegisters,
+                ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
+            
+            var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
+            
             _button_ContentKey = Button_Content_Stop;
             this.RaisePropertyChanged(nameof(Button_Content));
             IsMonitoringRunning = true;
@@ -574,9 +589,11 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
             if (WaitStartLogMessageIsVisible)
                 StartLogging();
 
-            _modbusModel.MonitoringStart(MonitoringRequestAction, (int)_selectedPeriod);
-
             ModbusMonitoringStateChanged?.Invoke(this, new MonitoringStateEventArgs(isRunning: true));
+            
+            _modbusModel.MonitoringStart(
+                () => MonitoringRequestAction(readFunction, data), 
+                (int)_selectedPeriod);
         }
         
         catch (Exception)
@@ -613,44 +630,36 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
         ModbusMonitoringStateChanged?.Invoke(this, new MonitoringStateEventArgs(isRunning: false));
     }
 
-    private async Task MonitoringRequestAction()
+    private async Task MonitoringRequestAction(ModbusReadFunction function, ModbusRequestData data)
     {
         try
         {
             if (_connectedHostModel.DisconnectedByClient)
                 return;
 
-            if (_connectedHostModel.HostIsConnect == false)
+            if (!_connectedHostModel.HostIsConnect)
                 throw new Exception(_localization.Get("Exception.ClientDisconnected"));
 
             if (ModbusClient_VM.ModbusMessageType == null)
                 throw new Exception(_localization.Get("Exception.ModbusTypeNotSet"));
 
-            var allAddresses = _monitoringDataGrid_VM.Items.Select(e => e.SelectedAddress);
+            var result = await _modbusModel.ExecuteModbusTransaction(function, data, ModbusClient_VM.ModbusMessageType);
 
-            var startingAddress = allAddresses.Min();
-            var numberOfRegisters = allAddresses.Max() - allAddresses.Min() + 1;
-
-            var readFunction = Function.AllReadFunctions.Single(x => x.Number == _selectedReadFunctionNumber);
-
-            ModbusRequestData data = new ModbusReadRequestData(
-                _selectedSlaveID,
-                startingAddress,
-                numberOfRegisters,
-                ModbusClient_VM.ModbusMessageType is ModbusTCP_Message ? false : true);
-
-            var result = await _modbusModel.ExecuteModbusTransaction(
-                            readFunction,
-                            data,
-                            ModbusClient_VM.ModbusMessageType);
-
-            if (result.ReadedData == null || !IsMonitoringRunning)
-                return;
-
-            var logString = _monitoringDataGrid_VM.DisplayData(result.ReadedData, readFunction, startingAddress, numberOfRegisters, _selectedPeriod);
-
-            if (_logger.IsRunning)
-                _logger.WriteLine(logString);
+            await _uiService.RunInUIThread(() =>
+            {
+                if (result.ReadedData == null || !IsMonitoringRunning)
+                    return;
+                
+                var logString = _monitoringDataGrid_VM.DisplayData(
+                    result.ReadedData,
+                    function,
+                    data.Address,
+                    data.NumberOfRegisters,
+                    _selectedPeriod);
+                
+                if (_logger.IsRunning)
+                    _logger.WriteLine(logString);
+            });
         }
         
         catch (Exception)
