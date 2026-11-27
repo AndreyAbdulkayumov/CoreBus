@@ -85,11 +85,11 @@ public partial class ResponseDataGrid : UserControl
 
     private void Border_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        Border? border = sender as Border;
+        var border = sender as Border;
 
         if (border != null)
         {
-            // Снять выделение с текущей строки
+            // РЎРЅСЏС‚СЊ РІС‹РґРµР»РµРЅРёРµ СЃ С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРё
             if (border == _selectedBorder)
             {
                 border.Background = _selectedBorder_InitColor;
@@ -100,14 +100,14 @@ public partial class ResponseDataGrid : UserControl
                 return;
             }
 
-            // Снять выделение с прошлой выбранной строки
+            // РЎРЅСЏС‚СЊ РІС‹РґРµР»РµРЅРёРµ СЃ РїСЂРѕС€Р»РѕР№ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё
             if (_selectedBorder != null)
             {
                 _selectedBorder.Background = _selectedBorder_InitColor;
                 _selectedBorder.BorderBrush = _selectedBorder_InitColor;
             }
 
-            // Запомнить и выделить выбранную строку
+            // Р—Р°РїРѕРјРЅРёС‚СЊ Рё РІС‹РґРµР»РёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ
             _selectedBorder = border;
             _selectedBorder_InitColor = (SolidColorBrush?)border.Background;
 
@@ -129,9 +129,9 @@ public partial class ResponseDataGrid : UserControl
         {
             if (e != null)
             {
-                string resourceKey = _dataInDataGrid.Count % 2 != 0 ? ResourceKey_DataGrid_Color_AlternatingRowBackground : ResourceKey_DataGrid_Color_RowBackground;
+                var resourceKey = _dataInDataGrid.Count % 2 != 0 ? ResourceKey_DataGrid_Color_AlternatingRowBackground : ResourceKey_DataGrid_Color_RowBackground;
 
-                if (this.TryFindResource(resourceKey, out object? rowBackground) == false)
+                if (this.TryFindResource(resourceKey, out var rowBackground) == false)
                 {
                     rowBackground = Brushes.Transparent;
                 }
@@ -154,13 +154,13 @@ public partial class ResponseDataGrid : UserControl
         });
     }
 
-    public async Task ScrollToEnd()
+    private async Task ScrollToEnd()
     {
         var listView = this.FindControl<ScrollViewer>("ScrollViewer_ModbusData");
 
         if (listView != null)
         {
-            await Task.Delay(10);  // Элемент отрисовывается не сразу. Нужно немного подождать, чтобы скрол точно произошел к последнему элементу 
+            await Task.Delay(10);  // Р­Р»РµРјРµРЅС‚ РѕС‚СЂРёСЃРѕРІС‹РІР°РµС‚СЃСЏ РЅРµ СЃСЂР°Р·Сѓ. РќСѓР¶РЅРѕ РЅРµРјРЅРѕРіРѕ РїРѕРґРѕР¶РґР°С‚СЊ, С‡С‚РѕР±С‹ СЃРєСЂРѕР» С‚РѕС‡РЅРѕ РїСЂРѕРёР·РѕС€РµР» Рє РїРѕСЃР»РµРґРЅРµРјСѓ СЌР»РµРјРµРЅС‚Сѓ 
 
             listView.ScrollToEnd();
         }

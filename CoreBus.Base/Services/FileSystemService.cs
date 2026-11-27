@@ -74,12 +74,12 @@ public class FileSystemService : IFileSystemService
 
     public void OpenUserManual()
     {
-        string manualFileName = 
+        var manualFileName = 
             string.Equals(_localization.CurrentLanguage.Code, "ru", StringComparison.OrdinalIgnoreCase)
                 ? "UserManual_ru.pdf"
                 : "UserManual_en.pdf";
 
-        string manualPath = Path.Combine("Documentation", manualFileName);
+        var manualPath = Path.Combine(AppContext.BaseDirectory, "Documentation", manualFileName);
 
         if (OperatingSystem.IsWindows())
         {
