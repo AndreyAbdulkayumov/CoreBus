@@ -124,8 +124,6 @@ public class NoProtocol_VM : ReactiveObject
 
     // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
     private readonly StringBuilder _rx = new StringBuilder(MaxCapacity, MaxCapacity);
-    
-    private readonly object _rxLock = new object();
 
     private const string BytesSeparator = " ";
     private const string ElementSeparatorInCycleMode = "  ";
@@ -137,12 +135,11 @@ public class NoProtocol_VM : ReactiveObject
     private readonly NoProtocol_Mode_Cycle_VM _cycleMode_VM;
     private readonly NoProtocol_Mode_Files_VM _filesMode_VM;
     private readonly ILocalizationService _localization;
-    private readonly IUIService _uiService;
 
     public NoProtocol_VM(IMessageBoxMainWindow messageBox,
         ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel,
         NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM, NoProtocol_Mode_Files_VM filesMode_VM,
-        ILocalizationService localization, IUIService uiService)
+        ILocalizationService localization)
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
@@ -151,7 +148,6 @@ public class NoProtocol_VM : ReactiveObject
         _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
         _filesMode_VM = filesMode_VM ?? throw new ArgumentNullException(nameof(filesMode_VM));
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
-        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
         _localization.LanguageChanged += (_, _) =>
         {
@@ -187,11 +183,7 @@ public class NoProtocol_VM : ReactiveObject
 
         Command_ClearRX = ReactiveCommand.Create(() =>
         {
-            lock (_rxLock)
-            {
-                _rx.Clear(); 
-            }
-            
+            _rx.Clear();
             RX_String = string.Empty;
         });
         Command_ClearRX.ThrownExceptions.Subscribe(error => _messageBox.Show(_localization.Get("Message.Error.ClearData") + "\n\n" + error.Message, MessageType.Error, error));
@@ -367,7 +359,7 @@ public class NoProtocol_VM : ReactiveObject
         UI_IsEnable = false;
     }
 
-    private async void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
+    private void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
     {
         var stringData = RX_IsByteView ?
             BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator :
@@ -384,37 +376,27 @@ public class NoProtocol_VM : ReactiveObject
             stringData += Environment.NewLine;
         }
 
-        string snapshot;
-        
-        lock (_rxLock)
-        {
-            // Если входные данные слишком длинные, то оставляем только хвост
-            if (stringData.Length > _rx.MaxCapacity)
-            {            
-                stringData = stringData.Substring(stringData.Length - _rx.MaxCapacity);
-                _rx.Clear();
-            }
-
-            else
-            {
-                int totalLength = _rx.Length + stringData.Length;
-
-                if (totalLength > _rx.MaxCapacity)
-                {
-                    int removeCount = totalLength - _rx.MaxCapacity;
-                    _rx.Remove(0, Math.Min(removeCount, _rx.Length));
-                }
-            }
-
-            _rx.Append(stringData);
-
-            snapshot = _rx.ToString();
+        // Если входные данные слишком длинные, то оставляем только хвост
+        if (stringData.Length > _rx.MaxCapacity)
+        {            
+            stringData = stringData.Substring(stringData.Length - _rx.MaxCapacity);
+            _rx.Clear();
         }
 
-        await _uiService.RunInUIThread(() =>
+        else
         {
-            RX_String = snapshot;
-        });
+            int totalLength = _rx.Length + stringData.Length;
+
+            if (totalLength > _rx.MaxCapacity)
+            {
+                int removeCount = totalLength - _rx.MaxCapacity;
+                _rx.Remove(0, Math.Min(removeCount, _rx.Length));
+            }
+        }
+
+        _rx.Append(stringData);
+
+        RX_String = _rx.ToString();
     }
 
     private void NoProtocol_Model_ErrorInReadThread(object? sender, Exception e)
