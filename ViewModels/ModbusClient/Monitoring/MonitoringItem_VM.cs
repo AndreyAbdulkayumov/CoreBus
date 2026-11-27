@@ -280,7 +280,7 @@ public class MonitoringItem_VM : ValidatedDataInput, IValidationFieldInfo
         ShowOnChartAndLog = initData.ShowOnChartAndLog;
     }
 
-    public void SetReadedValue(UInt16 newRawValue, IReadOnlyList<(int address, UInt16 value)> registers, uint chartIncrementX)
+    public void SetReadedValue(UInt16 newRawValue, IReadOnlyList<(int address, UInt16 value)> registers)
     {
         IsNewValue = _rawValue != newRawValue;
 
@@ -413,6 +413,10 @@ public class MonitoringItem_VM : ValidatedDataInput, IValidationFieldInfo
 
     private byte[] GetBytesFromRegisters(IReadOnlyList<(int address, UInt16 value)> registers, int numberOfRegisters)
     {
+        // Тут важно брать адреса из registers по порядку. Они уже ранее сгруппированы как нужно.
+        // Порядок регистров в registers - это порядок регистров в таблице мониторинга.
+        // В таблице регистры не обязательно должны располагаться по порядку от 0 до n.
+        // Порядок регистров определяет пользователь.
         return registers
             .SkipWhile(e => e.address != _selectedAddress)
             .Take(numberOfRegisters)

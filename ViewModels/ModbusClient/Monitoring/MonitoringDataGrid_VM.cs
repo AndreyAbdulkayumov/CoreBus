@@ -260,7 +260,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
     /// <param name="numberOfRegisters"></param>
     /// <param name="chartIncrementX"></param>
     /// <returns>Строка для записи в лог.</returns>
-    public string DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters, uint chartIncrementX)
+    public string DisplayData(byte[] data, ModbusReadFunction readFunction, UInt16 startingAddress, int numberOfRegisters)
     {
         var readRegisters =
             ConvertToResultList(data, numberOfRegisters, readFunction)
@@ -283,7 +283,7 @@ public class MonitoringDataGrid_VM : ReactiveObject
                 continue;
             }
                 
-            item.SetReadedValue(registerValue, registers, chartIncrementX);
+            item.SetReadedValue(registerValue, registers);
 
             if (item.ItemShowOnChartAndLog)
             {

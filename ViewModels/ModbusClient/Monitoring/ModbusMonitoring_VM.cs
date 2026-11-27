@@ -654,8 +654,7 @@ public partial class ModbusMonitoring_VM : ValidatedDataInput, IValidationFieldI
                     result.ReadedData,
                     function,
                     data.Address,
-                    data.NumberOfRegisters,
-                    _selectedPeriod);
+                    data.NumberOfRegisters);
                 
                 if (_logger.IsRunning)
                     _logger.WriteLine(logString);
